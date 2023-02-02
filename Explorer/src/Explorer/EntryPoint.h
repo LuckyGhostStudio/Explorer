@@ -10,6 +10,11 @@ extern Explorer::Application* Explorer::CreateApplication();
 
 int main(int argc, char** argv)
 {
+	Explorer::Log::Init();
+	EXP_CORE_WARN("初始化日志！");
+	int a = 2;
+	EXP_INFO("你好！{0}", a);
+
 	auto app = Explorer::CreateApplication();	//创建应用程序
 	app->Run();		//运行
 	delete app;
