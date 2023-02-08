@@ -18,6 +18,9 @@ project "Explorer"			--项目
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")	--目标目录
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")	--中间目录
 
+	pchheader "exppch.h"	--预编译头文件
+	pchsource "Explorer/src/exppch.cpp"
+
 	files				--文件
 	{
 		"%{prj.name}/src/**.h",

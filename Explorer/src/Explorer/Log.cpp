@@ -1,3 +1,4 @@
+#include "exppch.h"	//Ô¤±àÒëÍ·ÎÄ¼ş
 #include "Log.h"
 #include <spdlog/sinks/stdout_color_sinks.h>
 

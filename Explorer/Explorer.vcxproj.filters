@@ -4,6 +4,9 @@
     <Filter Include="Explorer">
       <UniqueIdentifier>{7612E14B-62DF-3B57-8BF8-29FF772471E5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Explorer\Events">
+      <UniqueIdentifier>{9A9D8657-0629-F41B-0F3A-77107B44501C}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Explorer.h" />
@@ -16,13 +19,22 @@
     <ClInclude Include="src\Explorer\EntryPoint.h">
       <Filter>Explorer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Events\ApplicationEvent.h">
+      <Filter>Explorer\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Events\Event.h">
+      <Filter>Explorer\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Events\KeyEvent.h">
+      <Filter>Explorer\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Events\MouseEvent.h">
+      <Filter>Explorer\Events</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Log.h">
       <Filter>Explorer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Events\ApplicationEvent.h" />
-    <ClInclude Include="src\Explorer\Events\Event.h" />
-    <ClInclude Include="src\Explorer\Events\KeyEvent.h" />
-    <ClInclude Include="src\Explorer\Events\MouseEvent.h" />
+    <ClInclude Include="src\exppch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp">
@@ -31,5 +43,6 @@
     <ClCompile Include="src\Explorer\Log.cpp">
       <Filter>Explorer</Filter>
     </ClCompile>
+    <ClCompile Include="src\exppch.cpp" />
   </ItemGroup>
 </Project>

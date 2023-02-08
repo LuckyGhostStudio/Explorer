@@ -1,9 +1,6 @@
 #pragma once
-
+#include "exppch.h"	//Ô¤±àÒëÍ·ÎÄ¼ş
 #include "Explorer/Core.h"
-
-#include <string>
-#include <functional>
 
 namespace Explorer
 {
