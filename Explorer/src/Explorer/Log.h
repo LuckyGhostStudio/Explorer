@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
 
 #include <memory>
 
@@ -44,7 +45,7 @@ namespace Explorer
 
 //客户端日志
 #define EXP_TRACE(...) ::Explorer::Log::GetClientLogger()->trace(__VA_ARGS__)	//提示日志
-#define EXP_INFO(...) ::Explorer::Log::GetClientLogger()->info(__VA_ARGS__)	//信息日志
-#define EXP_WARN(...) ::Explorer::Log::GetClientLogger()->warn(__VA_ARGS__)	//警告日志
+#define EXP_INFO(...) ::Explorer::Log::GetClientLogger()->info(__VA_ARGS__)		//信息日志
+#define EXP_WARN(...) ::Explorer::Log::GetClientLogger()->warn(__VA_ARGS__)		//警告日志
 #define EXP_ERROR(...) ::Explorer::Log::GetClientLogger()->error(__VA_ARGS__)	//错误日志
 #define EXP_FATAL(...) ::Explorer::Log::GetClientLogger()->fatal(__VA_ARGS__)	//严重错误日志

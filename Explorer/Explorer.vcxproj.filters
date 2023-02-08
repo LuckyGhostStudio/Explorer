@@ -19,6 +19,10 @@
     <ClInclude Include="src\Explorer\Log.h">
       <Filter>Explorer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\Explorer\Events\Event.h" />
+    <ClInclude Include="src\Explorer\Events\KeyEvent.h" />
+    <ClInclude Include="src\Explorer\Events\MouseEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp">

@@ -26,7 +26,8 @@ project "Explorer"			--项目
 
 	includedirs			--附加包含目录
 	{
-		"%{prj.name}/vendor/spdlog/include"
+		"%{prj.name}/vendor/spdlog/include",
+		"%{prj.name}/src"
 	}
 
 	filter "system:windows"	--windows系统
