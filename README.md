@@ -18,31 +18,58 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ## 开发过程
 
-### 项目入口点
+### 1. 项目入口点
 
 - EntryPoint.h
 
-### 日志系统
+### 2. 日志系统
 
 - Log.h
 - Log.cpp
 
-### Premake构建项目
+### 3. Premake构建项目
 
 - premake.lua
 
-### 实现事件系统
+### 4. 实现事件系统
 
 - Event.h
 - ApplicationEvent.h
 - KeyEvent.h
 - MouseEvent.h
 
+### 5. 创建预编译头文件
+
+- exppch.h
+- exppch.cpp
+
+### 6. 窗口抽象和GLFW
+
+- Window.h
+
+### 7. 窗口事件
+
 ## 文件说明
 
 ### Explorer 项目
 
 #### src
+
+##### 预编译头文件
+
+- exppch.h/.cpp。
+
+  包含引擎需要用到的C++标准库文件和其他库文件，预先编译为二进制文件，加快项目构建速度。
+
+##### 外部文件
+
+- spdlog
+
+  外部日志库文件。
+
+- GLFW
+
+  外部窗口库文件，配合OpenGL。
 
 ##### Events
 
@@ -70,7 +97,7 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Application.h/.cpp
 
-  引擎应用程序入口，应用基类。
+  引擎应用程序入口，应用基类。定义所有事件函数，创建窗口并为窗口设置事件函数，进行事件调度。
 
 - EntryPoint.h
 
@@ -78,17 +105,17 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 -  Log.h/.cpp
 
-  引擎日志系统，定义内核日志和客户端日志基本格式
+  引擎日志系统，定义内核日志和客户端日志基本格式。
 
 - Explorer.h
 
-  引用Explorer.dll需要包含的所有头文件
+  引用Explorer.dll需要包含的所有头文件。
 
-##### 外部文件
+##### 窗口文件
 
-- spdlog
+- Window.h
 
-  外部日志库
+  窗口类，可接收事件。
 
 ### Sandbox 项目
 

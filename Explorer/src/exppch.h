@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#ifdef EXP_PLATFORM_WINDOWS	//windowsƽ̨
+#include "Explorer/Log.h"
+
+#ifdef EXP_PLATFORM_WINDOWS	//windows
 	#include <Windows.h>
 #endif

@@ -1,6 +1,5 @@
 #pragma once
 #include "exppch.h"	//预编译头文件
-#include "Explorer/Core.h"
 
 namespace Explorer
 {
@@ -121,7 +120,7 @@ namespace Explorer
 		bool Dispatch(EventFn<T> func)
 		{
 			if (m_Event.GetEventType() == T::GetStaticType()) {		//接收到的事件类型 == 事件函数类型
-				m_Event.m_Handled = func(*(T*)&m_Event);	//执行事件函数
+				m_Event.m_Handled = func(*(T*)&m_Event);			//执行事件函数 func(Event& e)：将m_Event转换为T
 				return true;
 			}
 			return false;

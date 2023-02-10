@@ -7,6 +7,9 @@
     <Filter Include="Explorer\Events">
       <UniqueIdentifier>{9A9D8657-0629-F41B-0F3A-77107B44501C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Explorer\Windows">
+      <UniqueIdentifier>{B0D23C94-9CCB-5BE6-C5FD-406BB1553BF2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Explorer.h" />
@@ -34,6 +37,9 @@
     <ClInclude Include="src\Explorer\Log.h">
       <Filter>Explorer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Windows\Window.h">
+      <Filter>Explorer\Windows</Filter>
+    </ClInclude>
     <ClInclude Include="src\exppch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +48,9 @@
     </ClCompile>
     <ClCompile Include="src\Explorer\Log.cpp">
       <Filter>Explorer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Windows\Window.cpp">
+      <Filter>Explorer\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\exppch.cpp" />
   </ItemGroup>

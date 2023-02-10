@@ -10,6 +10,12 @@ workspace "Explorer"		--解决方案名称
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"	--输出目录
 
+--包含目录列表
+IncludeDir = {}
+IncludeDir["GLFW"] = "Explorer/vendor/GLFW/include"
+
+include "Explorer/vendor/GLFW"		--包含GLFW目录
+
 project "Explorer"			--项目
 	location "Explorer"	--相对路径
 	kind "SharedLib"	--动态库
@@ -29,8 +35,15 @@ project "Explorer"			--项目
 
 	includedirs			--附加包含目录
 	{
+		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{prj.name}/src"
+		"%{IncludeDir.GLFW}"
+	}
+
+	links
+	{
+		"GLFW",			--引用GLFW
+		"opengl32.lib"
 	}
 
 	filter "system:windows"	--windows系统
@@ -41,7 +54,8 @@ project "Explorer"			--项目
 		defines			--宏
 		{
 			"EXP_PLATFORM_WINDOWS",
-			"EXP_BUILD_DLL"
+			"EXP_BUILD_DLL",
+			"EXP_ENABLE_ASSERTS"
 		}
 
 		postbuildcommands -- build后的自定义命令
@@ -78,7 +92,8 @@ project "Sandbox"		--项目
 	includedirs			--附加包含目录
 	{
 		"Explorer/vendor/spdlog/include",
-		"Explorer/src"
+		"Explorer/src",
+		"%{IncludeDir.GLFW}"
 	}
 
 	links

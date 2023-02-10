@@ -3,6 +3,8 @@
 #include "Core.h"
 #include "Events/Event.h"
 
+#include "Windows/Window.h"
+
 namespace Explorer
 {
 	/// <summary>
@@ -10,6 +12,9 @@ namespace Explorer
 	/// </summary>
 	class EXPLORER_API Application
 	{
+	private:
+		std::unique_ptr<Window> m_Window;	//窗口指针
+		bool m_Running = true;				//是否正在运行
 	public:
 		Application();
 		virtual ~Application();
