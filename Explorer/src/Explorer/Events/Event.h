@@ -94,6 +94,12 @@ namespace Explorer
 		{
 			return GetCategoryFlags() & category;	//事件类别标志和 目标事件类别 按位与
 		}
+
+		/// <summary>
+		/// 获取事件处理结果
+		/// </summary>
+		/// <returns></returns>
+		inline bool GetHandled() const { return m_Handled; }
 	protected:
 		bool m_Handled = false;		//是否已处理
 	};

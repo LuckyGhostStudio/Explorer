@@ -34,6 +34,12 @@
     <ClInclude Include="src\Explorer\Events\MouseEvent.h">
       <Filter>Explorer\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Layer.h">
+      <Filter>Explorer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\LayerStack.h">
+      <Filter>Explorer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Log.h">
       <Filter>Explorer</Filter>
     </ClInclude>
@@ -44,6 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp">
+      <Filter>Explorer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Layer.cpp">
+      <Filter>Explorer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\LayerStack.cpp">
       <Filter>Explorer</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Log.cpp">

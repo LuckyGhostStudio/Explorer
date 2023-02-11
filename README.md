@@ -21,11 +21,12 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 ### 1. 项目入口点
 
 - EntryPoint.h
+- Application.h/.cpp
+- SandBoxApp.cpp
 
 ### 2. 日志系统
 
-- Log.h
-- Log.cpp
+- Log.h/.cpp
 
 ### 3. Premake构建项目
 
@@ -40,14 +41,18 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 5. 创建预编译头文件
 
-- exppch.h
-- exppch.cpp
+- exppch.h/.cpp
 
 ### 6. 窗口抽象和GLFW
 
-- Window.h
+- Window.h/.cpp
 
 ### 7. 窗口事件
+
+### 8. Layer
+
+- Layer.h/.cpp
+- LayerStack.h/.cpp
 
 ## 文件说明
 
@@ -97,7 +102,7 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Application.h/.cpp
 
-  引擎应用程序入口，应用基类。定义所有事件函数，创建窗口并为窗口设置事件函数，进行事件调度。
+  引擎应用程序入口，应用基类。定义所有事件函数，创建窗口并为窗口设置事件函数，接收事件并进行事件调度，将事件传递给层。
 
 - EntryPoint.h
 
@@ -115,7 +120,17 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Window.h
 
-  窗口类，可接收事件。
+  窗口类，可创建事件。
+
+##### Layer文件
+
+- Layer.h/.cpp
+
+  所有层的基类，可接收事件并处理。
+
+- LayerStack.h/.cpp
+
+  存储所有层，普通层在列表前半部分，覆盖层在列表后半部分。
 
 ### Sandbox 项目
 
@@ -123,7 +138,7 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - SandboxApp.cpp
 
-  应用程序类，继承Application
+  应用程序类，继承Application。可创建具体Layer。
 
 ## 子系统
 

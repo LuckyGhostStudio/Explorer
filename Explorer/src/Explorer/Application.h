@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Core.h"
-#include "Events/Event.h"
-#include "Events/ApplicationEvent.h"
+
 #include "Windows/Window.h"
+#include "Explorer/LayerStack.h"
+#include "Explorer/Events/Event.h"
+#include "Explorer/Events/ApplicationEvent.h"
 
 namespace Explorer
 {
@@ -15,6 +17,7 @@ namespace Explorer
 	private:
 		std::unique_ptr<Window> m_Window;	//窗口指针
 		bool m_Running = true;				//是否正在运行
+		LayerStack m_LayerStack;	
 
 		/// <summary>
 		/// 窗口关闭回调函数
@@ -36,6 +39,18 @@ namespace Explorer
 		/// 运行
 		/// </summary>
 		void Run();
+
+		/// <summary>
+		/// 添加普通层到层栈
+		/// </summary>
+		/// <param name="layer">层</param>
+		void PushLayer(Layer* layer);
+
+		/// <summary>
+		/// 添加覆盖层到层栈
+		/// </summary>
+		/// <param name="layer">层</param>
+		void PushOverlay(Layer* layer);
 	};
 
 	/// <summary>

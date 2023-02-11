@@ -84,6 +84,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -109,6 +110,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -135,6 +137,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -157,12 +160,16 @@
     <ClInclude Include="src\Explorer\Events\Event.h" />
     <ClInclude Include="src\Explorer\Events\KeyEvent.h" />
     <ClInclude Include="src\Explorer\Events\MouseEvent.h" />
+    <ClInclude Include="src\Explorer\Layer.h" />
+    <ClInclude Include="src\Explorer\LayerStack.h" />
     <ClInclude Include="src\Explorer\Log.h" />
     <ClInclude Include="src\Explorer\Windows\Window.h" />
     <ClInclude Include="src\exppch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp" />
+    <ClCompile Include="src\Explorer\Layer.cpp" />
+    <ClCompile Include="src\Explorer\LayerStack.cpp" />
     <ClCompile Include="src\Explorer\Log.cpp" />
     <ClCompile Include="src\Explorer\Windows\Window.cpp" />
     <ClCompile Include="src\exppch.cpp">

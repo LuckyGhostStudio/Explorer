@@ -65,14 +65,17 @@ project "Explorer"			--项目
 
 	filter "configurations:Debug"	--Debug配置
         defines "EXP_DEBUG"
+		buildoptions "/MDd"			--多线程调试dll
         symbols "on"
 
     filter "configurations:Release"	--Release配置
         defines "EXP_RELEASE"
+		buildoptions "/MD"			--多线程dll
         optimize "on"
 
     filter "configurations:Dist"	--Dist配置
         defines "EXP_DIST"
+		buildoptions "/MD"
         optimize "on"
 
 project "Sandbox"		--项目
@@ -113,12 +116,15 @@ project "Sandbox"		--项目
 
 	filter "configurations:Debug"	--Debug配置
         defines "EXP_DEBUG"
+		buildoptions "/MDd"			--多线程调试dll
         symbols "on"
 
     filter "configurations:Release"	--Release配置
         defines "EXP_RELEASE"
+		buildoptions "/MD"			--多线程dll
         optimize "on"
 
     filter "configurations:Dist"	--Dist配置
         defines "EXP_DIST"
+		buildoptions "/MD"			--多线程dll
         optimize "on"
