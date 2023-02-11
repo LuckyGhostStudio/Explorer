@@ -5,7 +5,7 @@
 #include "Explorer/Events/KeyEvent.h"
 #include "Explorer/Events/MouseEvent.h"
 
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 namespace Explorer
 {
@@ -94,25 +94,34 @@ namespace Explorer
 
 			switch (action)
 			{
-			case GLFW_PRESS:	//按键按下
-			{
-				KeyPressedEvent event(key, 0);	//按键按下事件
-				data.EventCallback(event);
-				break;
+				case GLFW_PRESS:	//按键按下
+				{
+					KeyPressedEvent event(key, 0);	//按键按下事件
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_RELEASE:	//按键抬起
+				{
+					KeyReleasedEvent event(key);	//按键抬起事件
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_REPEAT:	//按键重复
+				{
+					KeyPressedEvent event(key, 1);	//按键按下事件
+					data.EventCallback(event);
+					break;
+				}
 			}
-			case GLFW_RELEASE:	//按键抬起
-			{
-				KeyReleasedEvent event(key);	//按键抬起事件
-				data.EventCallback(event);
-				break;
-			}
-			case GLFW_REPEAT:	//按键重复
-			{
-				KeyPressedEvent event(key, 1);	//按键按下事件
-				data.EventCallback(event);
-				break;
-			}
-			}
+		});
+
+		//键盘字符输入
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			KeyTypedEvent event(keycode);	//按键输入字符事件
+			data.EventCallback(event);
 		});
 
 		//鼠标
@@ -122,18 +131,18 @@ namespace Explorer
 
 			switch (action)
 			{
-			case GLFW_PRESS:	//按键按下
-			{
-				MouseButtonPressedEvent event(button);	//鼠标按钮按下事件
-				data.EventCallback(event);
-				break;
-			}
-			case GLFW_RELEASE:	//按键抬起
-			{
-				MouseButtonReleasedEvent event(button);	//鼠标按钮抬起事件
-				data.EventCallback(event);
-				break;
-			}
+				case GLFW_PRESS:	//按键按下
+				{
+					MouseButtonPressedEvent event(button);	//鼠标按钮按下事件
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_RELEASE:	//按键抬起
+				{
+					MouseButtonReleasedEvent event(button);	//鼠标按钮抬起事件
+					data.EventCallback(event);
+					break;
+				}
 			}
 		});
 

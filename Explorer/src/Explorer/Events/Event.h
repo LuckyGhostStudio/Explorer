@@ -34,6 +34,7 @@ namespace Explorer
 
 		KeyPressed,				//按键按下事件
 		KeyReleased,			//按键抬起事件
+		keyTyped,				//按键输入字符事件
 
 		MouseButtonPressed,		//鼠标按钮按下事件
 		MouseButtonReleased,	//鼠标按钮抬起事件

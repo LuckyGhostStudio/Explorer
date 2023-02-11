@@ -116,4 +116,47 @@ namespace Explorer
 			return "KeyReleased";
 		}
 	};
+
+	/// <summary>
+	/// 按键输入字符事件
+	/// </summary>
+	class EXPLORER_API KeyTypedEvent :public KeyEvent
+	{
+	public:
+		KeyTypedEvent(int keycode) :KeyEvent(keycode) {}
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "KeyTypedEvent: " << m_KeyCode;
+			return ss.str();
+		}
+
+		/// <summary>
+		/// 返回该事件的类型
+		/// </summary>
+		/// <returns>KeyTyped事件</returns>
+		static EventType GetStaticType()
+		{
+			return EventType::keyTyped;
+		}
+
+		/// <summary>
+		/// 返回该事件类型
+		/// </summary>
+		/// <returns>事件类型</returns>
+		virtual EventType GetEventType() const override
+		{
+			return GetStaticType();
+		}
+
+		/// <summary>
+		/// 返回该事件名
+		/// </summary>
+		/// <returns>"KeyTyped"</returns>
+		virtual const char* GetName() const override
+		{
+			return "KeyTyped";
+		}
+	};
 }

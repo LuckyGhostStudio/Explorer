@@ -21,3 +21,5 @@
 #endif
 
 #define BIT(x) (1 << x)		//1左移x位
+
+#define EXP_BIND_EVENT_FUNC(func) std::bind(&func, this, std::placeholders::_1)	//绑定事件函数 返回函数对象
