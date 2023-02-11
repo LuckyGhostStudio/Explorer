@@ -5,6 +5,8 @@
 #include "Explorer/Events/KeyEvent.h"
 #include "Explorer/Events/MouseEvent.h"
 
+#include "glad/glad.h"
+
 namespace Explorer
 {
 	static bool s_GLFWInitialized = false;	//GLFW是否已初始化
@@ -55,6 +57,10 @@ namespace Explorer
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
 		glfwMakeContextCurrent(m_Window);				//设置窗口上下文为当前线程主上下文
+
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);	//初始化GLAD
+		EXP_CORE_ASSERT(status, "Failed to initialize Glad!");
+
 		glfwSetWindowUserPointer(m_Window, &m_Data);	//将数据m_Data传递给m_Window：userPtr指向m_Data
 		SetVSync(true);									//垂直同步
 

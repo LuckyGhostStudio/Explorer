@@ -15,6 +15,8 @@ namespace Explorer
 	class EXPLORER_API Application
 	{
 	private:
+		static Application* Instance;		//实例
+
 		std::unique_ptr<Window> m_Window;	//窗口指针
 		bool m_Running = true;				//是否正在运行
 		LayerStack m_LayerStack;	
@@ -51,6 +53,18 @@ namespace Explorer
 		/// </summary>
 		/// <param name="layer">层</param>
 		void PushOverlay(Layer* layer);
+
+		/// <summary>
+		/// 返回Application的实例
+		/// </summary>
+		/// <returns>实例</returns>
+		inline static Application& GetInstance() { return *Instance; }
+
+		/// <summary>
+		/// 返回Application的窗口
+		/// </summary>
+		/// <returns></returns>
+		inline Window& GetWindow() { return *m_Window; }
 	};
 
 	/// <summary>

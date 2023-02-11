@@ -54,6 +54,12 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Layer.h/.cpp
 - LayerStack.h/.cpp
 
+### 9. GLAD
+
+### 10.ImGui层
+
+- ImGuiLayer.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -131,6 +137,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - LayerStack.h/.cpp
 
   存储所有层，普通层在列表前半部分，覆盖层在列表后半部分。
+  
+- ImGuiLayer.h/.cpp
+
+  ImGui层，渲染ImGui，处理该层事件。
 
 ### Sandbox 项目
 

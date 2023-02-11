@@ -17,12 +17,12 @@ namespace Explorer
 		virtual ~Layer();
 
 		/// <summary>
-		/// 将该层固定到层栈
+		/// 将该层添加到层栈时调用
 		/// </summary>
 		virtual void OnAttach() {}
 
 		/// <summary>
-		/// 将该层从层栈分离
+		/// 将该层从层栈移除时调用
 		/// </summary>
 		virtual void OnDetach() {}
 

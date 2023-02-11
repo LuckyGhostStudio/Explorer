@@ -1,98 +1,107 @@
-workspace "Explorer"		--½â¾ö·½°¸Ãû³Æ
-	architecture "x64"	--ÌåÏµ½á¹¹
+workspace "Explorer"		--ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	architecture "x64"	--ï¿½ï¿½Ïµï¿½á¹¹
 
-	configurations		--ÅäÖÃ
+	configurations		--ï¿½ï¿½ï¿½ï¿½
 	{
 		"Debug",
 		"Release",
 		"Dist"
 	}
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"	--Êä³öÄ¿Â¼
+outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"	--ï¿½ï¿½ï¿½Ä¿Â¼
 
---°üº¬Ä¿Â¼ÁÐ±í
+--ï¿½ï¿½ï¿½ï¿½Ä¿Â¼ï¿½Ð±ï¿½
 IncludeDir = {}
 IncludeDir["GLFW"] = "Explorer/vendor/GLFW/include"
+IncludeDir["GLAD"] = "Explorer/vendor/GLAD/include"
+IncludeDir["ImGui"] = "Explorer/vendor/imgui"
 
-include "Explorer/vendor/GLFW"		--°üº¬GLFWÄ¿Â¼
+include "Explorer/vendor/GLFW"		--ï¿½ï¿½ï¿½ï¿½GLFWÄ¿Â¼
+include "Explorer/vendor/GLAD"		--ï¿½ï¿½ï¿½ï¿½GLADÄ¿Â¼
+include "Explorer/vendor/imgui"		--ï¿½ï¿½ï¿½ï¿½imguiÄ¿Â¼
 
-project "Explorer"			--ÏîÄ¿
-	location "Explorer"	--Ïà¶ÔÂ·¾¶
-	kind "SharedLib"	--¶¯Ì¬¿â
-	language "C++"		--ÓïÑÔ
+project "Explorer"			--ï¿½ï¿½Ä¿
+	location "Explorer"	--ï¿½ï¿½ï¿½Â·ï¿½ï¿½
+	kind "SharedLib"	--ï¿½ï¿½Ì¬ï¿½ï¿½
+	language "C++"		--ï¿½ï¿½ï¿½ï¿½
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")	--Ä¿±êÄ¿Â¼
-    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")	--ÖÐ¼äÄ¿Â¼
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")	--Ä¿ï¿½ï¿½Ä¿Â¼
+    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")	--ï¿½Ð¼ï¿½Ä¿Â¼
 
-	pchheader "exppch.h"	--Ô¤±àÒëÍ·ÎÄ¼þ
+	pchheader "exppch.h"	--Ô¤ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½
 	pchsource "Explorer/src/exppch.cpp"
 
-	files				--ÎÄ¼þ
+	files				--ï¿½Ä¼ï¿½
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
 	}
 
-	includedirs			--¸½¼Ó°üº¬Ä¿Â¼
+	includedirs			--ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½Ä¿Â¼
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.GLAD}",
+		"%{IncludeDir.ImGui}"
 	}
 
 	links
 	{
-		"GLFW",			--ÒýÓÃGLFW
+		"GLFW",			--ï¿½ï¿½ï¿½ï¿½GLFW
+		"GLAD",			--ï¿½ï¿½ï¿½ï¿½GLAD
+		"ImGui",		--ï¿½ï¿½ï¿½ï¿½ImGui
 		"opengl32.lib"
 	}
 
 	filter "system:windows"	--windowsÏµÍ³
 		cppdialect "C++17"
         staticruntime "On"
-        systemversion "latest"	--sdk°æ±¾
+        systemversion "latest"	--sdkï¿½æ±¾
 
-		defines			--ºê
+		defines			--ï¿½ï¿½
 		{
 			"EXP_PLATFORM_WINDOWS",
 			"EXP_BUILD_DLL",
-			"EXP_ENABLE_ASSERTS"
+			"EXP_ENABLE_ASSERTS",
+			"GLFW_INCLUDE_NONE"
 		}
 
-		postbuildcommands -- buildºóµÄ×Ô¶¨ÒåÃüÁî
+		postbuildcommands -- buildï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         {
-            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox") --¿½±´ÒýÇædll¿âµ½sanbox.exeµÄÍ¬Ò»Ä¿Â¼ÏÂ
+            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox") --ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½dllï¿½âµ½sanbox.exeï¿½ï¿½Í¬Ò»Ä¿Â¼ï¿½ï¿½
         }
 
-	filter "configurations:Debug"	--DebugÅäÖÃ
+	filter "configurations:Debug"	--Debugï¿½ï¿½ï¿½ï¿½
         defines "EXP_DEBUG"
-		buildoptions "/MDd"			--¶àÏß³Ìµ÷ÊÔdll
+		buildoptions "/MDd"			--ï¿½ï¿½ï¿½ß³Ìµï¿½ï¿½ï¿½dll
         symbols "on"
 
-    filter "configurations:Release"	--ReleaseÅäÖÃ
+    filter "configurations:Release"	--Releaseï¿½ï¿½ï¿½ï¿½
         defines "EXP_RELEASE"
-		buildoptions "/MD"			--¶àÏß³Ìdll
+		buildoptions "/MD"			--ï¿½ï¿½ï¿½ß³ï¿½dll
         optimize "on"
 
-    filter "configurations:Dist"	--DistÅäÖÃ
+    filter "configurations:Dist"	--Distï¿½ï¿½ï¿½ï¿½
         defines "EXP_DIST"
 		buildoptions "/MD"
         optimize "on"
 
-project "Sandbox"		--ÏîÄ¿
-	location "Sandbox"	--Ïà¶ÔÂ·¾¶
-	kind "ConsoleApp"	--¿ØÖÆÌ¨Ó¦ÓÃ
-	language "C++"		--ÓïÑÔ
+project "Sandbox"		--ï¿½ï¿½Ä¿
+	location "Sandbox"	--ï¿½ï¿½ï¿½Â·ï¿½ï¿½
+	kind "ConsoleApp"	--ï¿½ï¿½ï¿½ï¿½Ì¨Ó¦ï¿½ï¿½
+	language "C++"		--ï¿½ï¿½ï¿½ï¿½
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")	--Ä¿±êÄ¿Â¼
-    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")	--ÖÐ¼äÄ¿Â¼
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")	--Ä¿ï¿½ï¿½Ä¿Â¼
+    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")	--ï¿½Ð¼ï¿½Ä¿Â¼
 
-	files				--ÎÄ¼þ
+	files				--ï¿½Ä¼ï¿½
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
 	}
 
-	includedirs			--¸½¼Ó°üº¬Ä¿Â¼
+	includedirs			--ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½Ä¿Â¼
 	{
 		"Explorer/vendor/spdlog/include",
 		"Explorer/src",
@@ -101,30 +110,30 @@ project "Sandbox"		--ÏîÄ¿
 
 	links
 	{
-		"Explorer"			--ÒýÓÃExplorer
+		"Explorer"			--ï¿½ï¿½ï¿½ï¿½Explorer
 	}
 
 	filter "system:windows"	--windowsÏµÍ³
 		cppdialect "C++17"
         staticruntime "On"
-        systemversion "latest"	--sdk°æ±¾
+        systemversion "latest"	--sdkï¿½æ±¾
 
-		defines			--ºê
+		defines			--ï¿½ï¿½
 		{
 			"EXP_PLATFORM_WINDOWS"
 		}
 
-	filter "configurations:Debug"	--DebugÅäÖÃ
+	filter "configurations:Debug"	--Debugï¿½ï¿½ï¿½ï¿½
         defines "EXP_DEBUG"
-		buildoptions "/MDd"			--¶àÏß³Ìµ÷ÊÔdll
+		buildoptions "/MDd"			--ï¿½ï¿½ï¿½ß³Ìµï¿½ï¿½ï¿½dll
         symbols "on"
 
-    filter "configurations:Release"	--ReleaseÅäÖÃ
+    filter "configurations:Release"	--Releaseï¿½ï¿½ï¿½ï¿½
         defines "EXP_RELEASE"
-		buildoptions "/MD"			--¶àÏß³Ìdll
+		buildoptions "/MD"			--ï¿½ï¿½ï¿½ß³ï¿½dll
         optimize "on"
 
-    filter "configurations:Dist"	--DistÅäÖÃ
+    filter "configurations:Dist"	--Distï¿½ï¿½ï¿½ï¿½
         defines "EXP_DIST"
-		buildoptions "/MD"			--¶àÏß³Ìdll
+		buildoptions "/MD"			--ï¿½ï¿½ï¿½ß³ï¿½dll
         optimize "on"

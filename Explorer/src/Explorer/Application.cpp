@@ -3,14 +3,19 @@
 
 #include "Explorer/Log.h"
 
-#include <GLFW/glfw3.h>
+#include "glad/glad.h"
 
 namespace Explorer
 {
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)		//绑定函数x 返回函数对象
 
+	Application* Application::Instance = nullptr;	//单例
+
 	Application::Application()
 	{
+		EXP_CORE_ASSERT(!Instance, "Application already exisit!");	//Application已存在
+		Instance = this;
+
 		m_Window = std::unique_ptr<Window>(Window::Create());	//创建窗口
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));		//设置回调函数
 	}
@@ -23,11 +28,13 @@ namespace Explorer
 	void Application::PushLayer(Layer* layer)
 	{
 		m_LayerStack.PushLayer(layer);
+		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* layer)
 	{
 		m_LayerStack.PushOverlay(layer);
+		layer->OnAttach();
 	}
 
 	void Application::OnEvent(Event& e)

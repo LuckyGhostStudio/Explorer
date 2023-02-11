@@ -47,6 +47,8 @@
       <Filter>Explorer\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\exppch.h" />
+    <ClInclude Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.h" />
+    <ClInclude Include="src\Explorer\ImGui\ImGuiLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp">
@@ -65,5 +67,7 @@
       <Filter>Explorer\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\exppch.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.cpp" />
+    <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp" />
   </ItemGroup>
 </Project>
