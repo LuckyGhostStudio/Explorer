@@ -7,8 +7,17 @@
     <Filter Include="Explorer\Events">
       <UniqueIdentifier>{9A9D8657-0629-F41B-0F3A-77107B44501C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Explorer\ImGui">
+      <UniqueIdentifier>{20084777-0CD6-3A7D-F569-ABA3E1D616E2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Explorer\Windows">
       <UniqueIdentifier>{B0D23C94-9CCB-5BE6-C5FD-406BB1553BF2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platforms">
+      <UniqueIdentifier>{DDACA145-4917-56BC-9255-0762FEFE3311}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platforms\OpenGL">
+      <UniqueIdentifier>{719BB998-5D94-D8EA-86C6-BD6F721EB8F6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +43,9 @@
     <ClInclude Include="src\Explorer\Events\MouseEvent.h">
       <Filter>Explorer\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\ImGui\ImGuiLayer.h">
+      <Filter>Explorer\ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Layer.h">
       <Filter>Explorer</Filter>
     </ClInclude>
@@ -46,13 +58,18 @@
     <ClInclude Include="src\Explorer\Windows\Window.h">
       <Filter>Explorer\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.h">
+      <Filter>Platforms\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\exppch.h" />
-    <ClInclude Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.h" />
-    <ClInclude Include="src\Explorer\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Explorer\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp">
       <Filter>Explorer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp">
+      <Filter>Explorer\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Layer.cpp">
       <Filter>Explorer</Filter>
@@ -66,8 +83,10 @@
     <ClCompile Include="src\Explorer\Windows\Window.cpp">
       <Filter>Explorer\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.cpp">
+      <Filter>Platforms\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\exppch.cpp" />
-    <ClCompile Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.cpp" />
-    <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Explorer\Input.cpp" />
   </ItemGroup>
 </Project>

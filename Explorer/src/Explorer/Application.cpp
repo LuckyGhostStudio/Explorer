@@ -2,8 +2,10 @@
 #include "Application.h"
 
 #include "Explorer/Log.h"
+#include "Input.h"
 
-#include "glad/glad.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 namespace Explorer
 {
@@ -61,6 +63,12 @@ namespace Explorer
 			for (Layer* layer : m_LayerStack) {
 				layer->OnUpdate();
 			}
+
+			auto [x, y] = Input::GetMousePosition();	//获取鼠标位置
+			EXP_CORE_TRACE("{0}, {1}", x, y);
+
+			bool a = Input::IsKeyPressed(GLFW_KEY_A);
+			EXP_CORE_TRACE("Key A Pressed: {0}", a);
 
 			m_Window->OnUpdate();		//在OnUpdate中轮询处理接收的事件
 		}

@@ -1,43 +1,46 @@
-workspace "Explorer"		--�����������
-	architecture "x64"	--��ϵ�ṹ
+workspace "Explorer"	--解决方案名称
+	architecture "x64"	--体系结构
 
-	configurations		--����
+	configurations		--配置
 	{
 		"Debug",
 		"Release",
 		"Dist"
 	}
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"	--���Ŀ¼
+	startproject "Sandbox"	--将Sandbox设为启动项目
 
---����Ŀ¼�б�
+outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"	--输出目录
+
+--包含目录列表
 IncludeDir = {}
 IncludeDir["GLFW"] = "Explorer/vendor/GLFW/include"
 IncludeDir["GLAD"] = "Explorer/vendor/GLAD/include"
 IncludeDir["ImGui"] = "Explorer/vendor/imgui"
 
-include "Explorer/vendor/GLFW"		--����GLFWĿ¼
-include "Explorer/vendor/GLAD"		--����GLADĿ¼
-include "Explorer/vendor/imgui"		--����imguiĿ¼
+include "Explorer/vendor/GLFW"		--包含GLFW目录
+include "Explorer/vendor/GLAD"		--包含GLAD目录
+include "Explorer/vendor/imgui"		--包含imgui目录
 
-project "Explorer"			--��Ŀ
-	location "Explorer"	--���·��
-	kind "SharedLib"	--��̬��
-	language "C++"		--����
+project "Explorer"		--项目
+	location "Explorer"	--相对路径
+	kind "SharedLib"	--动态库
+	language "C++"		--语言
+	staticruntime "off"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")	--Ŀ��Ŀ¼
-    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")	--�м�Ŀ¼
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")	--目标目录
+    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")	--中间目录
 
-	pchheader "exppch.h"	--Ԥ����ͷ�ļ�
+	pchheader "exppch.h"	--预编译头文件
 	pchsource "Explorer/src/exppch.cpp"
 
-	files				--�ļ�
+	files				--文件
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
 	}
 
-	includedirs			--���Ӱ���Ŀ¼
+	includedirs			--附加包含目录
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
@@ -48,60 +51,59 @@ project "Explorer"			--��Ŀ
 
 	links
 	{
-		"GLFW",			--����GLFW
-		"GLAD",			--����GLAD
-		"ImGui",		--����ImGui
+		"GLFW",			--引用GLFW
+		"GLAD",			--引用GLAD
+		"ImGui",		--引用imgui
 		"opengl32.lib"
 	}
 
-	filter "system:windows"	--windowsϵͳ
+	filter "system:windows"	--windows系统
 		cppdialect "C++17"
-        staticruntime "On"
-        systemversion "latest"	--sdk�汾
+        systemversion "latest"	--sdk版本
 
-		defines			--��
+		defines			--宏
 		{
 			"EXP_PLATFORM_WINDOWS",
 			"EXP_BUILD_DLL",
-			"EXP_ENABLE_ASSERTS",
 			"GLFW_INCLUDE_NONE"
 		}
 
-		postbuildcommands -- build����Զ�������
+		postbuildcommands --build后的自定义命令
         {
-            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox") --��������dll�⵽sanbox.exe��ͬһĿ¼��
+            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox") --拷贝引擎dll库到sanbox.exe的同一目录下
         }
 
-	filter "configurations:Debug"	--Debug����
+	filter "configurations:Debug"	--Debug
         defines "EXP_DEBUG"
-		buildoptions "/MDd"			--���̵߳���dll
+		runtime "Debug"
         symbols "on"
 
-    filter "configurations:Release"	--Release����
+    filter "configurations:Release"	--Release
         defines "EXP_RELEASE"
-		buildoptions "/MD"			--���߳�dll
+		runtime "Release"
         optimize "on"
 
-    filter "configurations:Dist"	--Dist����
+    filter "configurations:Dist"	--Dist
         defines "EXP_DIST"
-		buildoptions "/MD"
+		runtime "Release"
         optimize "on"
 
-project "Sandbox"		--��Ŀ
-	location "Sandbox"	--���·��
-	kind "ConsoleApp"	--����̨Ӧ��
-	language "C++"		--����
+project "Sandbox"		--项目
+	location "Sandbox"	--相对路径
+	kind "ConsoleApp"	--控制台应用
+	language "C++"		--语言
+	staticruntime "off"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")	--Ŀ��Ŀ¼
-    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")	--�м�Ŀ¼
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
-	files				--�ļ�
+	files				
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
 	}
 
-	includedirs			--���Ӱ���Ŀ¼
+	includedirs			
 	{
 		"Explorer/vendor/spdlog/include",
 		"Explorer/src",
@@ -110,30 +112,29 @@ project "Sandbox"		--��Ŀ
 
 	links
 	{
-		"Explorer"			--����Explorer
+		"Explorer"			
 	}
 
-	filter "system:windows"	--windowsϵͳ
+	filter "system:windows"	--windows
 		cppdialect "C++17"
-        staticruntime "On"
-        systemversion "latest"	--sdk�汾
+        systemversion "latest"	
 
-		defines			--��
+		defines			
 		{
 			"EXP_PLATFORM_WINDOWS"
 		}
 
-	filter "configurations:Debug"	--Debug����
+	filter "configurations:Debug"	
         defines "EXP_DEBUG"
-		buildoptions "/MDd"			--���̵߳���dll
+		runtime "Debug"
         symbols "on"
 
-    filter "configurations:Release"	--Release����
+    filter "configurations:Release"
         defines "EXP_RELEASE"
-		buildoptions "/MD"			--���߳�dll
+		runtime "Release"
         optimize "on"
 
-    filter "configurations:Dist"	--Dist����
+    filter "configurations:Dist"
         defines "EXP_DIST"
-		buildoptions "/MD"			--���߳�dll
+		runtime "Release"
         optimize "on"

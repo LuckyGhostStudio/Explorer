@@ -10,6 +10,10 @@
 	#error Explorer only supports Windows!
 #endif
 
+#ifdef EXP_DEBUG
+	#define EXP_ENABLE_ASSERTS
+#endif // HZ_DEBUG
+
 #ifdef EXP_ENABLE_ASSERTS	//启用断言
 	//断言：x为假 则显示ERROR日志信息 并中断调试
 	#define EXP_ASSERT(x, ...) { if(!(x)) { EXP_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }

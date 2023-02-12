@@ -73,6 +73,12 @@ namespace Explorer
 		/// </summary>
 		/// <returns>结果</returns>
 		bool IsVSync() const;
+
+		/// <summary>
+		/// 返回原生窗口
+		/// </summary>
+		/// <returns>窗口指针</returns>
+		inline virtual void* GetNativeWindow() const { return m_Window; }
 	private:
 		/// <summary>
 		/// 初始化窗口

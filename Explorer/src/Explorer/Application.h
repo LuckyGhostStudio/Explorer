@@ -15,7 +15,7 @@ namespace Explorer
 	class EXPLORER_API Application
 	{
 	private:
-		static Application* Instance;		//实例
+		static Application* Instance;		//静态实例
 
 		std::unique_ptr<Window> m_Window;	//窗口指针
 		bool m_Running = true;				//是否正在运行

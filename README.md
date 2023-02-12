@@ -62,6 +62,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 11. ImGui事件
 
+### 12. 输入轮询
+
+- Input.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -123,6 +127,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Explorer.h
 
   引用Explorer.dll需要包含的所有头文件。
+  
+- Input.h/.cpp
+
+  输入类，定义实现按键鼠标输入接口。
 
 ##### 窗口文件
 

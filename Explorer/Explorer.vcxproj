@@ -79,12 +79,11 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>exppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>EXP_PLATFORM_WINDOWS;EXP_BUILD_DLL;EXP_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;EXP_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXP_PLATFORM_WINDOWS;EXP_BUILD_DLL;GLFW_INCLUDE_NONE;EXP_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -102,15 +101,14 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>exppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>EXP_PLATFORM_WINDOWS;EXP_BUILD_DLL;EXP_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;EXP_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXP_PLATFORM_WINDOWS;EXP_BUILD_DLL;GLFW_INCLUDE_NONE;EXP_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -129,15 +127,14 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>exppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>EXP_PLATFORM_WINDOWS;EXP_BUILD_DLL;EXP_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;EXP_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXP_PLATFORM_WINDOWS;EXP_BUILD_DLL;GLFW_INCLUDE_NONE;EXP_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -161,24 +158,26 @@
     <ClInclude Include="src\Explorer\Events\KeyEvent.h" />
     <ClInclude Include="src\Explorer\Events\MouseEvent.h" />
     <ClInclude Include="src\Explorer\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Explorer\Input.h" />
     <ClInclude Include="src\Explorer\Layer.h" />
     <ClInclude Include="src\Explorer\LayerStack.h" />
     <ClInclude Include="src\Explorer\Log.h" />
     <ClInclude Include="src\Explorer\Windows\Window.h" />
-    <ClInclude Include="src\exppch.h" />
     <ClInclude Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.h" />
+    <ClInclude Include="src\exppch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp" />
     <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Explorer\Input.cpp" />
     <ClCompile Include="src\Explorer\Layer.cpp" />
     <ClCompile Include="src\Explorer\LayerStack.cpp" />
     <ClCompile Include="src\Explorer\Log.cpp" />
     <ClCompile Include="src\Explorer\Windows\Window.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.cpp" />
     <ClCompile Include="src\exppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">
