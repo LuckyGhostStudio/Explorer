@@ -6,7 +6,10 @@
 class ExampleLayer :public Explorer::Layer
 {
 public:
-	ExampleLayer() :Layer("Example") {}
+	ExampleLayer() :Layer("Example") 
+	{ 
+		
+	}
 
 	void OnUpdate() override
 	{

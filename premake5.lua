@@ -17,6 +17,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Explorer/vendor/GLFW/include"
 IncludeDir["GLAD"] = "Explorer/vendor/GLAD/include"
 IncludeDir["ImGui"] = "Explorer/vendor/imgui"
+IncludeDir["glm"] = "Explorer/vendor/glm"
 
 include "Explorer/vendor/GLFW"		--包含GLFW目录
 include "Explorer/vendor/GLAD"		--包含GLAD目录
@@ -37,7 +38,9 @@ project "Explorer"		--项目
 	files				--文件
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl"
 	}
 
 	includedirs			--附加包含目录
@@ -46,7 +49,8 @@ project "Explorer"		--项目
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
 	}
 
 	links
@@ -107,7 +111,8 @@ project "Sandbox"		--项目
 	{
 		"Explorer/vendor/spdlog/include",
 		"Explorer/src",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.glm}"
 	}
 
 	links
