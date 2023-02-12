@@ -159,9 +159,11 @@
     <ClInclude Include="src\Explorer\Events\MouseEvent.h" />
     <ClInclude Include="src\Explorer\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Explorer\Input.h" />
+    <ClInclude Include="src\Explorer\KeyCodes.h" />
     <ClInclude Include="src\Explorer\Layer.h" />
     <ClInclude Include="src\Explorer\LayerStack.h" />
     <ClInclude Include="src\Explorer\Log.h" />
+    <ClInclude Include="src\Explorer\MouseButtonCodes.h" />
     <ClInclude Include="src\Explorer\Windows\Window.h" />
     <ClInclude Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.h" />
     <ClInclude Include="src\exppch.h" />

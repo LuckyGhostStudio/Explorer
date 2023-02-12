@@ -5,6 +5,10 @@
 #include "Explorer/Log.h"
 #include "Explorer/Layer.h"
 
+#include "Explorer/Input.h"
+#include "Explorer/KeyCodes.h"
+#include "Explorer/MouseButtonCodes.h"
+
 #include "Explorer/ImGui/ImGuiLayer.h"
 
 //------Entry Point 程序入口点------

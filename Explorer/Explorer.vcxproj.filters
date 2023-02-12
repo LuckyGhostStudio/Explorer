@@ -63,6 +63,8 @@
     </ClInclude>
     <ClInclude Include="src\exppch.h" />
     <ClInclude Include="src\Explorer\Input.h" />
+    <ClInclude Include="src\Explorer\KeyCodes.h" />
+    <ClInclude Include="src\Explorer\MouseButtonCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp">

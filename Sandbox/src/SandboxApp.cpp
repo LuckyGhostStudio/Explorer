@@ -10,12 +10,20 @@ public:
 
 	void OnUpdate() override
 	{
-		EXP_INFO("ExampleLayer::OnUpdate");
+		if (Explorer::Input::IsKeyPressed(EXP_KEY_F)) {
+			EXP_TRACE("{0} key is pressed!(poll)", EXP_KEY_F);
+		}
 	}
 
 	void OnEvent(Explorer::Event& event) override
 	{
-		EXP_TRACE("{0}", event);
+		if (event.GetEventType() == Explorer::EventType::KeyPressed) {	//按键按下事件
+			Explorer::KeyPressedEvent& e = (Explorer::KeyPressedEvent&)event;
+			if (e.GetKeyCode() == EXP_KEY_F) {
+				EXP_TRACE("{0} key is pressed!(event)", EXP_KEY_F);
+			}
+			EXP_TRACE("{0}", (char)e.GetKeyCode());
+		}
 	}
 };
 

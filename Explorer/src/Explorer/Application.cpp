@@ -5,7 +5,6 @@
 #include "Input.h"
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 namespace Explorer
 {
@@ -44,8 +43,6 @@ namespace Explorer
 		EventDispatcher dispatcher(e);	//事件调度器
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));	//调度 窗口关闭事件
 
-		EXP_CORE_TRACE("{0}", e);	//事件触发日志
-
 		//从最顶层向下遍历层栈
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
 			(*--it)->OnEvent(e);		//层获取并处理事件
@@ -63,12 +60,6 @@ namespace Explorer
 			for (Layer* layer : m_LayerStack) {
 				layer->OnUpdate();
 			}
-
-			auto [x, y] = Input::GetMousePosition();	//获取鼠标位置
-			EXP_CORE_TRACE("{0}, {1}", x, y);
-
-			bool a = Input::IsKeyPressed(GLFW_KEY_A);
-			EXP_CORE_TRACE("Key A Pressed: {0}", a);
 
 			m_Window->OnUpdate();		//在OnUpdate中轮询处理接收的事件
 		}

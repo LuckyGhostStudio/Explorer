@@ -66,6 +66,11 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Input.h/.cpp
 
+### 13. 按键和鼠标代码
+
+- KeyCodes.h
+- MouseButtonKeyCodes.h
+
 ## 文件说明
 
 ### Explorer 项目
@@ -166,5 +171,5 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 事件系统
 
-![](E:\毕业设计\Explorer\事件系统.png)
+### 输入系统
 
