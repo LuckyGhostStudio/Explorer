@@ -165,7 +165,6 @@
     <ClInclude Include="src\Explorer\Log.h" />
     <ClInclude Include="src\Explorer\MouseButtonCodes.h" />
     <ClInclude Include="src\Explorer\Windows\Window.h" />
-    <ClInclude Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.h" />
     <ClInclude Include="src\exppch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
@@ -586,13 +585,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp" />
+    <ClCompile Include="src\Explorer\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Explorer\Input.cpp" />
     <ClCompile Include="src\Explorer\Layer.cpp" />
     <ClCompile Include="src\Explorer\LayerStack.cpp" />
     <ClCompile Include="src\Explorer\Log.cpp" />
     <ClCompile Include="src\Explorer\Windows\Window.cpp" />
-    <ClCompile Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.cpp" />
     <ClCompile Include="src\exppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

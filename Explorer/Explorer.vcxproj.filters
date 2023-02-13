@@ -16,12 +16,6 @@
     <Filter Include="src\Explorer\Windows">
       <UniqueIdentifier>{A7DCA9FB-936B-33C5-3C8A-47C028F8436B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Platforms">
-      <UniqueIdentifier>{B40E5C85-20CF-D7BB-E909-213955891C98}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Platforms\OpenGL">
-      <UniqueIdentifier>{68A52600-5434-B0C9-FD52-C4C4E9C0C06F}</UniqueIdentifier>
-    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
@@ -92,9 +86,6 @@
     </ClInclude>
     <ClInclude Include="src\Explorer\Windows\Window.h">
       <Filter>src\Explorer\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.h">
-      <Filter>src\Platforms\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\exppch.h">
       <Filter>src</Filter>
@@ -1352,6 +1343,9 @@
     <ClCompile Include="src\Explorer\Application.cpp">
       <Filter>src\Explorer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Explorer\ImGui\ImGuiBuild.cpp">
+      <Filter>src\Explorer\ImGui</Filter>
+    </ClCompile>
     <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp">
       <Filter>src\Explorer\ImGui</Filter>
     </ClCompile>
@@ -1369,9 +1363,6 @@
     </ClCompile>
     <ClCompile Include="src\Explorer\Windows\Window.cpp">
       <Filter>src\Explorer\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.cpp">
-      <Filter>src\Platforms\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\exppch.cpp">
       <Filter>src</Filter>

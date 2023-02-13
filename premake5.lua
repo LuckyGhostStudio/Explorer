@@ -111,6 +111,7 @@ project "Sandbox"		--项目
 	{
 		"Explorer/vendor/spdlog/include",
 		"Explorer/src",
+		"Explorer/vendor",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.glm}"
 	}

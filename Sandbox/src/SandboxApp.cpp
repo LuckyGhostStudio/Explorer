@@ -1,5 +1,7 @@
 #include <Explorer.h>
 
+#include "imgui/imgui.h"
+
 /// <summary>
 /// 示例层
 /// </summary>
@@ -36,7 +38,6 @@ public:
 	Sandbox()
 	{
 		PushLayer(new ExampleLayer());	//添加到层栈
-		PushLayer(new Explorer::ImGuiLayer());	//添加ImGui层为覆盖层
 	}
 
 	~Sandbox()

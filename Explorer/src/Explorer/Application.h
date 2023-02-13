@@ -7,6 +7,8 @@
 #include "Explorer/Events/Event.h"
 #include "Explorer/Events/ApplicationEvent.h"
 
+#include "Explorer/ImGui/ImGuiLayer.h"
+
 namespace Explorer
 {
 	/// <summary>
@@ -18,8 +20,10 @@ namespace Explorer
 		static Application* Instance;		//静态实例
 
 		std::unique_ptr<Window> m_Window;	//窗口指针
+		ImGuiLayer* m_ImGuiLayer;			//ImGui层指针
+
 		bool m_Running = true;				//是否正在运行
-		LayerStack m_LayerStack;	
+		LayerStack m_LayerStack;			//层栈
 
 		/// <summary>
 		/// 窗口关闭回调函数
@@ -32,15 +36,15 @@ namespace Explorer
 		virtual ~Application();
 
 		/// <summary>
+		/// 运行
+		/// </summary>
+		void Run();
+
+		/// <summary>
 		/// 事件回调函数
 		/// </summary>
 		/// <param name="e">事件</param>
 		void OnEvent(Event& e);
-
-		/// <summary>
-		/// 运行
-		/// </summary>
-		void Run();
 
 		/// <summary>
 		/// 添加普通层到层栈

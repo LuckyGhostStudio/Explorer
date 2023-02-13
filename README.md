@@ -73,6 +73,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 14. glm数学库
 
+### 15. ImGui的docking
+
+- ImGuiBuild.h
+
 ## 文件说明
 
 ### Explorer 项目
@@ -121,7 +125,7 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Application.h/.cpp
 
-  引擎应用程序入口，应用基类。定义所有事件处理函数，创建窗口并为窗口设置事件函数，接收事件并进行事件调度，将事件传递给层。
+  引擎应用程序入口，应用基类。定义所有事件处理函数，创建窗口并为窗口设置事件函数，接收事件并进行事件调度，将事件传递给层。创建ImGui层。定义引擎循环，更新层栈中的所有层，渲染GUI，更新窗口。
 
 - EntryPoint.h
 
@@ -157,7 +161,7 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
   
 - ImGuiLayer.h/.cpp
 
-  ImGui层，渲染ImGui，定义事件处理函数，处理传递到该层的事件。
+  ImGui层，渲染ImGui。
 
 ### Sandbox 项目
 

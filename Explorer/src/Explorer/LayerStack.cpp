@@ -5,7 +5,7 @@ namespace Explorer
 {
 	LayerStack::LayerStack()
 	{
-		m_LayerInsert = m_Layers.begin();	//插入迭代器初始化为 begin
+		
 	}
 
 	LayerStack::~LayerStack()
@@ -18,7 +18,8 @@ namespace Explorer
 
 	void LayerStack::PushLayer(Layer* layer)
 	{
-		m_LayerInsert = m_Layers.emplace(m_LayerInsert, layer);	//插入layer到 m_LayerInsert位置
+		m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);		//插入layer到 m_LayerInsertIndex位置
+		m_LayerInsertIndex++;
 	}
 
 	void LayerStack::PushOverlay(Layer* overlay)
@@ -32,8 +33,7 @@ namespace Explorer
 
 		if (it != m_Layers.end()) {	//找到layer
 			m_Layers.erase(it);		//移除it指向的layer
-			// TODO: 质疑--的作用
-			m_LayerInsert--;
+			m_LayerInsertIndex--;
 		}
 	}
 
