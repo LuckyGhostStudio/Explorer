@@ -79,6 +79,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 16. 静态库和零警告
 
+### 17. 渲染上下文
+
+- OpenGLContext.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -165,6 +169,12 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
   ImGui层，渲染ImGui。
 
+##### 渲染文件
+
+- OpenGLContext.h/.cpp
+
+  OpenGL上下文类，初始化OpenGL上下文，交换双缓冲。
+
 ### Sandbox 项目
 
 #### src
@@ -180,4 +190,6 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 ### 事件系统
 
 ### 输入系统
+
+### 渲染系统
 

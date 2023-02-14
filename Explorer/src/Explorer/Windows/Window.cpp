@@ -5,7 +5,7 @@
 #include "Explorer/Events/KeyEvent.h"
 #include "Explorer/Events/MouseEvent.h"
 
-#include <glad/glad.h>
+#include "Explorer/Renderer/OpenGLContext.h"
 
 namespace Explorer
 {
@@ -56,10 +56,8 @@ namespace Explorer
 		//创建GLFW窗口
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
-		glfwMakeContextCurrent(m_Window);				//设置窗口上下文为当前线程主上下文
-
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);	//初始化GLAD
-		EXP_CORE_ASSERT(status, "Failed to initialize Glad!");
+		m_Context = new OpenGLContext(m_Window);	//创建OpenGL上下文
+		m_Context->Init();							//初始化上下文
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);	//将数据m_Data传递给m_Window：userPtr指向m_Data
 		SetVSync(true);									//垂直同步
@@ -173,7 +171,7 @@ namespace Explorer
 	void Window::OnUpdate()
 	{
 		glfwPollEvents();			//轮询所有待处理的事件
-		glfwSwapBuffers(m_Window);	//交换前后缓冲区
+		m_Context->SwapBuffers();	//交换前后缓冲区
 	}
 
 	void Window::SetVSync(bool enabled)

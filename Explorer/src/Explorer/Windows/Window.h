@@ -4,6 +4,7 @@
 
 #include "Explorer/Core.h"
 #include "Explorer/Events/Event.h"
+#include "Explorer/Renderer/OpenGLContext.h"
 
 #include <GLFW/glfw3.h>
 
@@ -91,7 +92,8 @@ namespace Explorer
 		/// </summary>
 		virtual void Shutdown();
 	private:
-		GLFWwindow* m_Window;	//GLFW窗口
+		GLFWwindow* m_Window;		//GLFW窗口
+		OpenGLContext* m_Context;	//OpenGL上下文
 
 		/// <summary>
 		/// 窗口数据

@@ -155,6 +155,7 @@
     <ClInclude Include="src\Explorer\LayerStack.h" />
     <ClInclude Include="src\Explorer\Log.h" />
     <ClInclude Include="src\Explorer\MouseButtonCodes.h" />
+    <ClInclude Include="src\Explorer\Renderer\OpenGLContext.h" />
     <ClInclude Include="src\Explorer\Windows\Window.h" />
     <ClInclude Include="src\exppch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
@@ -582,6 +583,7 @@
     <ClCompile Include="src\Explorer\Layer.cpp" />
     <ClCompile Include="src\Explorer\LayerStack.cpp" />
     <ClCompile Include="src\Explorer\Log.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\OpenGLContext.cpp" />
     <ClCompile Include="src\Explorer\Windows\Window.cpp" />
     <ClCompile Include="src\exppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

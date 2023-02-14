@@ -20,6 +20,13 @@ public:
 		}
 	}
 
+	void OnImGuiRender() override
+	{
+		ImGui::Begin("Example Begin");
+		ImGui::Text("Hello world");
+		ImGui::End();
+	}
+
 	void OnEvent(Explorer::Event& event) override
 	{
 		if (event.GetEventType() == Explorer::EventType::KeyPressed) {	//按键按下事件
