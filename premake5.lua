@@ -1,5 +1,6 @@
 workspace "Explorer"	--解决方案名称
 	architecture "x64"	--体系结构
+	startproject "Sandbox"	--将Sandbox设为启动项目
 
 	configurations		--配置
 	{
@@ -7,8 +8,6 @@ workspace "Explorer"	--解决方案名称
 		"Release",
 		"Dist"
 	}
-
-	startproject "Sandbox"	--将Sandbox设为启动项目
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"	--输出目录
 
@@ -25,9 +24,10 @@ include "Explorer/vendor/imgui"		--包含imgui目录
 
 project "Explorer"		--项目
 	location "Explorer"	--相对路径
-	kind "SharedLib"	--动态库
+	kind "StaticLib"	--静态库
 	language "C++"		--语言
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")	--目标目录
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")	--中间目录
@@ -41,6 +41,11 @@ project "Explorer"		--项目
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl"
+	}
+
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
 	}
 
 	includedirs			--附加包含目录
@@ -62,7 +67,6 @@ project "Explorer"		--项目
 	}
 
 	filter "system:windows"	--windows系统
-		cppdialect "C++17"
         systemversion "latest"	--sdk版本
 
 		defines			--宏
@@ -71,11 +75,6 @@ project "Explorer"		--项目
 			"EXP_BUILD_DLL",
 			"GLFW_INCLUDE_NONE"
 		}
-
-		postbuildcommands --build后的自定义命令
-        {
-            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox") --拷贝引擎dll库到sanbox.exe的同一目录下
-        }
 
 	filter "configurations:Debug"	--Debug
         defines "EXP_DEBUG"
@@ -96,7 +95,8 @@ project "Sandbox"		--项目
 	location "Sandbox"	--相对路径
 	kind "ConsoleApp"	--控制台应用
 	language "C++"		--语言
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -122,7 +122,6 @@ project "Sandbox"		--项目
 	}
 
 	filter "system:windows"	--windows
-		cppdialect "C++17"
         systemversion "latest"	
 
 		defines			

@@ -75,7 +75,7 @@ namespace Explorer
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::GetInstance();
-		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());	//设置窗口大小
+		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());	//设置窗口大小
 
 		// Rendering
 		ImGui::Render();
