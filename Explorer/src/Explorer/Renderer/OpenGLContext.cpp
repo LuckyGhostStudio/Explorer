@@ -17,6 +17,11 @@ namespace Explorer
 
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);	//初始化GLAD
 		EXP_CORE_ASSERT(status, "Failed to initialize Glad!");
+
+		EXP_CORE_INFO("OpenGL Info");										//OpenGL信息
+		EXP_CORE_INFO("    Vendor: {0}", (char*)glGetString(GL_VENDOR));	//出版商
+		EXP_CORE_INFO("    Renderer: {0}", (char*)glGetString(GL_RENDERER));//GPU类型
+		EXP_CORE_INFO("    Version: {0}", (char*)glGetString(GL_VERSION));	//版本
 	}
 
 	void OpenGLContext::SwapBuffers()

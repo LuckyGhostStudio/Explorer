@@ -25,6 +25,8 @@ namespace Explorer
 		bool m_Running = true;				//是否正在运行
 		LayerStack m_LayerStack;			//层栈
 
+		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+
 		/// <summary>
 		/// 窗口关闭回调函数
 		/// </summary>

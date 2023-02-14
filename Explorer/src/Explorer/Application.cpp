@@ -22,6 +22,31 @@ namespace Explorer
 
 		m_ImGuiLayer = new ImGuiLayer();		//创建ImGui层
 		PushOverlay(m_ImGuiLayer);				//添加ImGuiLayer到覆盖层
+
+		glGenVertexArrays(1, &m_VertexArray);	//创建顶点数组
+		glBindVertexArray(m_VertexArray);		//绑定
+
+		glGenBuffers(1, &m_VertexBuffer);				//创建VBO
+		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);	//绑定VBO到VAO
+
+		float vertices[3 * 3] = {
+			-0.5f, -0.5f, 0.0f,		//左下
+			 0.5f, -0.5f, 0.0f,		//右下
+			 0.0f,  0.5f, 0.0f		//上
+		};
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);	//绑定顶点数据
+
+		glEnableVertexAttribArray(0);	//启用0号顶点属性
+		//0号顶点属性 每个顶点3个数据 float类型 每个顶点占字节数 位置属性在一个顶点中的偏移量
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);	//设置顶点属性布局：顶点位置
+
+		unsigned int indices[3] = { 0,1,2 };	//顶点索引
+
+		glGenBuffers(1, &m_IndexBuffer);						//创建EBO
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);	//绑定EBO到VAO
+
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);	//绑定顶点索引数据
 	}
 
 	Application::~Application()
@@ -56,8 +81,11 @@ namespace Explorer
 	void Application::Run()
 	{
 		while (m_Running) {
-			glClearColor(0.3f, 0.5f, 0.8f, 1.0f);
+			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			glBindVertexArray(m_VertexArray);							//绑定VAO
+			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);	//根据索引绘制三角形
 
 			//更新层栈中所有层
 			for (Layer* layer : m_LayerStack) {
