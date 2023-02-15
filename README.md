@@ -85,6 +85,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 18. 第一个三角形
 
+### 19. 着色器
+
+- Shader.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -176,6 +180,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - OpenGLContext.h/.cpp
 
   OpenGL上下文类，初始化OpenGL上下文，交换双缓冲。
+  
+- Shader.h/.cpp
+
+  着色器，顶点着色器处理顶点，片元着色器处理像素，最终输出该像素的正确颜色。
 
 ### Sandbox 项目
 

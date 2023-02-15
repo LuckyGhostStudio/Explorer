@@ -1339,6 +1339,7 @@
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\OpenGLContext.h" />
+    <ClInclude Include="src\Explorer\Renderer\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp">
@@ -1369,5 +1370,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\OpenGLContext.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\Shader.cpp" />
   </ItemGroup>
 </Project>

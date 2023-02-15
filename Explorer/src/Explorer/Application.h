@@ -9,6 +9,8 @@
 
 #include "Explorer/ImGui/ImGuiLayer.h"
 
+#include "Explorer/Renderer/Shader.h"
+
 namespace Explorer
 {
 	/// <summary>
@@ -26,6 +28,7 @@ namespace Explorer
 		LayerStack m_LayerStack;			//层栈
 
 		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		std::unique_ptr<Shader> m_Shader;	//着色器
 
 		/// <summary>
 		/// 窗口关闭回调函数
