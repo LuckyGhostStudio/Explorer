@@ -10,6 +10,7 @@
 #include "Explorer/ImGui/ImGuiLayer.h"
 
 #include "Explorer/Renderer/Shader.h"
+#include "Explorer/Renderer/Buffer.h"
 
 namespace Explorer
 {
@@ -27,8 +28,10 @@ namespace Explorer
 		bool m_Running = true;				//是否正在运行
 		LayerStack m_LayerStack;			//层栈
 
-		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		unsigned int m_VertexArray;
 		std::unique_ptr<Shader> m_Shader;	//着色器
+		std::unique_ptr<VertexBuffer> m_VertexBuffer;	//顶点缓冲
+		std::unique_ptr<IndexBuffer> m_IndexBuffer;		//索引缓冲
 
 		/// <summary>
 		/// 窗口关闭回调函数

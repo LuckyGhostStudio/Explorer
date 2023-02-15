@@ -23,11 +23,11 @@ namespace Explorer
 		/// <summary>
 		/// 绑定：使用着色器
 		/// </summary>
-		void Bind();
+		void Bind() const;
 
 		/// <summary>
 		/// 解除绑定：调试时使用
 		/// </summary>
-		void UnBind();
+		void UnBind() const;
 	};
 }

@@ -96,12 +96,12 @@ namespace Explorer
 		glDeleteProgram(m_RendererID);	//删除着色器程序
 	}
 	
-	void Shader::Bind()
+	void Shader::Bind() const
 	{
 		glUseProgram(m_RendererID);		//使用着色器程序
 	}
 	
-	void Shader::UnBind()
+	void Shader::UnBind() const
 	{
 		glUseProgram(0);
 	}

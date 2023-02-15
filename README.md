@@ -89,6 +89,11 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Shader.h/.cpp
 
+### 20. 渲染器接口抽象
+
+- Buffer.h/.cpp
+- Renderer.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -184,6 +189,14 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Shader.h/.cpp
 
   着色器，顶点着色器处理顶点，片元着色器处理像素，最终输出该像素的正确颜色。
+  
+- Renderer.h/.cpp
+
+  渲染器接口。
+
+- Buffer.h/.cpp
+
+  缓冲类，包含顶点缓冲和索引缓冲。
 
 ### Sandbox 项目
 
