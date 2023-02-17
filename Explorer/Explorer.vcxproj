@@ -159,6 +159,7 @@
     <ClInclude Include="src\Explorer\Renderer\OpenGLContext.h" />
     <ClInclude Include="src\Explorer\Renderer\Renderer.h" />
     <ClInclude Include="src\Explorer\Renderer\Shader.h" />
+    <ClInclude Include="src\Explorer\Renderer\VertexArray.h" />
     <ClInclude Include="src\Explorer\Windows\Window.h" />
     <ClInclude Include="src\exppch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
@@ -590,6 +591,7 @@
     <ClCompile Include="src\Explorer\Renderer\OpenGLContext.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Explorer\Windows\Window.cpp" />
     <ClCompile Include="src\exppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
