@@ -94,6 +94,8 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Buffer.h/.cpp
 - Renderer.h/.cpp
 
+### 21. 顶点缓冲区布局
+
 ## 文件说明
 
 ### Explorer 项目
@@ -196,7 +198,7 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Buffer.h/.cpp
 
-  缓冲类，包含顶点缓冲和索引缓冲。
+  缓冲类，包含顶点缓冲和索引缓冲。缓冲区布局接口，格式化缓冲区布局。
 
 ### Sandbox 项目
 
