@@ -1343,6 +1343,7 @@
     <ClInclude Include="src\Explorer\Renderer\Buffer.h" />
     <ClInclude Include="src\Explorer\Renderer\Renderer.h" />
     <ClInclude Include="src\Explorer\Renderer\VertexArray.h" />
+    <ClInclude Include="src\Explorer\Renderer\RenderCommand.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp">
@@ -1377,5 +1378,6 @@
     <ClCompile Include="src\Explorer\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Explorer\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\RenderCommand.cpp" />
   </ItemGroup>
 </Project>

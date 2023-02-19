@@ -4,7 +4,7 @@
 #include "Explorer/Log.h"
 #include "Input.h"
 
-#include <glad/glad.h>
+#include "Renderer/Renderer.h"
 
 namespace Explorer
 {
@@ -116,13 +116,16 @@ namespace Explorer
 	void Application::Run()
 	{
 		while (m_Running) {
-			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+			RenderCommand::Clear();
 
-			m_Shader->Bind();		//使用Shader
-			m_VertexArray->Bind();	//绑定VAO
-			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);	//根据索引绘制三角形
+			Renderer::BeginScene();				//开始渲染场景
 
+			m_Shader->Bind();					//绑定Shader
+			Renderer::Submit(m_VertexArray);	//提交渲染指令
+
+			Renderer::EndScene();				//结束渲染场景
+			
 			//更新层栈中所有层
 			for (Layer* layer : m_LayerStack) {
 				layer->OnUpdate();

@@ -100,6 +100,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - VertexArray.h/.cpp
 
+### 23. 渲染流和渲染命令
+
+- RenderCommand.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -198,7 +202,7 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
   
 - Renderer.h/.cpp
 
-  渲染器接口。
+  渲染器，设置场景参数，进行渲染命令提交。
 
 - Buffer.h/.cpp
 
@@ -207,6 +211,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - VertexArray.h/.cpp
 
   顶点数组类，链接多个顶点缓冲区和索引缓冲区，整合缓冲区布局。
+  
+- RenderCommand.h/.cpp
+
+  渲染命令，执行最底层的OpenGL渲染命令。
 
 ### Sandbox 项目
 
