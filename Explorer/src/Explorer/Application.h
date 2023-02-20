@@ -9,17 +9,12 @@
 
 #include "Explorer/ImGui/ImGuiLayer.h"
 
-#include "Explorer/Renderer/Shader.h"
-#include "Explorer/Renderer/Buffer.h"
-#include "Explorer/Renderer/VertexArray.h"
-#include "Explorer/Renderer/Camera.h"
-
 namespace Explorer
 {
 	/// <summary>
 	/// 应用程序类：引擎入口
 	/// </summary>
-	class EXPLORER_API Application
+	class Application
 	{
 	private:
 		static Application* Instance;		//静态实例
@@ -29,11 +24,6 @@ namespace Explorer
 
 		bool m_Running = true;				//是否正在运行
 		LayerStack m_LayerStack;			//层栈
-
-		std::shared_ptr<Shader> m_Shader;				//着色器
-		std::shared_ptr<VertexArray> m_VertexArray;		//顶点数组
-
-		Camera m_Camera;						//相机
 
 		/// <summary>
 		/// 窗口关闭回调函数

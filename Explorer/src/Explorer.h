@@ -11,6 +11,17 @@
 
 #include "Explorer/ImGui/ImGuiLayer.h"
 
+//------Renderer------
+#include "Explorer/Renderer/Renderer.h"
+#include "Explorer/Renderer/RenderCommand.h"
+
+#include "Explorer/Renderer/Buffer.h"
+#include "Explorer/Renderer/Shader.h"
+#include "Explorer/Renderer/VertexArray.h"
+
+#include "Explorer/Renderer/Camera.h"
+//---------------------------------
+
 //------Entry Point 程序入口点------
 #include "Explorer/EntryPoint.h"
 //---------------------------------

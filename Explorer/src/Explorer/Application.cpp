@@ -12,7 +12,7 @@ namespace Explorer
 
 	Application* Application::Instance = nullptr;	//单例
 
-	Application::Application() :m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+	Application::Application()
 	{
 		EXP_CORE_ASSERT(!Instance, "Application already exisit!");	//Application已存在
 		Instance = this;
@@ -22,68 +22,6 @@ namespace Explorer
 
 		m_ImGuiLayer = new ImGuiLayer();		//创建ImGui层
 		PushOverlay(m_ImGuiLayer);				//添加ImGuiLayer到覆盖层
-
-		m_VertexArray.reset(new VertexArray());		//创建顶点数组对象
-
-		float vertices[] = {
-			//------位置------   ---------颜色---------
-			-0.5f, -0.5f, 0.0f,	1.0f, 0.0f, 1.0f, 1.0f,	//左下
-			 0.5f, -0.5f, 0.0f,	0.0f, 1.0f, 1.0f, 1.0f,	//右下
-			 0.0f,  0.5f, 0.0f,	1.0f, 1.0f, 0.0f, 1.0f,	//上
-		};
-
-		std::shared_ptr<VertexBuffer> vertexBuffer;								//VBO
-		vertexBuffer.reset(new VertexBuffer(vertices, sizeof(vertices)));		//创建顶点缓冲
-
-		//顶点缓冲区布局
-		BufferLayout layout = {
-			{ShaderDataType::Float3, "a_Position"},	//位置
-			{ShaderDataType::Float4, "a_Color"}		//颜色
-		};
-
-		vertexBuffer->SetLayout(layout);				//设置顶点缓冲区布局
-		m_VertexArray->AddVertexBuffer(vertexBuffer);	//添加VBO到VAO
-
-		unsigned int indices[3] = { 0,1,2 };	//顶点索引
-
-		std::shared_ptr<IndexBuffer> indexBuffer;												//EBO
-		indexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));		//创建索引缓冲
-		m_VertexArray->SetIndexBuffer(indexBuffer);	//设置EBO到VAO
-
-		std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-
-			uniform mat4 u_ViewProjectionMatrix;
-
-			out vec3 v_Position;			
-			out vec4 v_Color;			
-
-			void main()
-			{
-				v_Position = a_Position;
-				v_Color = a_Color;
-				gl_Position = u_ViewProjectionMatrix * vec4(a_Position, 1.0);
-			}
-		)";
-
-		std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec3 v_Position;
-			in vec4 v_Color;
-			
-			void main()
-			{
-				color = v_Color;
-			}
-		)";
-
-		m_Shader.reset(new Shader(vertexSrc, fragmentSrc));	//创建着色器
 	}
 
 	Application::~Application()
@@ -117,19 +55,7 @@ namespace Explorer
 
 	void Application::Run()
 	{
-		float angle = 0.0f;
-
 		while (m_Running) {
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-			RenderCommand::Clear();
-
-			m_Camera.SetPosition({ 0.5f, 0.5f, 0.0f });
-			m_Camera.SetRotation(angle += 0.2f);
-
-			Renderer::BeginScene(m_Camera);				//开始渲染场景
-			Renderer::Submit(m_Shader, m_VertexArray);	//提交渲染命令
-			Renderer::EndScene();						//结束渲染场景
-			
 			//更新层栈中所有层
 			for (Layer* layer : m_LayerStack) {
 				layer->OnUpdate();
