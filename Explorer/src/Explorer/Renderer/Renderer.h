@@ -38,6 +38,7 @@ namespace Explorer
 		/// </summary>
 		/// <param name="shader">着色器</param>
 		/// <param name="vertexArray">待渲染顶点数组</param>
-		static void Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray);
+		/// <param name="transform">变换矩阵</param>
+		static void Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
 	};
 }
