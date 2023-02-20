@@ -15,8 +15,8 @@ private:
 
 	glm::vec3 m_CameraPosition;
 	float m_CameraRotation = 0.0f;
-	float m_CameraMoveSpeed = 0.1f;
-	float m_CameraRotationSpeed = 1.0f;
+	float m_CameraMoveSpeed = 1.0f;
+	float m_CameraRotationSpeed = 90.0f;
 public:
 	ExampleLayer() :Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
 	{ 
@@ -83,26 +83,28 @@ public:
 		m_Shader.reset(new Explorer::Shader(vertexSrc, fragmentSrc));	//创建着色器
 	}
 
-	void OnUpdate() override
+	void OnUpdate(Explorer::DeltaTime dt) override
 	{
+		EXP_TRACE("Delta Time: {0}s ({1}ms)", dt.GetSeconds(), dt.GetMilliseconds());
+
 		if (Explorer::Input::IsKeyPressed(EXP_KEY_LEFT)) {	//左键
-			m_CameraPosition.x -= m_CameraMoveSpeed;
+			m_CameraPosition.x -= m_CameraMoveSpeed * dt;
 		}
 		else if (Explorer::Input::IsKeyPressed(EXP_KEY_RIGHT)) {	//右键
-			m_CameraPosition.x += m_CameraMoveSpeed;
+			m_CameraPosition.x += m_CameraMoveSpeed * dt;
 		}
 		if (Explorer::Input::IsKeyPressed(EXP_KEY_UP)) {	//上键
-			m_CameraPosition.y += m_CameraMoveSpeed;
+			m_CameraPosition.y += m_CameraMoveSpeed * dt;
 		}
 		else if (Explorer::Input::IsKeyPressed(EXP_KEY_DOWN)) {	//下键
-			m_CameraPosition.y -= m_CameraMoveSpeed;
+			m_CameraPosition.y -= m_CameraMoveSpeed * dt;
 		}
 
 		if (Explorer::Input::IsKeyPressed(EXP_KEY_A)) {
-			m_CameraRotation += m_CameraRotationSpeed;
+			m_CameraRotation += m_CameraRotationSpeed * dt;
 		}
 		if (Explorer::Input::IsKeyPressed(EXP_KEY_D)) {
-			m_CameraRotation -= m_CameraRotationSpeed;
+			m_CameraRotation -= m_CameraRotationSpeed * dt;
 		}
 
 		Explorer::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });

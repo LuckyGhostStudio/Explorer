@@ -6,6 +6,8 @@
 
 #include "Renderer/Renderer.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Explorer
 {
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)		//绑定函数x 返回函数对象
@@ -56,9 +58,13 @@ namespace Explorer
 	void Application::Run()
 	{
 		while (m_Running) {
+			float time = (float)glfwGetTime();				//当前时间
+			DeltaTime deltaTime = time - m_LastFrameTime;	//帧间隔 = 当前时间 - 上一帧时间
+			m_LastFrameTime = time;							//更新上一帧时间
+
 			//更新层栈中所有层
 			for (Layer* layer : m_LayerStack) {
-				layer->OnUpdate();
+				layer->OnUpdate(deltaTime);
 			}
 
 			//ImGui渲染

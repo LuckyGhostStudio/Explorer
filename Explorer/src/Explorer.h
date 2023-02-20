@@ -5,6 +5,8 @@
 #include "Explorer/Log.h"
 #include "Explorer/Layer.h"
 
+#include "Explorer/Core/DeltaTime.h"
+
 #include "Explorer/Input.h"
 #include "Explorer/KeyCodes.h"
 #include "Explorer/MouseButtonCodes.h"

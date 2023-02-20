@@ -110,6 +110,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 25. 移动渲染示例到SandBox
 
+### 26. 帧间隔DeltaTime
+
+- DeltaTime.h
+
 ## 文件说明
 
 ### Explorer 项目
@@ -175,6 +179,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Input.h/.cpp
 
   输入类，定义实现按键鼠标输入接口。
+  
+- DeltaTime.h
+
+  帧间隔，计算每帧之间的时间间隔。
 
 ##### 窗口文件
 

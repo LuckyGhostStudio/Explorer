@@ -7,6 +7,8 @@
 #include "Explorer/Events/Event.h"
 #include "Explorer/Events/ApplicationEvent.h"
 
+#include "Explorer/Core/DeltaTime.h"
+
 #include "Explorer/ImGui/ImGuiLayer.h"
 
 namespace Explorer
@@ -24,6 +26,8 @@ namespace Explorer
 
 		bool m_Running = true;				//是否正在运行
 		LayerStack m_LayerStack;			//层栈
+
+		float m_LastFrameTime = 0.0f;		//上一帧时间
 
 		/// <summary>
 		/// 窗口关闭回调函数

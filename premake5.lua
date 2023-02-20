@@ -18,9 +18,12 @@ IncludeDir["GLAD"] = "Explorer/vendor/GLAD/include"
 IncludeDir["ImGui"] = "Explorer/vendor/imgui"
 IncludeDir["glm"] = "Explorer/vendor/glm"
 
-include "Explorer/vendor/GLFW"		--包含GLFW目录
-include "Explorer/vendor/GLAD"		--包含GLAD目录
-include "Explorer/vendor/imgui"		--包含imgui目录
+group "Dependencies"
+	include "Explorer/vendor/GLFW"		--包含GLFW目录
+	include "Explorer/vendor/GLAD"		--包含GLAD目录
+	include "Explorer/vendor/imgui"		--包含imgui目录
+
+group ""
 
 project "Explorer"		--项目
 	location "Explorer"	--相对路径
