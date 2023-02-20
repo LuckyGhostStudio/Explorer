@@ -156,6 +156,7 @@
     <ClInclude Include="src\Explorer\Log.h" />
     <ClInclude Include="src\Explorer\MouseButtonCodes.h" />
     <ClInclude Include="src\Explorer\Renderer\Buffer.h" />
+    <ClInclude Include="src\Explorer\Renderer\Camera.h" />
     <ClInclude Include="src\Explorer\Renderer\OpenGLContext.h" />
     <ClInclude Include="src\Explorer\Renderer\Renderer.h" />
     <ClInclude Include="src\Explorer\Renderer\RenderCommand.h" />
@@ -589,6 +590,7 @@
     <ClCompile Include="src\Explorer\LayerStack.cpp" />
     <ClCompile Include="src\Explorer\Log.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\Camera.cpp" />
     <ClCompile Include="src\Explorer\Renderer\OpenGLContext.cpp" />
     <ClCompile Include="src\Explorer\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Renderer.cpp" />

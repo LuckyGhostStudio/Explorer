@@ -104,6 +104,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - RenderCommand.h/.cpp
 
+### 24. 相机
+
+- Camera.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -215,6 +219,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - RenderCommand.h/.cpp
 
   渲染命令，执行最底层的OpenGL渲染命令。
+  
+- Camera.h/.cpp
+
+  相机，进行相机变换，包括计算投影矩阵、视图矩阵，进行视图变换和投影变换。
 
 ### Sandbox 项目
 

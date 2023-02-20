@@ -12,6 +12,7 @@
 #include "Explorer/Renderer/Shader.h"
 #include "Explorer/Renderer/Buffer.h"
 #include "Explorer/Renderer/VertexArray.h"
+#include "Explorer/Renderer/Camera.h"
 
 namespace Explorer
 {
@@ -31,6 +32,8 @@ namespace Explorer
 
 		std::shared_ptr<Shader> m_Shader;				//着色器
 		std::shared_ptr<VertexArray> m_VertexArray;		//顶点数组
+
+		Camera m_Camera;						//相机
 
 		/// <summary>
 		/// 窗口关闭回调函数

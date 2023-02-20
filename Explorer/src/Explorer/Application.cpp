@@ -12,7 +12,7 @@ namespace Explorer
 
 	Application* Application::Instance = nullptr;	//单例
 
-	Application::Application()
+	Application::Application() :m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		EXP_CORE_ASSERT(!Instance, "Application already exisit!");	//Application已存在
 		Instance = this;
@@ -56,6 +56,8 @@ namespace Explorer
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec4 a_Color;
 
+			uniform mat4 u_ViewProjectionMatrix;
+
 			out vec3 v_Position;			
 			out vec4 v_Color;			
 
@@ -63,7 +65,7 @@ namespace Explorer
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjectionMatrix * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -115,16 +117,18 @@ namespace Explorer
 
 	void Application::Run()
 	{
+		float angle = 0.0f;
+
 		while (m_Running) {
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 			RenderCommand::Clear();
 
-			Renderer::BeginScene();				//开始渲染场景
+			m_Camera.SetPosition({ 0.5f, 0.5f, 0.0f });
+			m_Camera.SetRotation(angle += 0.2f);
 
-			m_Shader->Bind();					//绑定Shader
-			Renderer::Submit(m_VertexArray);	//提交渲染指令
-
-			Renderer::EndScene();				//结束渲染场景
+			Renderer::BeginScene(m_Camera);				//开始渲染场景
+			Renderer::Submit(m_Shader, m_VertexArray);	//提交渲染命令
+			Renderer::EndScene();						//结束渲染场景
 			
 			//更新层栈中所有层
 			for (Layer* layer : m_LayerStack) {

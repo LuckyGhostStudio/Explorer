@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <glm/glm.hpp>
 
 namespace Explorer
 {
@@ -29,5 +30,12 @@ namespace Explorer
 		/// 解除绑定：调试时使用
 		/// </summary>
 		void UnBind() const;
+
+		/// <summary>
+		/// 上传Uniform Mat4变量
+		/// </summary>
+		/// <param name="name">uniform在shader中的变量名</param>
+		/// <param name="matrix">变量值</param>
+		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 	};
 }
