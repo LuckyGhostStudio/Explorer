@@ -31,11 +31,19 @@ namespace Explorer
 		/// </summary>
 		void UnBind() const;
 
+		void UploadUniformInt(const std::string& name, int value);
+
+		void UploadUniformFloat(const std::string& name, float value);
+		void UploadUniformFloat2(const std::string& name, const glm::vec2& value);
+		void UploadUniformFloat3(const std::string& name, const glm::vec3& value);
+		void UploadUniformFloat4(const std::string& name, const glm::vec4& value);
+
 		/// <summary>
-		/// 上传Uniform Mat4变量
+		/// 上传Uniform Mat3变量
 		/// </summary>
-		/// <param name="name">uniform在shader中的变量名</param>
-		/// <param name="matrix">变量值</param>
+		/// <param name="name">Mat3在shader中的变量名</param>
+		/// <param name="matrix">Mat3</param>
+		void UploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 	};
 }
