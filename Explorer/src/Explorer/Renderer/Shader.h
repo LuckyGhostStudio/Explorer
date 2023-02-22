@@ -12,13 +12,26 @@ namespace Explorer
 	{
 	private:
 		uint32_t m_RendererID;	//着色器ID
+
+		/// <summary>
+		/// 读文件
+		/// </summary>
+		/// <param name="filepath">文件路径</param>
+		/// <returns>文件内容</returns>
+		std::string ReadFile(const std::string& filepath);
+
+		/// <summary>
+		/// 编译着色器
+		/// </summary>
+		/// <param name="shaderSources">着色器类型-着色器源码map</param>
+		void Compile(std::unordered_map<unsigned int, std::string>& shaderSources);
 	public:
 		/// <summary>
 		/// 着色器
 		/// </summary>
-		/// <param name="vertexSrc">顶点着色器源代码</param>
-		/// <param name="fragmentSrc">片段着色器源代码</param>
-		Shader(const std::string& vertexSrc, const std::string& fragmentSrc);
+		/// <param name="vertexShaderPath">顶点着色器文件路径</param>
+		/// <param name="fragmentShaderPath">片段着色器文件路径</param>
+		Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 		~Shader();
 
 		/// <summary>

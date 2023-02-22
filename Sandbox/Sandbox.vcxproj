@@ -142,6 +142,14 @@
     <Image Include="asserts\textures\Checkerboard.png" />
     <Image Include="asserts\textures\ChernoLogo.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="asserts\shaders\Color.frag" />
+    <None Include="asserts\shaders\Color.vert" />
+    <None Include="asserts\shaders\Texture.frag" />
+    <None Include="asserts\shaders\Texture.vert" />
+    <None Include="asserts\shaders\Triangle.frag" />
+    <None Include="asserts\shaders\Triangle.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

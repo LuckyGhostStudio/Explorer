@@ -56,40 +56,7 @@ public:
 		indexBuffer.reset(new Explorer::IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));		//创建索引缓冲
 		m_VertexArray->SetIndexBuffer(indexBuffer);	//设置EBO到VAO
 
-		std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-
-			uniform mat4 u_ViewProjectionMatrix;
-			uniform mat4 u_Transform;
-
-			out vec3 v_Position;						
-
-			void main()
-			{
-				v_Position = a_Position;
-				gl_Position = u_ViewProjectionMatrix * u_Transform * vec4(a_Position, 1.0);
-			}
-		)";
-
-		std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec3 v_Position;
-
-			uniform vec3 u_Color;
-			
-			void main()
-			{
-				color = vec4(u_Color, 1.0);
-			}
-		)";
-
-		m_Shader.reset(new Explorer::Shader(vertexSrc, fragmentSrc));	//创建着色器
+		m_Shader.reset(new Explorer::Shader("asserts/shaders/Triangle.vert", "asserts/shaders/Triangle.frag"));	//创建着色器
 
 		//Square
 		m_SquareVA.reset(new Explorer::VertexArray());		//创建顶点数组对象
@@ -117,69 +84,9 @@ public:
 		squareIB.reset(new Explorer::IndexBuffer(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));		//创建索引缓冲
 		m_SquareVA->SetIndexBuffer(squareIB);														//设置EBO到VAO
 
-		std::string squareVertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
+		m_FlatColorShader.reset(new Explorer::Shader("asserts/shaders/Color.vert", "asserts/shaders/Color.frag"));	//创建着色器
 
-			uniform mat4 u_ViewProjectionMatrix;
-			uniform mat4 u_Transform;					
-
-			void main()
-			{
-				gl_Position = u_ViewProjectionMatrix * u_Transform * vec4(a_Position, 1.0);
-			}
-		)";
-
-		std::string squareFragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			uniform vec3 u_Color;
-			
-			void main()
-			{
-				color = vec4(u_Color, 1.0);
-			}
-		)";
-
-		m_FlatColorShader.reset(new Explorer::Shader(squareVertexSrc, squareFragmentSrc));	//创建着色器
-
-		std::string textureVertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_TexCoord;
-
-			uniform mat4 u_ViewProjectionMatrix;
-			uniform mat4 u_Transform;
-
-			out vec2 v_TexCoord;					
-
-			void main()
-			{
-				v_TexCoord = a_TexCoord;
-				gl_Position = u_ViewProjectionMatrix * u_Transform * vec4(a_Position, 1.0);
-			}
-		)";
-
-		std::string textureFragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec2 v_TexCoord;
-
-			uniform sampler2D u_Texture;
-			
-			void main()
-			{
-				color = texture(u_Texture, v_TexCoord);
-			}
-		)";
-
-		m_TextureShader.reset(new Explorer::Shader(textureVertexSrc, textureFragmentSrc));	//创建着色器
+		m_TextureShader.reset(new Explorer::Shader("asserts/shaders/Texture.vert", "asserts/shaders/Texture.frag"));	//创建着色器
 
 		m_Texture.reset(new Explorer::Texture2D("asserts/textures/Checkerboard.png"));		//创建纹理
 		m_ChernoLogoTexture.reset(new Explorer::Texture2D("asserts/textures/ChernoLogo.png"));		//创建纹理
