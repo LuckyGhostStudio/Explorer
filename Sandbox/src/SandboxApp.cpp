@@ -5,15 +5,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Explorer/Renderer/Shader.h"
+
 /// <summary>
 /// 示例层
 /// </summary>
 class ExampleLayer :public Explorer::Layer
 {
 private:
+	Explorer::ShaderLibrary m_ShaderLibrary;				//着色器库
 	std::shared_ptr<Explorer::Shader> m_Shader;				//着色器
 	std::shared_ptr<Explorer::VertexArray> m_VertexArray;	//顶点数组
-	std::shared_ptr<Explorer::Shader> m_FlatColorShader, m_TextureShader;
+	std::shared_ptr<Explorer::Shader> m_FlatColorShader;
 	std::shared_ptr<Explorer::VertexArray> m_SquareVA;
 
 	std::shared_ptr<Explorer::Texture2D> m_Texture, m_ChernoLogoTexture;
@@ -56,7 +59,7 @@ public:
 		indexBuffer.reset(new Explorer::IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));		//创建索引缓冲
 		m_VertexArray->SetIndexBuffer(indexBuffer);	//设置EBO到VAO
 
-		m_Shader.reset(new Explorer::Shader("asserts/shaders/Triangle.vert", "asserts/shaders/Triangle.frag"));	//创建着色器
+		m_Shader.reset(new Explorer::Shader("asserts/shaders/Triangle"));	//创建着色器
 
 		//Square
 		m_SquareVA.reset(new Explorer::VertexArray());		//创建顶点数组对象
@@ -84,15 +87,15 @@ public:
 		squareIB.reset(new Explorer::IndexBuffer(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));		//创建索引缓冲
 		m_SquareVA->SetIndexBuffer(squareIB);														//设置EBO到VAO
 
-		m_FlatColorShader.reset(new Explorer::Shader("asserts/shaders/Color.vert", "asserts/shaders/Color.frag"));	//创建着色器
+		m_FlatColorShader.reset(new Explorer::Shader("asserts/shaders/FlatColor"));			//创建着色器
 
-		m_TextureShader.reset(new Explorer::Shader("asserts/shaders/Texture.vert", "asserts/shaders/Texture.frag"));	//创建着色器
+		auto textureShader = m_ShaderLibrary.Load("asserts/shaders/Texture");				//加载创建着色器
 
 		m_Texture.reset(new Explorer::Texture2D("asserts/textures/Checkerboard.png"));		//创建纹理
 		m_ChernoLogoTexture.reset(new Explorer::Texture2D("asserts/textures/ChernoLogo.png"));		//创建纹理
 
-		m_TextureShader->Bind();
-		m_TextureShader->UploadUniformInt("u_Texture", 0);
+		textureShader->Bind();
+		textureShader->UploadUniformInt("u_Texture", 0);
 	}
 
 	void OnUpdate(Explorer::DeltaTime dt) override
@@ -141,10 +144,12 @@ public:
 			}
 		}
 
+		auto textureShader = m_ShaderLibrary.Get("Texture");
+
 		m_Texture->Bind();
-		Explorer::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Explorer::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 		m_ChernoLogoTexture->Bind();
-		Explorer::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Explorer::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		//Triangle
 		//Explorer::Renderer::Submit(m_Shader, m_VertexArray);	//提交渲染指令

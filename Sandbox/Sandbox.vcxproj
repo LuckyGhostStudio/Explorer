@@ -143,8 +143,8 @@
     <Image Include="asserts\textures\ChernoLogo.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="asserts\shaders\Color.frag" />
-    <None Include="asserts\shaders\Color.vert" />
+    <None Include="asserts\shaders\FlatColor.frag" />
+    <None Include="asserts\shaders\FlatColor.vert" />
     <None Include="asserts\shaders\Texture.frag" />
     <None Include="asserts\shaders\Texture.vert" />
     <None Include="asserts\shaders\Triangle.frag" />
