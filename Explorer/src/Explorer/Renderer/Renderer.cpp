@@ -5,6 +5,11 @@ namespace Explorer
 {
 	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData();		//场景数据
 
+	void Renderer::Init()
+	{
+		RenderCommand::Init();
+	}
+
 	void Renderer::BeginScene(Camera& camera)
 	{
 		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();	//设置场景vp矩阵

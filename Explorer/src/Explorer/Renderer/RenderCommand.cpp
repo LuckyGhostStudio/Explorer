@@ -5,6 +5,12 @@
 
 namespace Explorer
 {
+	void RenderCommand::Init()
+	{
+		glEnable(GL_BLEND);									//启用混合
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	//最终颜色 = src * alpha + des * (1 - alpha)
+	}
+
 	void RenderCommand::SetClearColor(const glm::vec4& color)
 	{
 		glClearColor(color.r, color.g, color.b, color.a);	//设置清屏颜色

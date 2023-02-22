@@ -16,7 +16,7 @@ private:
 	std::shared_ptr<Explorer::Shader> m_FlatColorShader, m_TextureShader;
 	std::shared_ptr<Explorer::VertexArray> m_SquareVA;
 
-	std::shared_ptr<Explorer::Texture2D> m_Texture;
+	std::shared_ptr<Explorer::Texture2D> m_Texture, m_ChernoLogoTexture;
 
 	Explorer::Camera m_Camera;								//相机
 
@@ -182,6 +182,7 @@ public:
 		m_TextureShader.reset(new Explorer::Shader(textureVertexSrc, textureFragmentSrc));	//创建着色器
 
 		m_Texture.reset(new Explorer::Texture2D("asserts/textures/Checkerboard.png"));		//创建纹理
+		m_ChernoLogoTexture.reset(new Explorer::Texture2D("asserts/textures/ChernoLogo.png"));		//创建纹理
 
 		m_TextureShader->Bind();
 		m_TextureShader->UploadUniformInt("u_Texture", 0);
@@ -234,6 +235,8 @@ public:
 		}
 
 		m_Texture->Bind();
+		Explorer::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		m_ChernoLogoTexture->Bind();
 		Explorer::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		//Triangle

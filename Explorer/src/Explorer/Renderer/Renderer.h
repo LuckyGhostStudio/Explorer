@@ -23,6 +23,11 @@ namespace Explorer
 		static SceneData* m_SceneData;	//场景数据
 	public:
 		/// <summary>
+		/// 初始化渲染器
+		/// </summary>
+		static void Init();
+
+		/// <summary>
 		/// 开始渲染场景：设置场景参数（着色器，环境光，灯光，变换矩阵，相机...）
 		/// </summary>
 		/// <param name="camera">相机</param>

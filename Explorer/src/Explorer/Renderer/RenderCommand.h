@@ -12,6 +12,11 @@ namespace Explorer
 	{
 	public:
 		/// <summary>
+		/// 初始化渲染器
+		/// </summary>
+		static void Init();
+
+		/// <summary>
 		/// 设置清屏颜色
 		/// </summary>
 		/// <param name="color">清屏颜色</param>

@@ -120,6 +120,8 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Texture.h/.cpp
 
+### 29. 颜色混合
+
 ## 文件说明
 
 ### Explorer 项目
