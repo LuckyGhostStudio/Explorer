@@ -19,6 +19,7 @@
 
 #include "Explorer/Renderer/Buffer.h"
 #include "Explorer/Renderer/Shader.h"
+#include "Explorer/Renderer/Texture.h"
 #include "Explorer/Renderer/VertexArray.h"
 
 #include "Explorer/Renderer/Camera.h"

@@ -116,6 +116,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 27. Transforms
 
+### 28. 纹理
+
+- Texture.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -235,6 +239,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Camera.h/.cpp
 
   相机，进行相机变换，包括计算投影矩阵、视图矩阵，进行视图变换和投影变换。
+  
+- Texture.h/.cpp
+
+  纹理类，进行纹理加载和纹理格式设置。
 
 ### Sandbox 项目
 

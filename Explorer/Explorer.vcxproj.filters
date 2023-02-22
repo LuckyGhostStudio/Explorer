@@ -7,6 +7,9 @@
     <Filter Include="src\Explorer">
       <UniqueIdentifier>{6D155B7C-5978-EA20-02FE-22D7EE3FB6A3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Explorer\Core">
+      <UniqueIdentifier>{E5A54B6B-51BC-4901-9A33-D52206891A89}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Explorer\Events">
       <UniqueIdentifier>{B1C4EE71-1D26-CC7F-A693-123212F4023F}</UniqueIdentifier>
     </Filter>
@@ -40,6 +43,9 @@
     <Filter Include="vendor\glm\glm\gtx">
       <UniqueIdentifier>{B3A6A76B-9F8A-68C1-08EB-6214F4ED5243}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendor\stb_image">
+      <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Explorer.h">
@@ -50,6 +56,9 @@
     </ClInclude>
     <ClInclude Include="src\Explorer\Core.h">
       <Filter>src\Explorer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Core\DeltaTime.h">
+      <Filter>src\Explorer\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\EntryPoint.h">
       <Filter>src\Explorer</Filter>
@@ -103,6 +112,9 @@
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Shader.h">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Renderer\Texture.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\VertexArray.h">
@@ -1362,7 +1374,9 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Core\DeltaTime.h" />
+    <ClInclude Include="vendor\stb_image\stb_image.h">
+      <Filter>vendor\stb_image</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp">
@@ -1404,6 +1418,9 @@
     <ClCompile Include="src\Explorer\Renderer\Shader.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Explorer\Renderer\Texture.cpp">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\VertexArray.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
@@ -1412,6 +1429,9 @@
     </ClCompile>
     <ClCompile Include="src\exppch.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\stb_image\stb_image.cpp">
+      <Filter>vendor\stb_image</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
