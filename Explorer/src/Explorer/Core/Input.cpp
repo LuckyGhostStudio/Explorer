@@ -1,7 +1,7 @@
 #include "exppch.h"
 #include "Input.h"
 
-#include "Explorer/Application.h"
+#include "Explorer/Core/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace Explorer

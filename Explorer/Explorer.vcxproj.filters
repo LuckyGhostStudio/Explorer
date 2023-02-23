@@ -51,17 +51,35 @@
     <ClInclude Include="src\Explorer.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Application.h">
-      <Filter>src\Explorer</Filter>
+    <ClInclude Include="src\Explorer\Core\Application.h">
+      <Filter>src\Explorer\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Core.h">
-      <Filter>src\Explorer</Filter>
+    <ClInclude Include="src\Explorer\Core\Core.h">
+      <Filter>src\Explorer\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Core\DeltaTime.h">
       <Filter>src\Explorer\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\EntryPoint.h">
-      <Filter>src\Explorer</Filter>
+    <ClInclude Include="src\Explorer\Core\EntryPoint.h">
+      <Filter>src\Explorer\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Core\Input.h">
+      <Filter>src\Explorer\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Core\KeyCodes.h">
+      <Filter>src\Explorer\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Core\Layer.h">
+      <Filter>src\Explorer\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Core\LayerStack.h">
+      <Filter>src\Explorer\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Core\Log.h">
+      <Filter>src\Explorer\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Core\MouseButtonCodes.h">
+      <Filter>src\Explorer\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Events\ApplicationEvent.h">
       <Filter>src\Explorer\Events</Filter>
@@ -78,28 +96,13 @@
     <ClInclude Include="src\Explorer\ImGui\ImGuiLayer.h">
       <Filter>src\Explorer\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Input.h">
-      <Filter>src\Explorer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Explorer\KeyCodes.h">
-      <Filter>src\Explorer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Explorer\Layer.h">
-      <Filter>src\Explorer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Explorer\LayerStack.h">
-      <Filter>src\Explorer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Explorer\Log.h">
-      <Filter>src\Explorer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Explorer\MouseButtonCodes.h">
-      <Filter>src\Explorer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Buffer.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Camera.h">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Renderer\CameraController.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\OpenGLContext.h">
@@ -120,7 +123,7 @@
     <ClInclude Include="src\Explorer\Renderer\VertexArray.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Windows\Window.h">
+    <ClInclude Include="src\Explorer\Core\Window.h">
       <Filter>src\Explorer\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\exppch.h">
@@ -1377,11 +1380,22 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\CameraController.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Explorer\Application.cpp">
-      <Filter>src\Explorer</Filter>
+    <ClCompile Include="src\Explorer\Core\Application.cpp">
+      <Filter>src\Explorer\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Core\Input.cpp">
+      <Filter>src\Explorer\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Core\Layer.cpp">
+      <Filter>src\Explorer\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Core\LayerStack.cpp">
+      <Filter>src\Explorer\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Core\Log.cpp">
+      <Filter>src\Explorer\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\ImGui\ImGuiBuild.cpp">
       <Filter>src\Explorer\ImGui</Filter>
@@ -1389,22 +1403,13 @@
     <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp">
       <Filter>src\Explorer\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Input.cpp">
-      <Filter>src\Explorer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Explorer\Layer.cpp">
-      <Filter>src\Explorer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Explorer\LayerStack.cpp">
-      <Filter>src\Explorer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Explorer\Log.cpp">
-      <Filter>src\Explorer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Buffer.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Camera.cpp">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Renderer\CameraController.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\OpenGLContext.cpp">
@@ -1425,7 +1430,7 @@
     <ClCompile Include="src\Explorer\Renderer\VertexArray.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Windows\Window.cpp">
+    <ClCompile Include="src\Explorer\Core\Window.cpp">
       <Filter>src\Explorer\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\exppch.cpp">
@@ -1434,6 +1439,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\CameraController.cpp" />
   </ItemGroup>
 </Project>

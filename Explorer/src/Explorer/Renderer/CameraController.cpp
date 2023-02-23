@@ -1,8 +1,8 @@
 #include "exppch.h"
 #include "CameraController.h"
 
-#include "Explorer/Input.h"
-#include "Explorer//KeyCodes.h"
+#include "Explorer/Core/Input.h"
+#include "Explorer/Core/KeyCodes.h"
 
 namespace Explorer
 {

@@ -2,8 +2,8 @@
 
 #include "Core.h"
 
-#include "Windows/Window.h"
-#include "Explorer/LayerStack.h"
+#include "Explorer/Core/Window.h"
+#include "Explorer/Core/LayerStack.h"
 #include "Explorer/Events/Event.h"
 #include "Explorer/Events/ApplicationEvent.h"
 

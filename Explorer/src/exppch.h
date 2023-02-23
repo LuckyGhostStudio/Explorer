@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Explorer/Log.h"
+#include "Explorer/Core/Log.h"
 
 #ifdef EXP_PLATFORM_WINDOWS	//windows
 	#include <Windows.h>

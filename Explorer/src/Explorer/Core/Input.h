@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Explorer/Core.h"
+#include "Explorer/Core/Core.h"
 
 namespace Explorer
 {

@@ -202,12 +202,6 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
   帧间隔，计算每帧之间的时间间隔。
   
-- CameraController.h/.cpp
-
-  相机控制器，控制相机移动、旋转，窗口缩放。
-
-##### 窗口文件
-
 - Window.h
 
   窗口类，可创建事件。
@@ -259,6 +253,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Texture.h/.cpp
 
   纹理类，进行纹理加载和纹理格式设置。
+  
+- CameraController.h/.cpp
+
+  相机控制器，控制相机移动、旋转，窗口缩放。
 
 ### Sandbox 项目
 

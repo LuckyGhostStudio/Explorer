@@ -2,7 +2,7 @@
 
 #include "exppch.h"
 
-#include "Explorer/Core.h"
+#include "Explorer/Core/Core.h"
 #include "Explorer/Events/Event.h"
 #include "Explorer/Renderer/OpenGLContext.h"
 

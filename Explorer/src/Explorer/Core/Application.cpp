@@ -1,10 +1,10 @@
 #include "exppch.h"	//Ô¤±àÒëÍ·ÎÄ¼ş
 #include "Application.h"
 
-#include "Explorer/Log.h"
+#include "Explorer/Core/Log.h"
 #include "Input.h"
 
-#include "Renderer/Renderer.h"
+#include "Explorer/Renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
 

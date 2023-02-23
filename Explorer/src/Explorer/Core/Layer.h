@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Explorer/Core.h"
+#include "Explorer/Core/Core.h"
 #include "Explorer/Core/DeltaTime.h"
 #include "Explorer/Events/Event.h"
 
