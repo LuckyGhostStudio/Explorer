@@ -11,6 +11,12 @@ namespace Explorer
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;	//vp = p * v;
 	}
 
+	void Camera::SetProjection(float left, float right, float bottom, float top)
+	{
+		m_ProjectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;	//vp = p * v;
+	}
+
 	void Camera::RecalculateViewMatrix()
 	{
 		//变换矩阵 = 平移矩阵 * 旋转矩阵（- 旋转弧度 旋转轴z）

@@ -10,6 +10,7 @@
 #include "Explorer/Input.h"
 #include "Explorer/KeyCodes.h"
 #include "Explorer/MouseButtonCodes.h"
+#include "Explorer/CameraController.h"
 
 #include "Explorer/ImGui/ImGuiLayer.h"
 

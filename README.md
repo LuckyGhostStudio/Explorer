@@ -124,6 +124,12 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 30. 着色器资产文件
 
+### 31. 着色器库
+
+### 32. 相机控制器
+
+- CameraController.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -193,6 +199,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - DeltaTime.h
 
   帧间隔，计算每帧之间的时间间隔。
+  
+- CameraController.h/.cpp
+
+  相机控制器，控制相机移动、旋转，窗口缩放。
 
 ##### 窗口文件
 

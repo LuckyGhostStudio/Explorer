@@ -21,16 +21,11 @@ private:
 
 	std::shared_ptr<Explorer::Texture2D> m_Texture, m_ChernoLogoTexture;
 
-	Explorer::Camera m_Camera;								//相机
-
-	glm::vec3 m_CameraPosition;
-	float m_CameraRotation = 0.0f;
-	float m_CameraMoveSpeed = 1.0f;
-	float m_CameraRotationSpeed = 90.0f;
+	Explorer::CameraController m_CameraController;			//相机控制器
 
 	glm::vec3 m_SquareColor = { 0.2f,0.3f,0.8f };
 public:
-	ExampleLayer() :Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
+	ExampleLayer() :Layer("Example"), m_CameraController(1280.0f / 720.0f)
 	{ 
 		m_VertexArray.reset(new Explorer::VertexArray());		//创建顶点数组对象
 
@@ -100,36 +95,12 @@ public:
 
 	void OnUpdate(Explorer::DeltaTime dt) override
 	{
-		//EXP_TRACE("Delta Time: {0}s ({1}ms)", dt.GetSeconds(), dt.GetMilliseconds());
-
-		//相机移动
-		if (Explorer::Input::IsKeyPressed(EXP_KEY_LEFT)) {	//左键
-			m_CameraPosition.x -= m_CameraMoveSpeed * dt;
-		}
-		else if (Explorer::Input::IsKeyPressed(EXP_KEY_RIGHT)) {	//右键
-			m_CameraPosition.x += m_CameraMoveSpeed * dt;
-		}
-		if (Explorer::Input::IsKeyPressed(EXP_KEY_UP)) {	//上键
-			m_CameraPosition.y += m_CameraMoveSpeed * dt;
-		}
-		else if (Explorer::Input::IsKeyPressed(EXP_KEY_DOWN)) {	//下键
-			m_CameraPosition.y -= m_CameraMoveSpeed * dt;
-		}
-		//相机旋转
-		if (Explorer::Input::IsKeyPressed(EXP_KEY_A)) {
-			m_CameraRotation += m_CameraRotationSpeed * dt;
-		}
-		if (Explorer::Input::IsKeyPressed(EXP_KEY_D)) {
-			m_CameraRotation -= m_CameraRotationSpeed * dt;
-		}
+		m_CameraController.OnUpdate(dt);	//更新相机控制器
 
 		Explorer::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Explorer::RenderCommand::Clear();
 
-		m_Camera.SetPosition(m_CameraPosition);
-		m_Camera.SetRotation(m_CameraRotation);
-
-		Explorer::Renderer::BeginScene(m_Camera);				//开始渲染场景
+		Explorer::Renderer::BeginScene(m_CameraController.GetCamera());				//开始渲染场景
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
@@ -166,7 +137,7 @@ public:
 
 	void OnEvent(Explorer::Event& event) override
 	{
-		
+		m_CameraController.OnEvent(event);	//调用相机事件函数 
 	}
 };
 

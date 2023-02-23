@@ -31,6 +31,15 @@ namespace Explorer
 		/// <param name="top">上边界</param>
 		Camera(float left, float right, float bottom, float top);
 
+		/// <summary>
+		/// 设置投影矩阵
+		/// </summary>
+		/// <param name="left">左边界</param>
+		/// <param name="right">右边界</param>
+		/// <param name="bottom">下边界</param>
+		/// <param name="top">上边界</param>
+		void SetProjection(float left, float right, float bottom, float top);
+
 		const glm::vec3& GetPosition() const { return m_Position; }
 
 		/// <summary>

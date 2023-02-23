@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="src\Explorer.h" />
     <ClInclude Include="src\Explorer\Application.h" />
+    <ClInclude Include="src\Explorer\CameraController.h" />
     <ClInclude Include="src\Explorer\Core.h" />
     <ClInclude Include="src\Explorer\Core\DeltaTime.h" />
     <ClInclude Include="src\Explorer\EntryPoint.h" />
@@ -586,6 +587,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Application.cpp" />
+    <ClCompile Include="src\Explorer\CameraController.cpp" />
     <ClCompile Include="src\Explorer\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Explorer\Input.cpp" />
