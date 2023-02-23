@@ -11,6 +11,11 @@ namespace Explorer
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	//最终颜色 = src * alpha + des * (1 - alpha)
 	}
 
+	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+	{
+		glViewport(x, y, width, height);	//设置视口大小
+	}
+
 	void RenderCommand::SetClearColor(const glm::vec4& color)
 	{
 		glClearColor(color.r, color.g, color.b, color.a);	//设置清屏颜色

@@ -10,6 +10,11 @@ namespace Explorer
 		RenderCommand::Init();
 	}
 
+	void Renderer::OnWindowResize(uint32_t width, uint32_t height)
+	{
+		RenderCommand::SetViewport(0, 0, width, height);	//设置视口大小
+	}
+
 	void Renderer::BeginScene(Camera& camera)
 	{
 		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();	//设置场景vp矩阵

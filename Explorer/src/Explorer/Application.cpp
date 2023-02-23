@@ -49,6 +49,7 @@ namespace Explorer
 	{
 		EventDispatcher dispatcher(e);	//事件调度器
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));	//调度 窗口关闭事件
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));	//调度 窗口缩放事件
 
 		//从最顶层向下遍历层栈
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
@@ -64,9 +65,11 @@ namespace Explorer
 			DeltaTime deltaTime = time - m_LastFrameTime;	//帧间隔 = 当前时间 - 上一帧时间
 			m_LastFrameTime = time;							//更新上一帧时间
 
-			//更新层栈中所有层
-			for (Layer* layer : m_LayerStack) {
-				layer->OnUpdate(deltaTime);
+			if (!m_Minimized) {		//窗口未最小化
+				//更新层栈中所有层
+				for (Layer* layer : m_LayerStack) {
+					layer->OnUpdate(deltaTime);
+				}
 			}
 
 			//ImGui渲染
@@ -84,5 +87,18 @@ namespace Explorer
 	{
 		m_Running = false;	//结束运行
 		return true;
+	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{
+		if (e.GetWidth() == 0 || e.GetHeight() == 0) {
+			m_Minimized = true;		//窗口最小化
+			return false;
+		}
+
+		m_Minimized = false;
+		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());	//进行窗口缩放后的设置
+
+		return false;
 	}
 }
