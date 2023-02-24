@@ -1,4 +1,5 @@
 #include <Explorer.h>
+#include <Explorer/Core/EntryPoint.h>
 
 #include "imgui/imgui.h"
 
@@ -6,6 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Explorer/Renderer/Shader.h"
+#include "Sandbox2D.h"
 
 /// <summary>
 /// 示例层
@@ -54,7 +56,7 @@ public:
 		indexBuffer.reset(new Explorer::IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));		//创建索引缓冲
 		m_VertexArray->SetIndexBuffer(indexBuffer);	//设置EBO到VAO
 
-		m_Shader.reset(new Explorer::Shader("asserts/shaders/Triangle"));	//创建着色器
+		m_Shader.reset(new Explorer::Shader("asserts/shaders/TriangleShader"));	//创建着色器
 
 		//Square
 		m_SquareVA.reset(new Explorer::VertexArray());		//创建顶点数组对象
@@ -82,9 +84,9 @@ public:
 		squareIB.reset(new Explorer::IndexBuffer(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));		//创建索引缓冲
 		m_SquareVA->SetIndexBuffer(squareIB);														//设置EBO到VAO
 
-		m_FlatColorShader.reset(new Explorer::Shader("asserts/shaders/FlatColor"));			//创建着色器
+		m_FlatColorShader.reset(new Explorer::Shader("asserts/shaders/FlatColorShader"));			//创建着色器
 
-		auto textureShader = m_ShaderLibrary.Load("asserts/shaders/Texture");				//加载创建着色器
+		auto textureShader = m_ShaderLibrary.Load("asserts/shaders/TextureShader");				//加载创建着色器
 
 		m_Texture.reset(new Explorer::Texture2D("asserts/textures/Checkerboard.png"));		//创建纹理
 		m_ChernoLogoTexture.reset(new Explorer::Texture2D("asserts/textures/ChernoLogo.png"));		//创建纹理
@@ -115,7 +117,7 @@ public:
 			}
 		}
 
-		auto textureShader = m_ShaderLibrary.Get("Texture");
+		auto textureShader = m_ShaderLibrary.Get("TextureShader");
 
 		m_Texture->Bind();
 		Explorer::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
@@ -146,7 +148,8 @@ class Sandbox :public Explorer::Application
 public:
 	Sandbox()
 	{
-		PushLayer(new ExampleLayer());	//添加到层栈
+		//PushLayer(new ExampleLayer());	//添加示例到层栈
+		PushLayer(new Sandbox2D());		//添加2D渲染测试层
 	}
 
 	~Sandbox()

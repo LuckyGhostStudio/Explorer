@@ -132,6 +132,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 33. 窗口缩放调整
 
+### 34. 准备2D渲染
+
+- Sandbox2D.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -260,11 +264,25 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### Sandbox 项目
 
+#### asserts
+
+- ##### shaders
+
+  着色器文件，包括顶点着色器和片元着色器。
+
+- ##### textures
+
+  贴图文件。
+
 #### src
 
 - SandboxApp.cpp
 
   应用程序类，继承Application。可创建具体Layer。
+
+- Sandbox2D.h/.cpp
+
+  2D渲染测试层，继承Layer。
 
 ## 子系统
 

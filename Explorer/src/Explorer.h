@@ -25,7 +25,3 @@
 #include "Explorer/Renderer/Camera.h"
 #include "Explorer/Renderer/CameraController.h"
 //---------------------------------
-
-//------Entry Point 程序入口点------
-#include "Explorer/Core/EntryPoint.h"
-//---------------------------------
