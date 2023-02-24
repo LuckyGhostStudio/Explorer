@@ -136,6 +136,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Sandbox2D.h/.cpp
 
+### 35. 开始2D渲染
+
+- Renderer2D.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -237,6 +241,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Renderer.h/.cpp
 
   渲染器，设置场景参数，进行渲染命令提交。
+
+- Renderer2D.h/.cpp
+
+  2D渲染器，进行2D图形渲染。
 
 - Buffer.h/.cpp
 

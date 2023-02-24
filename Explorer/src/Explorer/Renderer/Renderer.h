@@ -20,7 +20,7 @@ namespace Explorer
 			glm::mat4 ViewProjectionMatrix;	//vp矩阵
 		};
 
-		static SceneData* m_SceneData;	//场景数据
+		static std::unique_ptr<SceneData> m_SceneData;	//场景数据
 	public:
 		/// <summary>
 		/// 初始化渲染器
