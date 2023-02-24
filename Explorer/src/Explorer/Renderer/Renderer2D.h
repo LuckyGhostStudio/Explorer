@@ -29,16 +29,18 @@ namespace Explorer
 		/// 绘制长方形
 		/// </summary>
 		/// <param name="position">位置</param>
-		/// <param name="size">大小</param>
+		/// <param name="rotation">旋转</param>
+		/// <param name="scale">大小</param>
 		/// <param name="color">颜色</param>
-		static void DrawQuad(const glm::vec2 position, const glm::vec2 size, const glm::vec4 color);
+		static void DrawQuad(const glm::vec2 position, float rotation, const glm::vec2 scale, const glm::vec4 color);
 
 		/// <summary>
 		/// 绘制长方形
 		/// </summary>
 		/// <param name="position">位置</param>
-		/// <param name="size">大小</param>
+		/// <param name="rotation">旋转</param>
+		/// <param name="scale">大小</param>
 		/// <param name="color">颜色</param>
-		static void DrawQuad(const glm::vec3 position, const glm::vec2 size, const glm::vec4 color);
+		static void DrawQuad(const glm::vec3 position, float rotation, const glm::vec3 scale, const glm::vec4 color);
 	};
 }

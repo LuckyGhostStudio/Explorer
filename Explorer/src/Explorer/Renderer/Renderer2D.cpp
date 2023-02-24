@@ -5,6 +5,8 @@
 #include "Shader.h"
 #include "RenderCommand.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace Explorer
 {
 	/// <summary>
@@ -58,10 +60,7 @@ namespace Explorer
 	void Renderer2D::BeginScene(const Camera& camera)
 	{
 		s_Data->FlatColorShader->Bind();	//绑定着色器
-		//设置uniform vp矩阵
-		s_Data->FlatColorShader->UploadUniformMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());
-		//设置transform矩阵
-		s_Data->FlatColorShader->UploadUniformMat4("u_Transform", glm::mat4(1.0f));
+		s_Data->FlatColorShader->SetMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());	//设置vp矩阵
 	}
 
 	void Renderer2D::EndScene()
@@ -69,15 +68,20 @@ namespace Explorer
 
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2 position, const glm::vec2 size, const glm::vec4 color)
+	void Renderer2D::DrawQuad(const glm::vec2 position, float rotation, const glm::vec2 scale, const glm::vec4 color)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, color);
+		DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec3 position, const glm::vec2 size, const glm::vec4 color)
+	void Renderer2D::DrawQuad(const glm::vec3 position, const float rotation, const glm::vec3 scale, const glm::vec4 color)
 	{
 		s_Data->FlatColorShader->Bind();	//绑定着色器
-		s_Data->FlatColorShader->UploadUniformFloat4("u_Color", color);	//设置uniform color
+		s_Data->FlatColorShader->SetFloat4("u_Color", color);	//设置color
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
+			* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
+		s_Data->FlatColorShader->SetMat4("u_Transform", transform);		//设置transform矩阵
 
 		s_Data->QuadVertexArray->Bind();						//绑定顶点数组
 		RenderCommand::DrawIndexed(s_Data->QuadVertexArray);	//绘制

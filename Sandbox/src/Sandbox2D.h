@@ -14,6 +14,10 @@ private:
 	std::shared_ptr<Explorer::VertexArray> m_SquareVA;			//正方形顶点数组
 	std::shared_ptr<Explorer::Shader> m_FlatColorShader;		//正方形着色器
 
+	glm::vec3 m_SquarePosition = { 0.0f, 0.0f, 0.0f};
+	glm::vec3 m_SquareRotation = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 m_SquareScale = { 1.0f, 1.0f, 1.0f };
+
 	glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 public:
 	Sandbox2D();

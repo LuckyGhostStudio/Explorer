@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <glm/glm.hpp>
 
 namespace Explorer
@@ -43,6 +42,24 @@ namespace Explorer
 		/// 解除绑定：调试时使用
 		/// </summary>
 		void UnBind() const;
+
+		/// <summary>
+		/// 设置uniform Float3变量
+		/// </summary>
+		/// <param name="value">变量</param>
+		void SetFloat3(const std::string& name, const glm::vec3 value);
+
+		/// <summary>
+		/// 设置uniform Float4变量
+		/// </summary>
+		/// <param name="value">变量</param>
+		void SetFloat4(const std::string& name, const glm::vec4 value);
+
+		/// <summary>
+		/// 设置uniform Matrix4变量
+		/// </summary>
+		/// <param name="value">变量</param>
+		void SetMat4(const std::string& name, const glm::mat4 value);
 
 		const std::string GetName() const { return m_Name; }
 

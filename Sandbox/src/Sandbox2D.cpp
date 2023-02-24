@@ -29,18 +29,23 @@ void Sandbox2D::OnUpdate(Explorer::DeltaTime dt)
 
 	Explorer::Renderer2D::BeginScene(m_CameraController.GetCamera());		//开始渲染场景
 
-	Explorer::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.8f, 0.2f, 0.3f, 1.0f });	//绘制四边形
+	Explorer::Renderer2D::DrawQuad(m_SquarePosition, m_SquareRotation.z, m_SquareScale, m_SquareColor);	//绘制四边形
+
+	Explorer::Renderer2D::DrawQuad({ -1.0f, 0.0f }, 0.0f, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });	//绘制四边形
+	Explorer::Renderer2D::DrawQuad({ 0.5f, -0.5f }, 0.0f,{ 0.5f, 0.75f }, { 0.2f, 0.8f, 0.3f, 1.0f });	//绘制四边形
 
 	Explorer::Renderer2D::EndScene();						//结束渲染场景
-
-	//m_FlatColorShader->Bind();
-	//m_FlatColorShader->UploadUniformFloat4("u_Color", m_SquareColor);	//上传uniform变量
 }
 
 void Sandbox2D::OnImGuiRender()
 {
 	ImGui::Begin("Settings");
-	ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));	//颜色编辑UI
+	ImGui::ColorEdit4("Color", glm::value_ptr(m_SquareColor));	//颜色编辑UI
+
+	ImGui::SliderFloat3("Position", glm::value_ptr(m_SquarePosition), -1.0f, 1.0f);
+	ImGui::SliderFloat3("Rotation", glm::value_ptr(m_SquareRotation), -360.0f, 360.0f);
+	ImGui::SliderFloat3("Scale", glm::value_ptr(m_SquareScale), 0.0f, 4.0f);
+
 	ImGui::End();
 }
 
