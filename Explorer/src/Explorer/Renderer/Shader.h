@@ -44,22 +44,32 @@ namespace Explorer
 		void UnBind() const;
 
 		/// <summary>
+		/// 设置uniform Int变量
+		/// </summary>
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetInt(const std::string& name, int value);
+
+		/// <summary>
 		/// 设置uniform Float3变量
 		/// </summary>
-		/// <param name="value">变量</param>
-		void SetFloat3(const std::string& name, const glm::vec3 value);
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetFloat3(const std::string& name, const glm::vec3& value);
 
 		/// <summary>
 		/// 设置uniform Float4变量
 		/// </summary>
-		/// <param name="value">变量</param>
-		void SetFloat4(const std::string& name, const glm::vec4 value);
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetFloat4(const std::string& name, const glm::vec4& value);
 
 		/// <summary>
 		/// 设置uniform Matrix4变量
 		/// </summary>
-		/// <param name="value">变量</param>
-		void SetMat4(const std::string& name, const glm::mat4 value);
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetMat4(const std::string& name, const glm::mat4& value);
 
 		const std::string GetName() const { return m_Name; }
 

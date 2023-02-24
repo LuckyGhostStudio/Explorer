@@ -12,7 +12,7 @@ private:
 
 	//Temp
 	std::shared_ptr<Explorer::VertexArray> m_SquareVA;			//正方形顶点数组
-	std::shared_ptr<Explorer::Shader> m_FlatColorShader;		//正方形着色器
+	std::shared_ptr<Explorer::Texture2D> m_CheckerboardTexture;	//棋盘纹理
 
 	glm::vec3 m_SquarePosition = { 0.0f, 0.0f, 0.0f};
 	glm::vec3 m_SquareRotation = { 0.0f, 0.0f, 0.0f };
