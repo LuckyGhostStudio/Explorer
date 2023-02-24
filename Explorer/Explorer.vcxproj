@@ -151,6 +151,7 @@
     <ClInclude Include="src\Explorer\Core\LayerStack.h" />
     <ClInclude Include="src\Explorer\Core\Log.h" />
     <ClInclude Include="src\Explorer\Core\MouseButtonCodes.h" />
+    <ClInclude Include="src\Explorer\Core\Window.h" />
     <ClInclude Include="src\Explorer\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Explorer\Events\Event.h" />
     <ClInclude Include="src\Explorer\Events\KeyEvent.h" />
@@ -166,7 +167,6 @@
     <ClInclude Include="src\Explorer\Renderer\Shader.h" />
     <ClInclude Include="src\Explorer\Renderer\Texture.h" />
     <ClInclude Include="src\Explorer\Renderer\VertexArray.h" />
-    <ClInclude Include="src\Explorer\Core\Window.h" />
     <ClInclude Include="src\exppch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
@@ -592,6 +592,7 @@
     <ClCompile Include="src\Explorer\Core\Layer.cpp" />
     <ClCompile Include="src\Explorer\Core\LayerStack.cpp" />
     <ClCompile Include="src\Explorer\Core\Log.cpp" />
+    <ClCompile Include="src\Explorer\Core\Window.cpp" />
     <ClCompile Include="src\Explorer\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Buffer.cpp" />
@@ -604,7 +605,6 @@
     <ClCompile Include="src\Explorer\Renderer\Shader.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Texture.cpp" />
     <ClCompile Include="src\Explorer\Renderer\VertexArray.cpp" />
-    <ClCompile Include="src\Explorer\Core\Window.cpp" />
     <ClCompile Include="src\exppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

@@ -19,9 +19,6 @@
     <Filter Include="src\Explorer\Renderer">
       <UniqueIdentifier>{B3C3AD9F-1F30-699A-E823-01F8544F8B02}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Explorer\Windows">
-      <UniqueIdentifier>{A7DCA9FB-936B-33C5-3C8A-47C028F8436B}</UniqueIdentifier>
-    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
@@ -81,6 +78,9 @@
     <ClInclude Include="src\Explorer\Core\MouseButtonCodes.h">
       <Filter>src\Explorer\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Core\Window.h">
+      <Filter>src\Explorer\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Events\ApplicationEvent.h">
       <Filter>src\Explorer\Events</Filter>
     </ClInclude>
@@ -114,6 +114,9 @@
     <ClInclude Include="src\Explorer\Renderer\Renderer.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Renderer\Renderer2D.h">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Shader.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
@@ -122,9 +125,6 @@
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\VertexArray.h">
       <Filter>src\Explorer\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Explorer\Core\Window.h">
-      <Filter>src\Explorer\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\exppch.h">
       <Filter>src</Filter>
@@ -1380,7 +1380,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Renderer\Renderer2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Core\Application.cpp">
@@ -1396,6 +1395,9 @@
       <Filter>src\Explorer\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Core\Log.cpp">
+      <Filter>src\Explorer\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Core\Window.cpp">
       <Filter>src\Explorer\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\ImGui\ImGuiBuild.cpp">
@@ -1422,6 +1424,9 @@
     <ClCompile Include="src\Explorer\Renderer\Renderer.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Explorer\Renderer\Renderer2D.cpp">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Shader.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
@@ -1431,15 +1436,11 @@
     <ClCompile Include="src\Explorer\Renderer\VertexArray.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Core\Window.cpp">
-      <Filter>src\Explorer\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\exppch.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Renderer\Renderer2D.cpp" />
   </ItemGroup>
 </Project>

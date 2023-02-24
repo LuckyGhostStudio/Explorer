@@ -31,5 +31,6 @@ namespace Explorer
 	void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
 	{
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);	//顶点数组索引绘制三角形
+		glBindTexture(GL_TEXTURE_2D, 0);	//清空纹理槽
 	}
 }
