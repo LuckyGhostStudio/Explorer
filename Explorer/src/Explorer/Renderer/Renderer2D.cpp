@@ -85,6 +85,7 @@ namespace Explorer
 	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color)
 	{
 		s_Data->TextureShader->SetFloat4("u_Color", color);		//设置color
+		s_Data->TextureShader->SetFloat2("u_TilingFactor", { 1.0f, 1.0f });//设置纹理重复因子
 		s_Data->WhiteTexture->Bind();							//绑定白色纹理（默认纹理）
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
@@ -97,15 +98,16 @@ namespace Explorer
 		RenderCommand::DrawIndexed(s_Data->QuadVertexArray);	//绘制
 	}
 	
-	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture)
+	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture, const glm::vec2& tilingFactor)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color, texture);
+		DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color, texture, tilingFactor);
 	}
 	
-	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture)
+	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture, const glm::vec2& tilingFactor)
 	{
-		s_Data->TextureShader->SetFloat4("u_Color", color);		//设置颜色（默认颜色）
-		texture->Bind();										//绑定纹理
+		s_Data->TextureShader->SetFloat4("u_Color", color);					//设置颜色（默认颜色）
+		s_Data->TextureShader->SetFloat2("u_TilingFactor", tilingFactor);	//设置纹理重复因子
+		texture->Bind();													//绑定纹理
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
 			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))

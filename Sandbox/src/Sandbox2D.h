@@ -18,6 +18,8 @@ private:
 	glm::vec3 m_SquareRotation = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 m_SquareScale = { 1.0f, 1.0f, 1.0f };
 
+	glm::vec2 m_TextureTilingFactor = { 1.0f, 1.0f };	//纹理重复因子
+
 	glm::vec4 m_SquareColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	//性能测试结果

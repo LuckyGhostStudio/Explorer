@@ -70,14 +70,14 @@ namespace Explorer
 				for (Layer* layer : m_LayerStack) {
 					layer->OnUpdate(deltaTime);
 				}
-			}
 
-			//ImGui渲染
-			m_ImGuiLayer->Begin();
-			for (Layer* layer : m_LayerStack) {
-				layer->OnImGuiRender();		//渲染每个Laye的ImGui
+				//ImGui渲染
+				m_ImGuiLayer->Begin();
+				for (Layer* layer : m_LayerStack) {
+					layer->OnImGuiRender();		//渲染每个Laye的ImGui
+				}
+				m_ImGuiLayer->End();
 			}
-			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();		//在OnUpdate中轮询处理接收的事件
 		}

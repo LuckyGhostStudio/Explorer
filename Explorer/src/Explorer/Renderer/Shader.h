@@ -51,6 +51,20 @@ namespace Explorer
 		void SetInt(const std::string& name, int value);
 
 		/// <summary>
+		/// 设置uniform Float变量
+		/// </summary>
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetFloat(const std::string& name, float value);
+
+		/// <summary>
+		/// 设置uniform Float2变量
+		/// </summary>
+		/// <param name="name">变量名</param>
+		/// <param name="value">变量值</param>
+		void SetFloat2(const std::string& name, const glm::vec2& value);
+
+		/// <summary>
 		/// 设置uniform Float3变量
 		/// </summary>
 		/// <param name="name">变量名</param>

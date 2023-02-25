@@ -137,6 +137,16 @@ namespace Explorer
 		UploadUniformInt(name, value);
 	}
 
+	void Shader::SetFloat(const std::string& name, float value)
+	{
+		UploadUniformFloat(name, value);
+	}
+
+	void Shader::SetFloat2(const std::string& name, const glm::vec2& value)
+	{
+		UploadUniformFloat2(name, value);
+	}
+
 	void Shader::SetFloat3(const std::string& name, const glm::vec3& value)
 	{
 		UploadUniformFloat3(name, value);
