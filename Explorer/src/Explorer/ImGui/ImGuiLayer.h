@@ -30,11 +30,6 @@ namespace Explorer
 		virtual void OnDetach() override;
 
 		/// <summary>
-		/// äÖÈ¾ImGui
-		/// </summary>
-		virtual void OnImGuiRender() override;
-
-		/// <summary>
 		/// ¿ªÊ¼´°¿ÚäÖÈ¾
 		/// </summary>
 		void Begin();

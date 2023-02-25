@@ -19,6 +19,15 @@ private:
 	glm::vec3 m_SquareScale = { 1.0f, 1.0f, 1.0f };
 
 	glm::vec4 m_SquareColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	//性能测试结果
+	struct ProfileResult
+	{
+		const char* Name;	//测试程序段名
+		float Time;			//运行时间
+	};
+
+	std::vector<ProfileResult> m_ProfileResults;	//性能测试结果集合
 public:
 	Sandbox2D();
 	virtual ~Sandbox2D() = default;
