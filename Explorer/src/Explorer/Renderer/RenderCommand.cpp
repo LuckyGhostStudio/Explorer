@@ -28,9 +28,10 @@ namespace Explorer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	//清除 颜色缓冲区|深度缓冲区
 	}
 	
-	void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
+	void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, uint32_t indexCount)
 	{
-		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);	//顶点数组索引绘制三角形
+		uint32_t count = indexCount ? vertexArray->GetIndexBuffer()->GetCount() : indexCount;
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);	//顶点数组索引绘制三角形
 		glBindTexture(GL_TEXTURE_2D, 0);	//清空纹理槽
 	}
 }

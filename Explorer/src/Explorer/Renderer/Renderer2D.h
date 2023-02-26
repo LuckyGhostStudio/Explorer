@@ -27,6 +27,11 @@ namespace Explorer
 		static void EndScene();
 
 		/// <summary>
+		/// 刷新
+		/// </summary>
+		static void Flush();
+
+		/// <summary>
 		/// 绘制长方形
 		/// </summary>
 		/// <param name="position">位置</param>

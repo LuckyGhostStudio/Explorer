@@ -152,6 +152,13 @@ namespace Explorer
 		/// <summary>
 		/// 顶点缓冲区
 		/// </summary>
+		/// <param name="size">顶点大小</param>
+		/// <returns>顶点缓冲</returns>
+		VertexBuffer(uint32_t size);
+
+		/// <summary>
+		/// 顶点缓冲区
+		/// </summary>
 		/// <param name="vertices">顶点数据</param>
 		/// <param name="size">顶点大小</param>
 		/// <returns>顶点缓冲</returns>
@@ -167,6 +174,13 @@ namespace Explorer
 		/// 解除绑定
 		/// </summary>
 		void Unbind() const;
+
+		/// <summary>
+		/// 设置顶点缓冲区数据
+		/// </summary>
+		/// <param name="data">数据</param>
+		/// <param name="size">大小（字节）</param>
+		void SetData(const void* data, uint32_t size);
 
 		/// <summary>
 		/// 返回顶点缓冲区布局
