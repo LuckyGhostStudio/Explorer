@@ -26,9 +26,9 @@ namespace Explorer
 	/// </summary>
 	struct Renderer2DData
 	{
-		uint32_t MaxQuads = 10000;					//最大四边形数量
-		uint32_t MaxVertices = MaxQuads * 4;		//最大顶点数
-		uint32_t MaxIndices = MaxQuads * 6;			//最大索引数（4个顶点6个索引）
+		static const uint32_t MaxQuads = 10000;					//最大四边形数量
+		static const uint32_t MaxVertices = MaxQuads * 4;		//最大顶点数
+		static const uint32_t MaxIndices = MaxQuads * 6;			//最大索引数（4个顶点6个索引）
 		static const uint32_t MaxTextureSlots = 32;	//最大纹理槽数
 
 		std::shared_ptr<VertexArray> QuadVertexArray;	//四边形顶点数组
@@ -43,6 +43,10 @@ namespace Explorer
 
 		std::array<std::shared_ptr<Texture2D>, MaxTextureSlots> TextureSlots;	//纹理槽列表 存储纹理
 		uint32_t TextureSlotIndex = 1;		//纹理槽索引 0 = white
+
+		glm::vec4 QuadVerticesPositions[4];
+
+		Renderer2D::Statistics Stats;	//统计数据
 	};
 
 	static Renderer2DData s_Data;	//渲染器数据
@@ -99,6 +103,11 @@ namespace Explorer
 		s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);	//设置textures变量 所有纹理槽
 
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;	//0号纹理槽为白色纹理
+
+		s_Data.QuadVerticesPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVerticesPositions[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVerticesPositions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
+		s_Data.QuadVerticesPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 	}
 
 	void Renderer2D::Shutdown()
@@ -133,6 +142,18 @@ namespace Explorer
 		}
 
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);	//绘制
+
+		s_Data.Stats.DrawCalls++;	//绘制调用次数++
+	}
+
+	void Renderer2D::FlushAndReset()
+	{
+		EndScene();	//结束上一批渲染
+
+		s_Data.QuadIndexCount = 0;
+		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+
+		s_Data.TextureSlotIndex = 1;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color)
@@ -142,55 +163,53 @@ namespace Explorer
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color)
 	{
-		const float texIndex = 0.0f;					//白色纹理索引
+		//索引个数超过最大索引数
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
+			FlushAndReset();	//开始新一批渲染
+		}
+
+		const float textureIndex = 0.0f;				//白色纹理索引
 		const glm::vec2 tilingFactor = { 1.0f, 1.0f };	//纹理平铺因子
-
-		//左下角顶点数据：锚点在左下角
-		s_Data.QuadVertexBufferPtr->Position = position;
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 0.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-		s_Data.QuadVertexBufferPtr++;
-
-		//右下角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x + scale.x, position.y, 0.0f };
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 0.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-		s_Data.QuadVertexBufferPtr++;
-
-		//右上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x + scale.x, position.y + scale.y, 0.0f };
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 1.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-		s_Data.QuadVertexBufferPtr++;
-
-		//左上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x, position.y + scale.y, 0.0f };
-		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 1.0f };
-		s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
-		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-		s_Data.QuadVertexBufferPtr++;
-
-		s_Data.QuadIndexCount += 6;	//索引个数增加
-
-		/*s_Data.TextureShader->SetFloat4("u_Color", color);		//设置color
-		s_Data.TextureShader->SetFloat2("u_TilingFactor", { 1.0f, 1.0f });//设置纹理重复因子
-		s_Data.WhiteTexture->Bind();							//绑定白色纹理（默认纹理）
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
 			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
 			* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
 
-		s_Data.TextureShader->SetMat4("u_Transform", transform);		//设置transform矩阵
+		//左下角顶点数据
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[0];
+		s_Data.QuadVertexBufferPtr->Color = color;
+		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 0.0f };
+		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+		s_Data.QuadVertexBufferPtr++;
 
-		s_Data.QuadVertexArray->Bind();						//绑定顶点数组
-		RenderCommand::DrawIndexed(s_Data.QuadVertexArray);	//绘制*/
+		//右下角顶点数据
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[1];
+		s_Data.QuadVertexBufferPtr->Color = color;
+		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 0.0f };
+		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+		s_Data.QuadVertexBufferPtr++;
+
+		//右上角顶点数据
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[2];
+		s_Data.QuadVertexBufferPtr->Color = color;
+		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 1.0f };
+		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+		s_Data.QuadVertexBufferPtr++;
+
+		//左上角顶点数据
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[3];
+		s_Data.QuadVertexBufferPtr->Color = color;
+		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 1.0f };
+		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+		s_Data.QuadVertexBufferPtr++;
+
+		s_Data.QuadIndexCount += 6;	//索引个数增加
+
+		s_Data.Stats.QuadCount++;	//四边形个数++
 	}
 	
 	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture, const glm::vec2& tilingFactor)
@@ -200,7 +219,10 @@ namespace Explorer
 	
 	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture, const glm::vec2& tilingFactor)
 	{
-		//constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		//索引个数超过最大索引数
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
+			FlushAndReset();	//开始新一批渲染
+		}
 
 		float textureIndex = 0.0f;	//当前纹理索引
 
@@ -219,8 +241,12 @@ namespace Explorer
 			s_Data.TextureSlotIndex++;	//纹理槽索引++
 		}
 
-		//左下角顶点数据：锚点在左下角
-		s_Data.QuadVertexBufferPtr->Position = position;
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
+			* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
+
+		//左下角顶点数据
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[0];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 0.0f };
 		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
@@ -228,7 +254,7 @@ namespace Explorer
 		s_Data.QuadVertexBufferPtr++;
 
 		//右下角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x + scale.x, position.y, 0.0f };
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[1];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 0.0f };
 		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
@@ -236,7 +262,7 @@ namespace Explorer
 		s_Data.QuadVertexBufferPtr++;
 
 		//右上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x + scale.x, position.y + scale.y, 0.0f };
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[2];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 1.0f };
 		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
@@ -244,7 +270,7 @@ namespace Explorer
 		s_Data.QuadVertexBufferPtr++;
 
 		//左上角顶点数据
-		s_Data.QuadVertexBufferPtr->Position = { position.x, position.y + scale.y, 0.0f };
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[3];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 1.0f };
 		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
@@ -253,17 +279,16 @@ namespace Explorer
 
 		s_Data.QuadIndexCount += 6;	//索引个数增加
 
-		/*s_Data.TextureShader->SetFloat4("u_Color", color);					//设置颜色（默认颜色）
-		s_Data.TextureShader->SetFloat2("u_TilingFactor", tilingFactor);	//设置纹理重复因子
-		texture->Bind();													//绑定纹理
+		s_Data.Stats.QuadCount++;	//四边形个数++
+	}
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
-			* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
+	Renderer2D::Statistics Renderer2D::GetStats()
+	{
+		return s_Data.Stats;
+	}
 
-		s_Data.TextureShader->SetMat4("u_Transform", transform);		//设置transform矩阵
-
-		s_Data.QuadVertexArray->Bind();						//绑定顶点数组
-		RenderCommand::DrawIndexed(s_Data.QuadVertexArray);	//绘制*/
+	void Renderer2D::ResetStats()
+	{
+		memset(&s_Data.Stats, 0, sizeof(Statistics));
 	}
 }

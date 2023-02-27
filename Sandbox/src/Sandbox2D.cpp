@@ -30,6 +30,7 @@ void Sandbox2D::OnUpdate(Explorer::DeltaTime dt)
 	}
 
 	//Renderer
+	Explorer::Renderer2D::ResetStats();	//重置统计数据
 	{
 		PROFILE_SCOPE("Renderer Preparation");
 		Explorer::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });	//设置清屏颜色
@@ -42,8 +43,19 @@ void Sandbox2D::OnUpdate(Explorer::DeltaTime dt)
 
 		Explorer::Renderer2D::DrawQuad(m_SquarePosition, m_SquareRotation.z, m_SquareScale, m_SquareColor, m_CheckerboardTexture, m_TextureTilingFactor);	//绘制四边形
 		Explorer::Renderer2D::DrawQuad({ -3.0f, 1.0f, 1.0f }, 0.0f, { 0.8f, 0.8f, 1.0f }, { 0.8f, 0.2f, 0.5f, 1.0f }, m_CheckerboardTexture, { 0.5f, 0.5f });	//绘制四边形
-		Explorer::Renderer2D::DrawQuad({ -1.0f, 0.0f }, 0.0f, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });	//绘制四边形
-		Explorer::Renderer2D::DrawQuad({ 0.5f, -0.5f }, 0.0f, { 0.5f, 0.75f }, { 0.2f, 0.8f, 0.3f, 1.0f });	//绘制四边形
+		Explorer::Renderer2D::DrawQuad({ 1.0f, 0.0f, 1.0f }, 0.0f, { 0.8f, 0.8f, 1.0f }, { 0.8f, 0.2f, 0.3f, 0.8f });	//绘制四边形
+		Explorer::Renderer2D::DrawQuad({ 0.5f, -0.5f, 0.0f }, 0.0f, { 0.5f, 0.75f, 0.0f }, { 0.2f, 0.8f, 0.3f, 1.0f });	//绘制四边形
+
+		Explorer::Renderer2D::EndScene();						//结束渲染场景
+
+		Explorer::Renderer2D::BeginScene(m_CameraController.GetCamera());		//开始渲染场景
+
+		for (float y = -5.0f; y < 5.0f; y += 0.5f) {
+			for (float x = -5.0f; x < 5.0f; x += 0.5f) {
+				glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.6f };
+				Explorer::Renderer2D::DrawQuad({ x, y }, 0.0f, { 0.45f, 0.45f }, color);
+			}
+		}
 
 		Explorer::Renderer2D::EndScene();						//结束渲染场景
 	}
@@ -52,17 +64,17 @@ void Sandbox2D::OnUpdate(Explorer::DeltaTime dt)
 void Sandbox2D::OnImGuiRender()
 {
 	ImGui::Begin("Settings");
-	ImGui::ColorEdit4("Color", glm::value_ptr(m_SquareColor));	//颜色编辑UI
 
+	//属性面板
+	ImGui::Text("Inspector:");
+	ImGui::ColorEdit4("Color", glm::value_ptr(m_SquareColor));	//颜色编辑UI
 	ImGui::SliderFloat3("Position", glm::value_ptr(m_SquarePosition), -10.0f, 10.0f);
 	ImGui::SliderFloat3("Rotation", glm::value_ptr(m_SquareRotation), -360.0f, 360.0f);
 	ImGui::SliderFloat3("Scale", glm::value_ptr(m_SquareScale), 0.0f, 10.0f);
 	ImGui::SliderFloat2("Texture Tiling Factor", glm::value_ptr(m_TextureTilingFactor), 0.0f, 10.0f);
 
-	ImGui::End();
-
 	//性能分析
-	ImGui::Begin("Profiling");
+	ImGui::Text("\nProfiling:");
 	for (auto& result : m_ProfileResults) {
 		char label[50];
 		strcpy(label, "%.3fms  ");
@@ -70,6 +82,14 @@ void Sandbox2D::OnImGuiRender()
 		ImGui::Text(label, result.Time);	//显示性能测试结果（测试程序段名 运行时间）
 	}
 	m_ProfileResults.clear();
+
+	//批渲染数据统计
+	ImGui::Text("\nRenderer2D Stats:");
+	auto stats = Explorer::Renderer2D::GetStats();
+	ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+	ImGui::Text("Quad: %d", stats.QuadCount);
+	ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+	ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 
 	ImGui::End();
 }

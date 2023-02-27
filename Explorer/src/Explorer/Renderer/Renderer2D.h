@@ -70,5 +70,38 @@ namespace Explorer
 		/// <param name="texture">纹理</param>
 		/// <param name="tilingFactor">纹理重复因子</param>
 		static void DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture, const glm::vec2& = glm::vec2(1.0f));
+	
+		/// <summary>
+		/// 统计数据
+		/// </summary>
+		struct Statistics
+		{
+			uint32_t DrawCalls = 0;	//绘制调用次数
+			uint32_t QuadCount = 0;	//四边形个数
+
+			/// <summary>
+			/// 返回总顶点个数
+			/// </summary>
+			/// <returns></returns>
+			uint32_t GetTotalVertexCount() { return QuadCount * 4; }
+
+			/// <summary>
+			/// 返回总索引个数
+			/// </summary>
+			/// <returns></returns>
+			uint32_t GetTotalIndexCount() { return QuadCount * 6; }
+		};
+
+		static Statistics GetStats();
+
+		/// <summary>
+		/// 重置统计数据
+		/// </summary>
+		static void ResetStats();
+	private:
+		/// <summary>
+		/// 开始新一批渲染
+		/// </summary>
+		static void FlushAndReset();
 	};
 }
