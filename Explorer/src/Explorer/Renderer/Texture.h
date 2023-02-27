@@ -27,6 +27,13 @@ namespace Explorer
 		/// </summary>
 		/// <param name="slot">纹理槽位</param>
 		virtual void Bind(uint32_t slot = 0) const = 0;
+
+		/// <summary>
+		/// 比较两个纹理是否相等
+		/// </summary>
+		/// <param name="other">另一个纹理</param>
+		/// <returns>比较结果</returns>
+		virtual bool operator==(const Texture& other) const = 0;
 	};
 
 	/// <summary>
@@ -72,5 +79,15 @@ namespace Explorer
 		/// </summary>
 		/// <param name="slot">绑定槽位</param>
 		virtual void Bind(uint32_t slot = 0) const override;
+
+		/// <summary>
+		/// 比较两个纹理是否相等
+		/// </summary>
+		/// <param name="other">另一个纹理</param>
+		/// <returns>比较结果</returns>
+		virtual bool operator==(const Texture& other) const override
+		{
+			return m_RendererID == ((Texture2D&)other).m_RendererID;	//纹理ID相等
+		}
 	};
 }

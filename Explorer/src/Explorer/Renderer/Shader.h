@@ -51,6 +51,14 @@ namespace Explorer
 		void SetInt(const std::string& name, int value);
 
 		/// <summary>
+		/// 设置uniform Int Array变量
+		/// </summary>
+		/// <param name="name">变量名</param>
+		/// <param name="values">变量值</param>
+		/// <param name="count">变量个数</param>
+		void SetIntArray(const std::string& name, int* values, uint32_t count);
+
+		/// <summary>
 		/// 设置uniform Float变量
 		/// </summary>
 		/// <param name="name">变量名</param>
@@ -88,7 +96,7 @@ namespace Explorer
 		const std::string GetName() const { return m_Name; }
 
 		void UploadUniformInt(const std::string& name, int value);
-
+		void UploadUniformIntArray(const std::string& name, int* values, uint32_t count);
 		void UploadUniformFloat(const std::string& name, float value);
 		void UploadUniformFloat2(const std::string& name, const glm::vec2& value);
 		void UploadUniformFloat3(const std::string& name, const glm::vec3& value);
