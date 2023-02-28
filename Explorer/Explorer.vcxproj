@@ -165,6 +165,7 @@
     <ClInclude Include="src\Explorer\Renderer\Renderer.h" />
     <ClInclude Include="src\Explorer\Renderer\Renderer2D.h" />
     <ClInclude Include="src\Explorer\Renderer\Shader.h" />
+    <ClInclude Include="src\Explorer\Renderer\SubTexture2D.h" />
     <ClInclude Include="src\Explorer\Renderer\Texture.h" />
     <ClInclude Include="src\Explorer\Renderer\VertexArray.h" />
     <ClInclude Include="src\exppch.h" />
@@ -603,6 +604,7 @@
     <ClCompile Include="src\Explorer\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\SubTexture2D.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Texture.cpp" />
     <ClCompile Include="src\Explorer\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\exppch.cpp">

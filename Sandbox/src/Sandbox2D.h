@@ -13,6 +13,10 @@ private:
 	//Temp
 	std::shared_ptr<Explorer::VertexArray> m_SquareVA;			//正方形顶点数组
 	std::shared_ptr<Explorer::Texture2D> m_CheckerboardTexture;	//棋盘纹理
+	std::shared_ptr<Explorer::Texture2D> m_SpriteSheet;			//RPG纹理
+	std::shared_ptr<Explorer::SubTexture2D> m_TextureStairs;	//楼梯纹理
+	std::shared_ptr<Explorer::SubTexture2D> m_TextureBarrel;	//木桶纹理
+	std::shared_ptr<Explorer::SubTexture2D> m_TextureTree;		//树纹理
 
 	glm::vec3 m_SquarePosition = { 0.0f, 0.0f, 0.0f};
 	glm::vec3 m_SquareRotation = { 0.0f, 0.0f, 0.0f };
@@ -21,6 +25,8 @@ private:
 	glm::vec2 m_TextureTilingFactor = { 1.0f, 1.0f };	//纹理重复因子
 
 	glm::vec4 m_SquareColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	float fps = 0.0f;
 
 	//性能测试结果
 	struct ProfileResult

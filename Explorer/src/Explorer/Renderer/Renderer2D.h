@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "Texture.h"
+#include "SubTexture2D.h"
 
 namespace Explorer
 {
@@ -58,7 +59,7 @@ namespace Explorer
 		/// <param name="color">颜色</param>
 		/// <param name="texture">纹理</param>
 		/// <param name="tilingFactor">纹理重复因子</param>
-		static void DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture, const glm::vec2& = glm::vec2(1.0f));
+		static void DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture, const glm::vec2& tilingFactor = glm::vec2(1.0f));
 
 		/// <summary>
 		/// 绘制长方形
@@ -69,8 +70,31 @@ namespace Explorer
 		/// <param name="color">颜色</param>
 		/// <param name="texture">纹理</param>
 		/// <param name="tilingFactor">纹理重复因子</param>
-		static void DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture, const glm::vec2& = glm::vec2(1.0f));
+		static void DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture, const glm::vec2& tilingFactor = glm::vec2(1.0f));
 	
+		/// <summary>
+		/// 绘制长方形
+		/// </summary>
+		/// <param name="position">位置</param>
+		/// <param name="rotation">旋转</param>
+		/// <param name="scale">大小</param>
+		/// <param name="color">颜色</param>
+		/// <param name="subTexture">子纹理</param>
+		/// <param name="tilingFactor">纹理重复因子</param>
+		static void DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const std::shared_ptr<SubTexture2D>& subTexture, const glm::vec2& tilingFactor = glm::vec2(1.0f));
+
+		/// <summary>
+		/// 绘制长方形
+		/// </summary>
+		/// <param name="position">位置</param>
+		/// <param name="rotation">旋转</param>
+		/// <param name="scale">大小</param>
+		/// <param name="color">颜色</param>
+		/// <param name="subTexture">子纹理</param>
+		/// <param name="tilingFactor">纹理重复因子</param>
+		static void DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<SubTexture2D>& subTexture, const glm::vec2& tilingFactor = glm::vec2(1.0f));
+
+
 		/// <summary>
 		/// 统计数据
 		/// </summary>

@@ -13,6 +13,11 @@ Sandbox2D::Sandbox2D() :Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f)
 void Sandbox2D::OnAttach()
 {
 	m_CheckerboardTexture = std::make_shared<Explorer::Texture2D>("asserts/textures/Checkerboard.png");	//创建纹理
+	m_SpriteSheet = std::make_shared<Explorer::Texture2D>("asserts/textures/RPGpack_sheet_2X.png");		//创建纹理
+
+	m_TextureStairs = Explorer::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 7, 6 }, { 128.0f, 128.0f });	//创建楼梯纹理
+	m_TextureBarrel = Explorer::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 8, 2 }, { 128.0f, 128.0f });	//创建楼梯纹理
+	m_TextureTree = Explorer::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 2, 1 }, { 128.0f, 128.0f }, { 1, 2 });	//创建树纹理
 }
 
 void Sandbox2D::OnDetach()
@@ -23,6 +28,8 @@ void Sandbox2D::OnDetach()
 void Sandbox2D::OnUpdate(Explorer::DeltaTime dt)
 {
 	PROFILE_SCOPE("Sandbox2D::OnUpdate");
+
+	fps = 1.0f / dt;
 
 	{
 		PROFILE_SCOPE("CameraController::OnUpdate");
@@ -36,7 +43,7 @@ void Sandbox2D::OnUpdate(Explorer::DeltaTime dt)
 		Explorer::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });	//设置清屏颜色
 		Explorer::RenderCommand::Clear();									//清除
 	}
-
+#if 0
 	{
 		PROFILE_SCOPE("Renderer Draw");
 		Explorer::Renderer2D::BeginScene(m_CameraController.GetCamera());		//开始渲染场景
@@ -59,6 +66,12 @@ void Sandbox2D::OnUpdate(Explorer::DeltaTime dt)
 
 		Explorer::Renderer2D::EndScene();						//结束渲染场景
 	}
+#endif
+	Explorer::Renderer2D::BeginScene(m_CameraController.GetCamera());		//开始渲染场景
+	Explorer::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, 0.0f, { 1.0f, 1.0f, 1.0f }, glm::vec4(1.0f), m_TextureStairs);	//绘制楼梯纹理
+	Explorer::Renderer2D::DrawQuad({ 1.0f, 0.0f, -0.1f }, 0.0f, { 1.0f, 1.0f, 1.0f }, glm::vec4(1.0f), m_TextureBarrel);	//绘制木桶纹理
+	Explorer::Renderer2D::DrawQuad({ -1.0f, 0.0f, -0.1f }, 0.0f, { 1.0f, 2.0f, 1.0f }, glm::vec4(1.0f), m_TextureTree);		//绘制树纹理
+	Explorer::Renderer2D::EndScene();						//结束渲染场景
 }
 
 void Sandbox2D::OnImGuiRender()
@@ -82,6 +95,7 @@ void Sandbox2D::OnImGuiRender()
 		ImGui::Text(label, result.Time);	//显示性能测试结果（测试程序段名 运行时间）
 	}
 	m_ProfileResults.clear();
+	ImGui::Text("FPS: %.3f", fps);	//帧率
 
 	//批渲染数据统计
 	ImGui::Text("\nRenderer2D Stats:");

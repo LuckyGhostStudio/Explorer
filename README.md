@@ -150,6 +150,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 40. 批渲染数据统计
 
+### 41. 创建子纹理
+
+- SubTexture2D.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -276,6 +280,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
   纹理类，进行纹理加载和纹理格式设置。
   
+- SubTexture2D.h/.cpp
+
+  子纹理，根据子纹理坐标从Texture中裁剪。
+
 - CameraController.h/.cpp
 
   相机控制器，控制相机移动、旋转，窗口缩放。
