@@ -53,6 +53,11 @@ namespace Explorer
 		void Run();
 
 		/// <summary>
+		/// 关闭程序
+		/// </summary>
+		void Close();
+
+		/// <summary>
 		/// 事件回调函数
 		/// </summary>
 		/// <param name="e">事件</param>

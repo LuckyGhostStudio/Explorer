@@ -14,6 +14,7 @@ namespace Explorer
 
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
+		virtual uint32_t GetRendererID() const = 0;
 
 		/// <summary>
 		/// 设置纹理数据
@@ -66,6 +67,7 @@ namespace Explorer
 
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const  override { return m_Height; }
+		virtual uint32_t GetRendererID() const  override { return m_RendererID; }
 
 		/// <summary>
 		/// 设置纹理数据

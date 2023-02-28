@@ -83,6 +83,11 @@ namespace Explorer
 		}
 	}
 
+	void Application::Close()
+	{
+		m_Running = false;	//结束运行
+	}
+
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
 		m_Running = false;	//结束运行
