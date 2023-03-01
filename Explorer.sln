@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGui", "Explorer\vendor\im
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Explorer", "Explorer\Explorer.vcxproj", "{7612E14B-62DF-3B57-8BF8-29FF772471E5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Explorer-Editor", "Explorer-Editor\Explorer-Editor.vcxproj", "{6AB54EBC-D640-BC80-DF51-3F754B5C1881}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -50,6 +52,12 @@ Global
 		{7612E14B-62DF-3B57-8BF8-29FF772471E5}.Dist|x64.Build.0 = Dist|x64
 		{7612E14B-62DF-3B57-8BF8-29FF772471E5}.Release|x64.ActiveCfg = Release|x64
 		{7612E14B-62DF-3B57-8BF8-29FF772471E5}.Release|x64.Build.0 = Release|x64
+		{6AB54EBC-D640-BC80-DF51-3F754B5C1881}.Debug|x64.ActiveCfg = Debug|x64
+		{6AB54EBC-D640-BC80-DF51-3F754B5C1881}.Debug|x64.Build.0 = Debug|x64
+		{6AB54EBC-D640-BC80-DF51-3F754B5C1881}.Dist|x64.ActiveCfg = Dist|x64
+		{6AB54EBC-D640-BC80-DF51-3F754B5C1881}.Dist|x64.Build.0 = Dist|x64
+		{6AB54EBC-D640-BC80-DF51-3F754B5C1881}.Release|x64.ActiveCfg = Release|x64
+		{6AB54EBC-D640-BC80-DF51-3F754B5C1881}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

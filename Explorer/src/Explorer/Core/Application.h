@@ -44,7 +44,7 @@ namespace Explorer
 		/// <returns>事件处理结果</returns>
 		bool OnWindowResize(WindowResizeEvent& e);
 	public:
-		Application();
+		Application(const std::string& name = "Explorer App");
 		virtual ~Application();
 
 		/// <summary>

@@ -7,14 +7,21 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 ### Explorer
 
 - 引擎核心
-- 编译后生成静态库文件和动态链接库（.dll）文件
-- 在运行时链接到Sandbox
+- 编译后生成静态库文件
+- 链接到Sandbox
 - 由Sandbox调用
+
+### ExplorerEditor
+
+- 编辑器
+- exe文件
+- 构建应用程序
 
 ### Sandbox
 
-- 引擎应用启动项
-- 最终编译为exe文件
+- 测试项目
+- exe文件
+- 测试应用程序
 
 ## 开发过程
 

@@ -105,6 +105,9 @@
     <ClInclude Include="src\Explorer\Renderer\CameraController.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Renderer\Framebuffer.h">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\OpenGLContext.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
@@ -118,6 +121,9 @@
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Shader.h">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Renderer\SubTexture2D.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Texture.h">
@@ -1380,8 +1386,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Renderer\SubTexture2D.h" />
-    <ClInclude Include="src\Explorer\Renderer\Framebuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Core\Application.cpp">
@@ -1417,6 +1421,9 @@
     <ClCompile Include="src\Explorer\Renderer\CameraController.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Explorer\Renderer\Framebuffer.cpp">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\OpenGLContext.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
@@ -1432,6 +1439,9 @@
     <ClCompile Include="src\Explorer\Renderer\Shader.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Explorer\Renderer\SubTexture2D.cpp">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Texture.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
@@ -1444,7 +1454,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Renderer\SubTexture2D.cpp" />
-    <ClCompile Include="src\Explorer\Renderer\Framebuffer.cpp" />
   </ItemGroup>
 </Project>
