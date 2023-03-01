@@ -1381,6 +1381,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\SubTexture2D.h" />
+    <ClInclude Include="src\Explorer\Renderer\Framebuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Core\Application.cpp">
@@ -1444,5 +1445,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\SubTexture2D.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\Framebuffer.cpp" />
   </ItemGroup>
 </Project>

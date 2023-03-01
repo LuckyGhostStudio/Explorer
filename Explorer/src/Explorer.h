@@ -20,6 +20,7 @@
 
 #include "Explorer/Renderer/Buffer.h"
 #include "Explorer/Renderer/Shader.h"
+#include "Explorer/Renderer/Framebuffer.h"
 #include "Explorer/Renderer/Texture.h"
 #include "Explorer/Renderer/SubTexture2D.h"
 #include "Explorer/Renderer/VertexArray.h"

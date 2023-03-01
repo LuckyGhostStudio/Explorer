@@ -156,6 +156,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 42. DockSpace
 
+### 43.帧缓冲区
+
+- Framebuffer.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -289,6 +293,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - CameraController.h/.cpp
 
   相机控制器，控制相机移动、旋转，窗口缩放。
+  
+- Framebuffer.h/.cpp
+
+  帧缓冲区，可创建帧缓冲区，包括颜色缓冲区和深度缓冲区，可将颜色缓冲区显示在ImGui上。
 
 ### Sandbox 项目
 

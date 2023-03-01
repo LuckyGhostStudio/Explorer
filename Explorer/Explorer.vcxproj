@@ -160,6 +160,7 @@
     <ClInclude Include="src\Explorer\Renderer\Buffer.h" />
     <ClInclude Include="src\Explorer\Renderer\Camera.h" />
     <ClInclude Include="src\Explorer\Renderer\CameraController.h" />
+    <ClInclude Include="src\Explorer\Renderer\Framebuffer.h" />
     <ClInclude Include="src\Explorer\Renderer\OpenGLContext.h" />
     <ClInclude Include="src\Explorer\Renderer\RenderCommand.h" />
     <ClInclude Include="src\Explorer\Renderer\Renderer.h" />
@@ -599,6 +600,7 @@
     <ClCompile Include="src\Explorer\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Camera.cpp" />
     <ClCompile Include="src\Explorer\Renderer\CameraController.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\Explorer\Renderer\OpenGLContext.cpp" />
     <ClCompile Include="src\Explorer\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Renderer.cpp" />

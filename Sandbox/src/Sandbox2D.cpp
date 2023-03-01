@@ -6,13 +6,16 @@
 
 #include "Timer.h"
 
-
-
 Sandbox2D::Sandbox2D() :Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f) {}
 
 void Sandbox2D::OnAttach()
 {
 	m_CheckerboardTexture = std::make_shared<Explorer::Texture2D>("asserts/textures/Checkerboard.png");	//创建纹理
+
+	Explorer::FramebufferSpecification fbSpec;	//帧缓冲区规范
+	fbSpec.Width = 1280;
+	fbSpec.Height = 720;
+	m_Framebuffer = std::make_shared < Explorer::Framebuffer>(fbSpec);	//创建帧缓冲区
 }
 
 void Sandbox2D::OnDetach()
@@ -35,6 +38,7 @@ void Sandbox2D::OnUpdate(Explorer::DeltaTime dt)
 	Explorer::Renderer2D::ResetStats();	//重置统计数据
 	{
 		PROFILE_SCOPE("Renderer Preparation");
+		m_Framebuffer->Bind();	//绑定帧缓冲区
 		Explorer::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });	//设置清屏颜色
 		Explorer::RenderCommand::Clear();									//清除
 	}
@@ -60,7 +64,8 @@ void Sandbox2D::OnUpdate(Explorer::DeltaTime dt)
 		}
 
 		Explorer::Renderer2D::EndScene();						//结束渲染场景
-	}					//结束渲染场景
+		m_Framebuffer->Unbind();	//解除绑定帧缓冲区
+	}
 }
 
 void Sandbox2D::OnImGuiRender()
@@ -149,6 +154,12 @@ void Sandbox2D::OnImGuiRender()
 		ImGui::Text("Quad: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+		ImGui::End();
+
+		//场景
+		ImGui::Begin("Scene");
+		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区ID
+		ImGui::Image((void*)textureID, ImVec2{ 720.0f, 405.0f });
 		ImGui::End();
 	}
 	ImGui::End();
