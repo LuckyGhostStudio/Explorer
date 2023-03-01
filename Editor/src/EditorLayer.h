@@ -15,7 +15,9 @@ namespace Explorer
 		//Temp
 		std::shared_ptr<VertexArray> m_SquareVA;			//正方形顶点数组
 		std::shared_ptr<Texture2D> m_CheckerboardTexture;	//棋盘纹理
-		std::shared_ptr<Framebuffer> m_Framebuffer;				//帧缓冲区
+		std::shared_ptr<Framebuffer> m_Framebuffer;			//帧缓冲区
+
+		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };	//视口大小
 
 		glm::vec3 m_SquarePosition = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_SquareRotation = { 0.0f, 0.0f, 0.0f };

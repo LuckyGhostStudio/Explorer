@@ -23,9 +23,9 @@ namespace Explorer
 	class Framebuffer
 	{
 	private:
-		uint32_t m_RendererID;						//帧缓冲区ID
-		uint32_t m_ColorAttachment;					//颜色缓冲区
-		uint32_t m_DepthAttachment;					//深度缓冲区
+		uint32_t m_RendererID = 0;					//帧缓冲区ID
+		uint32_t m_ColorAttachment = 0;				//颜色缓冲区
+		uint32_t m_DepthAttachment = 0;				//深度缓冲区
 		FramebufferSpecification m_Specification;	//帧缓冲区规范
 	public:
 		/// <summary>
@@ -49,6 +49,13 @@ namespace Explorer
 		/// 解除绑定
 		/// </summary>
 		void Unbind();
+
+		/// <summary>
+		/// 重置帧缓冲区大小
+		/// </summary>
+		/// <param name="width">宽</param>
+		/// <param name="height">高</param>
+		void Resize(uint32_t width, uint32_t height);
 
 		/// <summary>
 		/// 返回颜色缓冲区ID

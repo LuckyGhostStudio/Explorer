@@ -134,11 +134,20 @@ namespace Explorer
 			ImGui::Text("FPS: %.3f", fps);	//帧率
 			ImGui::End();
 
-			//场景
+			//场景视口
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
 			ImGui::Begin("Scene");
+			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Gui面板大小
+			//视口大小 != Gui面板大小
+			if (m_ViewportSize != (*(glm::vec2*)&viewportPanelSize)) {
+				m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);	//重置帧缓冲区大小
+				m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };			//视口大小
+				m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);	//重置相机大小
+			}
 			uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区ID
-			ImGui::Image((void*)textureID, ImVec2(720.0f, 405.0f), ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));
 			ImGui::End();
+			ImGui::PopStyleVar();
 		}
 		ImGui::End();
 	}

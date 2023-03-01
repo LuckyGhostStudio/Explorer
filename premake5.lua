@@ -1,6 +1,6 @@
 workspace "Explorer"	--解决方案名称
 	architecture "x64"	--体系结构
-	startproject "Sandbox"	--将Sandbox设为启动项目
+	startproject "Editor"	--启动项目
 
 	configurations		--配置
 	{
@@ -151,8 +151,8 @@ project "Sandbox"		--项目
 		runtime "Release"
         optimize "on"
 
-project "Explorer-Editor"		--项目
-	location "Explorer-Editor"	--相对路径
+project "Editor"		--项目
+	location "Editor"	--相对路径
 	kind "ConsoleApp"	--控制台应用
 	language "C++"		--语言
 	cppdialect "C++17"

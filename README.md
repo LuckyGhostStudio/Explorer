@@ -167,6 +167,8 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Framebuffer.h/.cpp
 
+### 44. 场景视口
+
 ## 文件说明
 
 ### Explorer 项目
@@ -304,6 +306,28 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Framebuffer.h/.cpp
 
   帧缓冲区，可创建帧缓冲区，包括颜色缓冲区和深度缓冲区，可将颜色缓冲区显示在ImGui上。
+
+### Editor 项目
+
+#### asserts
+
+- ##### shaders
+
+  着色器文件，包括顶点着色器和片元着色器。
+
+- ##### textures
+
+  贴图文件。
+
+#### src
+
+- ExplorerEditor.cpp
+
+  编辑器，继承Application，构建应用程序。
+
+- EditorLayer.h/.cpp
+
+  编辑器层，构建引擎编辑器。
 
 ### Sandbox 项目
 
