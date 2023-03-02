@@ -27,7 +27,9 @@ namespace Explorer
 	{
 		fps = 1.0f / dt;	//帧率
 
-		m_CameraController.OnUpdate(dt);	//更新相机控制器
+		if (m_ViewportFocused) {	//视口被聚焦
+			m_CameraController.OnUpdate(dt);	//更新相机控制器
+		}
 
 		//Renderer
 		Renderer2D::ResetStats();	//重置统计数据
@@ -137,6 +139,12 @@ namespace Explorer
 			//场景视口
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
 			ImGui::Begin("Scene");
+
+			m_ViewportFocused = ImGui::IsWindowFocused();	//当前窗口被聚焦
+			m_ViewportHovered = ImGui::IsWindowHovered();	//鼠标悬停在当前窗口
+
+			Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);	//阻止ImGui事件
+
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Gui面板大小
 			//视口大小 != Gui面板大小
 			if (m_ViewportSize != (*(glm::vec2*)&viewportPanelSize)) {

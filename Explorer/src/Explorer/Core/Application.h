@@ -76,6 +76,12 @@ namespace Explorer
 		void PushOverlay(Layer* layer);
 
 		/// <summary>
+		/// 返回ImGui层
+		/// </summary>
+		/// <returns>ImGui层</returns>
+		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
+
+		/// <summary>
 		/// 返回Application的实例
 		/// </summary>
 		/// <returns>实例</returns>

@@ -101,7 +101,7 @@ namespace Explorer
 		/// </summary>
 		/// <returns></returns>
 		inline bool GetHandled() const { return m_Handled; }
-	protected:
+	public:
 		bool m_Handled = false;		//是否已处理
 	};
 
