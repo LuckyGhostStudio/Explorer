@@ -18,6 +18,7 @@ IncludeDir["GLAD"] = "Explorer/vendor/GLAD/include"
 IncludeDir["ImGui"] = "Explorer/vendor/imgui"
 IncludeDir["glm"] = "Explorer/vendor/glm"
 IncludeDir["stb_image"] = "Explorer/vendor/stb_image"
+IncludeDir["entt"] = "Explorer/vendor/entt/include"
 
 group "Dependencies"
 	include "Explorer/vendor/GLFW"		--包含GLFW目录
@@ -62,7 +63,8 @@ project "Explorer"		--项目
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -173,7 +175,8 @@ project "Editor"		--项目
 		"Explorer/src",
 		"Explorer/vendor",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}"
 	}
 
 	links

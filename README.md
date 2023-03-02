@@ -171,6 +171,11 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 45. ImGuiLayer事件
 
+### 46. 组件系统
+
+- Scene.h/.cpp
+- Components.h
+
 ## 文件说明
 
 ### Explorer 项目
@@ -211,7 +216,7 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
   定义所有鼠标事件。
 
-##### 内核文件
+##### Core
 
 - Core.h
 
@@ -259,7 +264,7 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
   ImGui层，渲染ImGui。
 
-##### 渲染文件
+##### Renderer
 
 - OpenGLContext.h/.cpp
 
@@ -308,6 +313,16 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Framebuffer.h/.cpp
 
   帧缓冲区，可创建帧缓冲区，包括颜色缓冲区和深度缓冲区，可将颜色缓冲区显示在ImGui上。
+
+##### Scene
+
+- Scene.h/.cpp
+
+  场景，包括所有的实体对象。
+
+- Components.h
+
+  组件，所有组件。
 
 ### Editor 项目
 

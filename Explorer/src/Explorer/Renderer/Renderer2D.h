@@ -72,6 +72,9 @@ namespace Explorer
 		/// <param name="tilingFactor">纹理重复因子</param>
 		static void DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<Texture2D>& texture, const glm::vec2& tilingFactor = glm::vec2(1.0f));
 	
+		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
+		static void DrawQuad(const glm::mat4& transform, const std::shared_ptr<Texture2D>& texture, const glm::vec2& tilingFactor = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f));
+
 		/// <summary>
 		/// 绘制长方形
 		/// </summary>

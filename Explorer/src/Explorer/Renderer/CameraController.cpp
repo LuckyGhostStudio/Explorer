@@ -17,24 +17,24 @@ namespace Explorer
 	void CameraController::OnUpdate(DeltaTime dt)
 	{
 		//相机移动
-		if (Input::IsKeyPressed(EXP_KEY_A)) {		//左
+		if (Input::IsKeyPressed((int)KeyCode::A)) {		//左
 			m_CameraPosition.x -= m_CameraTranslationSpeed * dt;
 		}
-		else if (Input::IsKeyPressed(EXP_KEY_D)) {	//右
+		else if (Input::IsKeyPressed((int)KeyCode::D)) {	//右
 			m_CameraPosition.x += m_CameraTranslationSpeed * dt;
 		}
-		if (Input::IsKeyPressed(EXP_KEY_W)) {		//上
+		if (Input::IsKeyPressed((int)KeyCode::W)) {		//上
 			m_CameraPosition.y += m_CameraTranslationSpeed * dt;
 		}
-		else if (Input::IsKeyPressed(EXP_KEY_S)) {	//下
+		else if (Input::IsKeyPressed((int)KeyCode::S)) {	//下
 			m_CameraPosition.y -= m_CameraTranslationSpeed * dt;
 		}
 
 		if (m_Rotation) {
-			if (Input::IsKeyPressed(EXP_KEY_Q)) {
+			if (Input::IsKeyPressed((int)KeyCode::Q)) {
 				m_CameraRotation += m_CameraRotationSpeed * dt;
 			}
-			if (Input::IsKeyPressed(EXP_KEY_E)) {
+			if (Input::IsKeyPressed((int)KeyCode::E)) {
 				m_CameraRotation -= m_CameraRotationSpeed * dt;
 			}
 

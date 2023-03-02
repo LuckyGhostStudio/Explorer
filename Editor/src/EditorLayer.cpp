@@ -16,6 +16,12 @@ namespace Explorer
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
 		m_Framebuffer = std::make_shared < Framebuffer>(fbSpec);	//创建帧缓冲区
+
+		m_ActiveScene = std::make_shared<Scene>();		//创建场景
+
+		m_SquareEntity = m_ActiveScene->CreateEntity();	//创建正方形实体
+		m_ActiveScene->Reg().emplace<Transform>(m_SquareEntity);	//添加Transform组件
+		m_ActiveScene->Reg().emplace<SpriteRenderer>(m_SquareEntity, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));	//添加SpriteRenderer组件
 	}
 
 	void EditorLayer::OnDetach()
@@ -38,24 +44,9 @@ namespace Explorer
 		RenderCommand::Clear();										//清除
 
 		Renderer2D::BeginScene(m_CameraController.GetCamera());		//开始渲染场景
+		m_ActiveScene->OnUpdate(dt);	//更新场景
+		Renderer2D::EndScene();			//结束渲染场景
 
-		Renderer2D::DrawQuad(m_SquarePosition, m_SquareRotation.z, m_SquareScale, m_SquareColor, m_CheckerboardTexture, m_TextureTilingFactor);	//绘制四边形
-		Renderer2D::DrawQuad({ -3.0f, 1.0f, 1.0f }, 0.0f, { 0.8f, 0.8f, 1.0f }, { 0.8f, 0.2f, 0.5f, 1.0f }, m_CheckerboardTexture, { 0.5f, 0.5f });	//绘制四边形
-		Renderer2D::DrawQuad({ 1.0f, 0.0f, 1.0f }, 0.0f, { 0.8f, 0.8f, 1.0f }, { 0.8f, 0.2f, 0.3f, 0.8f });	//绘制四边形
-		Renderer2D::DrawQuad({ 0.5f, -0.5f, 0.0f }, 0.0f, { 0.5f, 0.75f, 0.0f }, { 0.2f, 0.8f, 0.3f, 1.0f });	//绘制四边形
-
-		Renderer2D::EndScene();						//结束渲染场景
-
-		Renderer2D::BeginScene(m_CameraController.GetCamera());		//开始渲染场景
-
-		for (float y = -5.0f; y < 5.0f; y += 0.5f) {
-			for (float x = -5.0f; x < 5.0f; x += 0.5f) {
-				glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.6f };
-				Renderer2D::DrawQuad({ x, y }, 0.0f, { 0.45f, 0.45f }, color);
-			}
-		}
-
-		Renderer2D::EndScene();						//结束渲染场景
 		m_Framebuffer->Unbind();	//解除绑定帧缓冲区
 	}
 
@@ -119,10 +110,16 @@ namespace Explorer
 
 			//属性面板
 			ImGui::Begin("Settings");
-			ImGui::ColorEdit4("Color", glm::value_ptr(m_SquareColor));	//颜色编辑UI
-			ImGui::SliderFloat3("Position", glm::value_ptr(m_SquarePosition), -10.0f, 10.0f);
-			ImGui::SliderFloat3("Rotation", glm::value_ptr(m_SquareRotation), -360.0f, 360.0f);
-			ImGui::SliderFloat3("Scale", glm::value_ptr(m_SquareScale), 0.0f, 10.0f);
+
+			auto& squarePos = m_ActiveScene->Reg().get<Transform>(m_SquareEntity).m_Position;		//位置
+			auto& squareRot = m_ActiveScene->Reg().get<Transform>(m_SquareEntity).m_Rotation;		//旋转
+			auto& squareScale = m_ActiveScene->Reg().get<Transform>(m_SquareEntity).m_Scale;		//缩放
+			auto& squareColor = m_ActiveScene->Reg().get<SpriteRenderer>(m_SquareEntity).m_Color;	//颜色
+
+			ImGui::SliderFloat3("Position", glm::value_ptr(squarePos), -10.0f, 10.0f);
+			ImGui::SliderFloat3("Rotation", glm::value_ptr(squareRot), -360.0f, 360.0f);
+			ImGui::SliderFloat3("Scale", glm::value_ptr(squareScale), 0.0f, 10.0f);
+			ImGui::ColorEdit4("Color", glm::value_ptr(squareColor));	//颜色编辑UI
 			ImGui::SliderFloat2("Texture Tiling Factor", glm::value_ptr(m_TextureTilingFactor), 0.0f, 10.0f);
 			ImGui::End();
 
@@ -147,7 +144,7 @@ namespace Explorer
 
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Gui面板大小
 			//视口大小 != Gui面板大小
-			if (m_ViewportSize != (*(glm::vec2*)&viewportPanelSize)) {
+			if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize) && viewportPanelSize.x > 0 && viewportPanelSize.y > 0) {
 				m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);	//重置帧缓冲区大小
 				m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };			//视口大小
 				m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);	//重置相机大小
