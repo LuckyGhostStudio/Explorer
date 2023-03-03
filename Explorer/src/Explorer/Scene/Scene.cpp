@@ -5,11 +5,11 @@
 
 #include "Components.h"
 
+#include "Object.h"
+
 namespace Explorer
 {
-
-
-	Scene::Scene()
+	Scene::Scene(const std::string& name) :m_Name(name)
 	{
 
 	}
@@ -19,9 +19,12 @@ namespace Explorer
 
 	}
 
-	entt::entity Scene::CreateEntity()
+	Object Scene::CreateEntity(const std::string& name)
 	{
-		return m_Registry.create();	//创建实体
+		Object object = { m_Registry.create(), this, name };	//创建实体
+		object.AddComponent<Transform>();						//添加Transform组件（默认组件）
+
+		return object;
 	}
 
 	void Scene::OnUpdate(DeltaTime dt)

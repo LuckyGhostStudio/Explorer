@@ -6,24 +6,31 @@
 
 namespace Explorer
 {
+	class Object;
+
 	/// <summary>
 	/// 场景
 	/// </summary>
 	class Scene
 	{
 	private:
-		entt::registry m_Registry;	//实体集合：实体id集合（unsigned int集合）
+		friend class Object;	//友元类Object
+
+		entt::registry m_Registry;	//实体注册表：实体id集合（unsigned int集合）
+		std::string m_Name;			//场景名
 	public:
-		Scene();
+		Scene(const std::string& name = "New Scene");
 		~Scene();
 
-		entt::registry& Reg() { return m_Registry; }
+		inline const std::string& GetName() const { return m_Name; }
+		inline void SetName(const std::string& name) { m_Name = name; }
 
 		/// <summary>
 		/// 创建实体
 		/// </summary>
+		/// <param name="name">实体名</param>
 		/// <returns>实体</returns>
-		entt::entity CreateEntity();
+		Object CreateEntity(const std::string& name = std::string());
 
 		/// <summary>
 		/// 更新：每帧调用

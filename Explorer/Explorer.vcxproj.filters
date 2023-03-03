@@ -1388,6 +1388,7 @@
     </ClInclude>
     <ClInclude Include="src\Explorer\Scene\Scene.h" />
     <ClInclude Include="src\Explorer\Scene\Components.h" />
+    <ClInclude Include="src\Explorer\Scene\Object.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Core\Application.cpp">
@@ -1457,5 +1458,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Scene\Scene.cpp" />
+    <ClCompile Include="src\Explorer\Scene\Object.cpp" />
   </ItemGroup>
 </Project>

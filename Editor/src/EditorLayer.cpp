@@ -17,11 +17,10 @@ namespace Explorer
 		fbSpec.Height = 720;
 		m_Framebuffer = std::make_shared < Framebuffer>(fbSpec);	//创建帧缓冲区
 
-		m_ActiveScene = std::make_shared<Scene>();		//创建场景
+		m_ActiveScene = std::make_shared<Scene>();	//创建场景
 
-		m_SquareEntity = m_ActiveScene->CreateEntity();	//创建正方形实体
-		m_ActiveScene->Reg().emplace<Transform>(m_SquareEntity);	//添加Transform组件
-		m_ActiveScene->Reg().emplace<SpriteRenderer>(m_SquareEntity, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));	//添加SpriteRenderer组件
+		m_SquareObject = m_ActiveScene->CreateEntity("Square");	//创建正方形对象
+		m_SquareObject.AddComponent<SpriteRenderer>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));	//添加SpriteRenderer组件
 	}
 
 	void EditorLayer::OnDetach()
@@ -108,19 +107,27 @@ namespace Explorer
 				ImGui::EndMenuBar();
 			}
 
+			auto& squarePos = m_SquareObject.GetComponent<Transform>().m_Position;		//位置
+			auto& squareRot = m_SquareObject.GetComponent<Transform>().m_Rotation;		//旋转
+			auto& squareScale = m_SquareObject.GetComponent<Transform>().m_Scale;		//缩放
+			auto& squareColor = m_SquareObject.GetComponent<SpriteRenderer>().m_Color;	//颜色
+
 			//属性面板
-			ImGui::Begin("Settings");
-
-			auto& squarePos = m_ActiveScene->Reg().get<Transform>(m_SquareEntity).m_Position;		//位置
-			auto& squareRot = m_ActiveScene->Reg().get<Transform>(m_SquareEntity).m_Rotation;		//旋转
-			auto& squareScale = m_ActiveScene->Reg().get<Transform>(m_SquareEntity).m_Scale;		//缩放
-			auto& squareColor = m_ActiveScene->Reg().get<SpriteRenderer>(m_SquareEntity).m_Color;	//颜色
-
+			ImGui::Begin("Inspector");
+			//Transform
+			ImGui::Separator();
+			ImGui::Text("Transform");
 			ImGui::SliderFloat3("Position", glm::value_ptr(squarePos), -10.0f, 10.0f);
 			ImGui::SliderFloat3("Rotation", glm::value_ptr(squareRot), -360.0f, 360.0f);
 			ImGui::SliderFloat3("Scale", glm::value_ptr(squareScale), 0.0f, 10.0f);
+			ImGui::Separator();
+			//Sprite Renderer
+			ImGui::Separator();
+			ImGui::Text("Sprite Renderer");
 			ImGui::ColorEdit4("Color", glm::value_ptr(squareColor));	//颜色编辑UI
 			ImGui::SliderFloat2("Texture Tiling Factor", glm::value_ptr(m_TextureTilingFactor), 0.0f, 10.0f);
+			ImGui::Separator();
+
 			ImGui::End();
 
 			//批渲染数据统计

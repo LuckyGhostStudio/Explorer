@@ -9,7 +9,7 @@ namespace Explorer
 	/// <summary>
 	/// 层
 	/// </summary>
-	class EXPLORER_API Layer
+	class Layer
 	{
 	protected:
 		std::string m_DebugName;	//Layer在Debug模式中的名字

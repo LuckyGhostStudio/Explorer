@@ -170,6 +170,7 @@
     <ClInclude Include="src\Explorer\Renderer\Texture.h" />
     <ClInclude Include="src\Explorer\Renderer\VertexArray.h" />
     <ClInclude Include="src\Explorer\Scene\Components.h" />
+    <ClInclude Include="src\Explorer\Scene\Object.h" />
     <ClInclude Include="src\Explorer\Scene\Scene.h" />
     <ClInclude Include="src\exppch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
@@ -611,6 +612,7 @@
     <ClCompile Include="src\Explorer\Renderer\SubTexture2D.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Texture.cpp" />
     <ClCompile Include="src\Explorer\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Explorer\Scene\Object.cpp" />
     <ClCompile Include="src\Explorer\Scene\Scene.cpp" />
     <ClCompile Include="src\exppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

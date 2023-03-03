@@ -176,6 +176,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Scene.h/.cpp
 - Components.h
 
+### 47. 实体
+
+- Object.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -323,6 +327,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Components.h
 
   组件，所有组件。
+  
+- Object.h/.cpp
+
+  实体，场景中的物体对象，保存物体id，和其他参数，通过id关联所有组件。
 
 ### Editor 项目
 

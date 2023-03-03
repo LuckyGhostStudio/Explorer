@@ -14,6 +14,7 @@
 #include "Explorer/ImGui/ImGuiLayer.h"
 
 #include "Explorer/Scene/Scene.h"
+#include "Explorer/Scene/Object.h"
 #include "Explorer/Scene/Components.h"
 
 //------Renderer------

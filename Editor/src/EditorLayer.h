@@ -18,7 +18,7 @@ namespace Explorer
 		std::shared_ptr<Framebuffer> m_Framebuffer;			//帧缓冲区
 
 		std::shared_ptr<Scene> m_ActiveScene;	//活动场景
-		entt::entity m_SquareEntity;			//正方形实体
+		Object m_SquareObject;					//正方形对象
 
 		bool m_ViewportFocused = false;				//视口被聚焦
 		bool m_ViewportHovered = false;				//鼠标悬停在视口
