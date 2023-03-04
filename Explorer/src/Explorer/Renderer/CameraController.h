@@ -18,10 +18,8 @@ namespace Explorer
 		float m_ZoomLevel = 1.0f;	//缩放比例（Y）
 		Camera m_Camera;			//相机
 
-		bool m_Rotation;			//是否可旋转
-
 		glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };	//相机位置
-		float m_CameraRotation = 0.0f;						//相机旋转（z轴）
+		glm::vec3 m_CameraRotation = { 0.0f, 0.0f, 0.0f };	//相机旋转
 		float m_CameraTranslationSpeed = 2.0f;				//相机移动速度
 		float m_CameraRotationSpeed = 90.0f;				//相机旋转速度
 	public:
@@ -29,8 +27,15 @@ namespace Explorer
 		/// 正交相机控制器
 		/// </summary>
 		/// <param name="aspectRatio">宽高比（X/Y）</param>
-		/// <param name="rotation">是否可旋转（false）</param>
-		CameraController(float aspectRatio, bool rotation = false);
+		CameraController(float aspectRatio);
+
+		/// <summary>
+		/// 透视相机控制器
+		/// </summary>
+		/// <param name="fov">垂直方向张角</param>
+		/// <param name="aspectRatio">屏幕宽高比</param>
+		/// <param name="clippingPlane">裁剪平面（近，远）</param>
+		CameraController(float fov, float aspectRatio, const glm::vec2& clippingPlane);
 
 		/// <summary>
 		/// 更新：每帧调用

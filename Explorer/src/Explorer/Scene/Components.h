@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace Explorer
 {
 	/// <summary>
@@ -31,9 +33,27 @@ namespace Explorer
 
 		glm::mat4 m_Transform{ 1.0f };
 
-		Transform() :Component("Transform") {}
+		Transform() :Component("Transform") 
+		{
+			CalculateTransform();
+		}
+
+		Transform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) 
+			:Component("Transform"), m_Position(position), m_Rotation(rotation), m_Scale(scale)
+		{
+			CalculateTransform();
+		}
+
 		Transform(const Transform&) :Component("Transform") {}
 		Transform(const glm::mat4& transform) :Component("Transform"), m_Transform(transform) {}
+
+		void CalculateTransform()
+		{
+			m_Transform = glm::translate(glm::mat4(1.0f), m_Position)
+				* glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.x), glm::vec3(1.0f, 0, 0))
+				* glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.y), glm::vec3(0, 1.0f, 0))
+				* glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.z), glm::vec3(0, 0, 1.0f));
+		}
 
 		operator glm::mat4& () { return m_Transform; }
 		operator const glm::mat4& () const { return m_Transform; }

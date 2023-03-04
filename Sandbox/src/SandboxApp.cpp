@@ -1,15 +1,14 @@
 #include <Explorer.h>
 #include <Explorer/Core/EntryPoint.h>
 
-#include "Sandbox2D.h"
+#include "Sandbox3D.h"
 
 class Sandbox :public Explorer::Application
 {
 public:
 	Sandbox()
 	{
-		//PushLayer(new ExampleLayer());	//ÃÌº” æ¿˝µΩ≤„’ª
-		PushLayer(new Sandbox2D());		//ÃÌº”2D‰÷»æ≤‚ ‘≤„
+		PushLayer(new Sandbox3D());		//ÃÌº”3D‰÷»æ≤‚ ‘≤„
 	}
 
 	~Sandbox()

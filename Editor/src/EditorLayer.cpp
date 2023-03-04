@@ -6,7 +6,10 @@
 
 namespace Explorer
 {
-	EditorLayer::EditorLayer() :Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f) {}
+	EditorLayer::EditorLayer() :Layer("EditorLayer")//, m_CameraController(1280.0f / 720.0f) 
+	{
+		
+	}
 
 	void EditorLayer::OnAttach()
 	{
@@ -21,6 +24,9 @@ namespace Explorer
 
 		m_SquareObject = m_ActiveScene->CreateEntity("Square");	//创建正方形对象
 		m_SquareObject.AddComponent<SpriteRenderer>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));	//添加SpriteRenderer组件
+
+		m_CameraObject = m_ActiveScene->CreateEntity("Main Camera");	//创建相机对象
+		m_CameraObject.AddComponent<Camera>();					//添加Camera组件
 	}
 
 	void EditorLayer::OnDetach()
@@ -32,8 +38,18 @@ namespace Explorer
 	{
 		fps = 1.0f / dt;	//帧率
 
+		if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
+			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
+			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+		{
+			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置帧缓冲区大小
+			//m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);				//重置相机大小
+
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
+		}
+
 		if (m_ViewportFocused) {	//视口被聚焦
-			m_CameraController.OnUpdate(dt);	//更新相机控制器
+			//m_CameraController.OnUpdate(dt);	//更新相机控制器
 		}
 
 		//Renderer
@@ -42,9 +58,7 @@ namespace Explorer
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });	//设置清屏颜色
 		RenderCommand::Clear();										//清除
 
-		Renderer2D::BeginScene(m_CameraController.GetCamera());		//开始渲染场景
 		m_ActiveScene->OnUpdate(dt);	//更新场景
-		Renderer2D::EndScene();			//结束渲染场景
 
 		m_Framebuffer->Unbind();	//解除绑定帧缓冲区
 	}
@@ -107,25 +121,55 @@ namespace Explorer
 				ImGui::EndMenuBar();
 			}
 
-			auto& squarePos = m_SquareObject.GetComponent<Transform>().m_Position;		//位置
-			auto& squareRot = m_SquareObject.GetComponent<Transform>().m_Rotation;		//旋转
-			auto& squareScale = m_SquareObject.GetComponent<Transform>().m_Scale;		//缩放
+			auto& squareTransform = m_SquareObject.GetComponent<Transform>();
+			auto& squarePos = squareTransform.m_Position;	//位置
+			auto& squareRot = squareTransform.m_Rotation;	//旋转
+			auto& squareSca = squareTransform.m_Scale;		//缩放
 			auto& squareColor = m_SquareObject.GetComponent<SpriteRenderer>().m_Color;	//颜色
 
 			//属性面板
 			ImGui::Begin("Inspector");
 			//Transform
 			ImGui::Separator();
+			ImGui::Text("Square");
+			ImGui::Separator();
 			ImGui::Text("Transform");
-			ImGui::SliderFloat3("Position", glm::value_ptr(squarePos), -10.0f, 10.0f);
-			ImGui::SliderFloat3("Rotation", glm::value_ptr(squareRot), -360.0f, 360.0f);
-			ImGui::SliderFloat3("Scale", glm::value_ptr(squareScale), 0.0f, 10.0f);
-			ImGui::Separator();
+			ImGui::DragFloat3("Position", glm::value_ptr(squarePos));
+			ImGui::DragFloat3("Rotation", glm::value_ptr(squareRot));
+			ImGui::DragFloat3("Scale", glm::value_ptr(squareSca));
 			//Sprite Renderer
-			ImGui::Separator();
 			ImGui::Text("Sprite Renderer");
 			ImGui::ColorEdit4("Color", glm::value_ptr(squareColor));	//颜色编辑UI
-			ImGui::SliderFloat2("Texture Tiling Factor", glm::value_ptr(m_TextureTilingFactor), 0.0f, 10.0f);
+			ImGui::DragFloat2("Texture Tiling Factor", glm::value_ptr(m_TextureTilingFactor));
+			ImGui::Separator();
+
+			auto& cameraTransform = m_CameraObject.GetComponent<Transform>();
+			auto& cameraPos = cameraTransform.m_Position;	//位置
+			auto& cameraRot = cameraTransform.m_Rotation;	//旋转
+			auto& cameraSca = cameraTransform.m_Scale;		//缩放
+			auto& camera = m_CameraObject.GetComponent<Camera>();
+			float cameraSize = camera.GetSize();			//尺寸
+			float cameraNear = camera.GetNearClip();		//近裁剪平面
+			float cameraFar = camera.GetFarClip();			//远裁剪平面
+
+			ImGui::Separator();
+			ImGui::Text("Main Camera");
+			ImGui::Separator();
+			ImGui::Text("Transform");
+			ImGui::DragFloat3("Pos", glm::value_ptr(cameraPos));
+			ImGui::DragFloat3("Rot", glm::value_ptr(cameraRot));
+			ImGui::DragFloat3("Sca", glm::value_ptr(cameraSca));
+
+			ImGui::Text("Camera");
+			if (ImGui::DragFloat("Size", &cameraSize)) {
+				camera.SetSize(cameraSize);
+			}
+			if (ImGui::DragFloat("Near", &cameraNear)) {
+				camera.SetNearClip(cameraNear);
+			}
+			if (ImGui::DragFloat("Far", &cameraFar)) {
+				camera.SetFarClip(cameraFar);
+			}
 			ImGui::Separator();
 
 			ImGui::End();
@@ -150,12 +194,9 @@ namespace Explorer
 			Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);	//阻止ImGui事件
 
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Gui面板大小
-			//视口大小 != Gui面板大小
-			if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize) && viewportPanelSize.x > 0 && viewportPanelSize.y > 0) {
-				m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);	//重置帧缓冲区大小
-				m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };			//视口大小
-				m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);	//重置相机大小
-			}
+
+			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
+
 			uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区ID
 			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));
 			ImGui::End();
@@ -166,6 +207,6 @@ namespace Explorer
 
 	void EditorLayer::OnEvent(Event& event)
 	{
-		m_CameraController.OnEvent(event);	//调用相机事件函数
+		//m_CameraController.OnEvent(event);	//调用相机事件函数
 	}
 }

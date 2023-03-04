@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Texture.h"
 #include "SubTexture2D.h"
+#include "Explorer/Scene/Components.h"
 
 namespace Explorer
 {
@@ -20,7 +21,8 @@ namespace Explorer
 		/// 开始渲染场景：设置场景参数
 		/// </summary>
 		/// <param name="camera">相机</param>
-		static void BeginScene(const Camera& camera);
+		/// <param name="transform">变换</param>
+		static void BeginScene(const Camera& camera, const Transform& transform);
 
 		/// <summary>
 		/// 结束渲染场景

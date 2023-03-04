@@ -19,6 +19,9 @@
     <Filter Include="src\Explorer\Renderer">
       <UniqueIdentifier>{B3C3AD9F-1F30-699A-E823-01F8544F8B02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Explorer\Scene">
+      <UniqueIdentifier>{4A20DBD5-3604-9C2B-9F64-967E8B6786AD}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
@@ -131,6 +134,15 @@
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\VertexArray.h">
       <Filter>src\Explorer\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Scene\Components.h">
+      <Filter>src\Explorer\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Scene\Object.h">
+      <Filter>src\Explorer\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Scene\Scene.h">
+      <Filter>src\Explorer\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\exppch.h">
       <Filter>src</Filter>
@@ -1386,9 +1398,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Scene\Scene.h" />
-    <ClInclude Include="src\Explorer\Scene\Components.h" />
-    <ClInclude Include="src\Explorer\Scene\Object.h" />
+    <ClInclude Include="src\Explorer\Renderer\Renderer3D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Core\Application.cpp">
@@ -1451,13 +1461,18 @@
     <ClCompile Include="src\Explorer\Renderer\VertexArray.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Explorer\Scene\Object.cpp">
+      <Filter>src\Explorer\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Scene\Scene.cpp">
+      <Filter>src\Explorer\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="src\exppch.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Scene\Scene.cpp" />
-    <ClCompile Include="src\Explorer\Scene\Object.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\Renderer3D.cpp" />
   </ItemGroup>
 </Project>

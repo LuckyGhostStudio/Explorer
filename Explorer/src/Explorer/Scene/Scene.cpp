@@ -29,12 +29,46 @@ namespace Explorer
 
 	void Scene::OnUpdate(DeltaTime dt)
 	{
-		auto group = m_Registry.group<Transform>(entt::get<SpriteRenderer>);
+		Camera* mainCamera = nullptr;	//主相机
+		Transform* cameraTransform = nullptr;
 
-		for (auto entity : group) {
-			auto& [transform, sprite] = group.get<Transform, SpriteRenderer>(entity);
+		auto view = m_Registry.view<Transform, Camera>();	//返回有Transform和Camera的所有实体
 
-			Renderer2D::DrawQuad(transform.m_Position, transform.m_Rotation.z, transform.m_Scale, sprite.m_Color);
+		for (auto entity : view) {
+			auto& [transform, camera] = view.get<Transform, Camera>(entity);
+
+			//找到主相机
+			if (camera.m_Primary) {
+				mainCamera = &camera;
+				cameraTransform = &transform;
+				break;
+			}
+		}
+
+		//主相机存在
+		if (mainCamera) {
+			auto group = m_Registry.group<Transform>(entt::get<SpriteRenderer>);	//返回有Transform和SpriteRenderer的所有实体
+
+			Renderer2D::BeginScene(*mainCamera, *cameraTransform);	//开始渲染场景
+			for (auto entity : group) {
+				auto& [transform, sprite] = group.get<Transform, SpriteRenderer>(entity);
+
+				Renderer2D::DrawQuad(transform.m_Position, transform.m_Rotation.z, transform.m_Scale, sprite.m_Color);
+			}
+			Renderer2D::EndScene();			//结束渲染场景
+		}
+	}
+	
+	void Scene::OnViewportResize(uint32_t width, uint32_t height)
+	{
+		m_ViewportWidth = width;
+		m_ViewportHeight = height;
+
+		auto view = m_Registry.view<Camera>();	//所有有Camera组件的实体
+
+		for (auto entity : view) {
+			auto& camera = view.get<Camera>(entity);	//获得Camera组件
+			camera.SetViewportSize(width, height);		//设置视口大小
 		}
 	}
 }

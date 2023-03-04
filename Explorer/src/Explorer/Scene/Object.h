@@ -12,7 +12,7 @@ namespace Explorer
 	class Object
 	{
 	private:
-		entt::entity m_ObjectID{ 0 };	//实体ID
+		entt::entity m_ObjectID{ entt::null };	//实体ID
 		Scene* m_Scene = nullptr;		//实体所属场景
 
 		std::string m_Name;
@@ -75,6 +75,6 @@ namespace Explorer
 			m_Scene->m_Registry.remove<T>(m_ObjectID);	//移除m_Scene场景中m_ObjectHandle的T类型组件
 		}
 
-		//operator bool() const { return m_ObjectID != 0; }
+		operator bool() const { return m_ObjectID != entt::null; }
 	};
 }

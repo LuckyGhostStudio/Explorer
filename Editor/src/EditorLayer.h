@@ -10,8 +10,6 @@ namespace Explorer
 	class EditorLayer :public Layer
 	{
 	private:
-		CameraController m_CameraController;		//相机控制器
-
 		//Temp
 		std::shared_ptr<VertexArray> m_SquareVA;			//正方形顶点数组
 		std::shared_ptr<Texture2D> m_CheckerboardTexture;	//棋盘纹理
@@ -19,6 +17,7 @@ namespace Explorer
 
 		std::shared_ptr<Scene> m_ActiveScene;	//活动场景
 		Object m_SquareObject;					//正方形对象
+		Object m_CameraObject;					//相机对象
 
 		bool m_ViewportFocused = false;				//视口被聚焦
 		bool m_ViewportHovered = false;				//鼠标悬停在视口

@@ -122,7 +122,8 @@ project "Sandbox"		--项目
 		"Explorer/src",
 		"Explorer/vendor",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}"
 	}
 
 	links

@@ -1,6 +1,7 @@
 #include "exppch.h"
 #include "Renderer.h"
 #include "Renderer2D.h"
+#include "Renderer3D.h"
 
 namespace Explorer
 {
@@ -10,6 +11,7 @@ namespace Explorer
 	{
 		RenderCommand::Init();
 		Renderer2D::Init();
+		//Renderer3D::Init();
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)
@@ -19,7 +21,7 @@ namespace Explorer
 
 	void Renderer::BeginScene(Camera& camera)
 	{
-		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();	//设置场景vp矩阵
+		//m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();	//设置场景vp矩阵
 	}
 
 	void Renderer::EndScene()

@@ -32,7 +32,7 @@ namespace Explorer
 		static const uint32_t MaxTextureSlots = 32;	//最大纹理槽数
 
 		std::shared_ptr<VertexArray> QuadVertexArray;	//四边形顶点数组
-		std::shared_ptr<VertexBuffer> QuadVertexBuffer;				//四边形顶点缓冲区
+		std::shared_ptr<VertexBuffer> QuadVertexBuffer;	//四边形顶点缓冲区
 		std::shared_ptr<Shader>	TextureShader;			//纹理着色器
 		std::shared_ptr<Texture2D>	WhiteTexture;		//白色纹理
 
@@ -115,10 +115,12 @@ namespace Explorer
 
 	}
 
-	void Renderer2D::BeginScene(const Camera& camera)
+	void Renderer2D::BeginScene(const Camera& camera, const Transform& transform)
 	{
+		glm::mat4 viewProject = camera.GetProjection() * glm::inverse(transform.m_Transform);	//vp = p * v
+
 		s_Data.TextureShader->Bind();		//绑定Texture着色器
-		s_Data.TextureShader->SetMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());		//设置vp矩阵
+		s_Data.TextureShader->SetMat4("u_ViewProjectionMatrix", viewProject);	//设置vp矩阵
 
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;	//初始化顶点数据指针
