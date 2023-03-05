@@ -15,12 +15,18 @@ namespace Explorer
 	private:
 		std::shared_ptr<Scene> m_Scene;	//面板显示的场景
 		Object m_SelectionObject;		//被选择中实体
-
+	private:
 		/// <summary>
 		/// 绘制物体结点
 		/// </summary>
 		/// <param name="Object">物体</param>
-		void DrawObjectNode(Object Object);
+		void DrawObjectNode(Object object);
+
+		/// <summary>
+		/// 绘制实体的所有组件
+		/// </summary>
+		/// <param name="object">物体</param>
+		void DrawComponents(Object object);
 	public:
 		SceneHierarchyPanel() = default;
 
