@@ -180,6 +180,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Object.h/.cpp
 
+### 48. 本地脚本
+
+- ScriptableObject.h
+
 ## 文件说明
 
 ### Explorer 项目
@@ -331,6 +335,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Object.h/.cpp
 
   实体，场景中的物体对象，保存物体id，和其他参数，通过id关联所有组件。
+  
+- ScriptableObject.h
+
+  可脚本化对象，所有本地脚本的基类。
 
 ### Editor 项目
 

@@ -27,7 +27,7 @@ namespace Explorer
 	/// <summary>
 	/// Па»ъ
 	/// </summary>
-	class Camera :public Component
+	class Camera
 	{
 	public:
 		//Temp

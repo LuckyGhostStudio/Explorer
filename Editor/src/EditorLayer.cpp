@@ -27,6 +27,41 @@ namespace Explorer
 
 		m_CameraObject = m_ActiveScene->CreateEntity("Main Camera");	//创建相机对象
 		m_CameraObject.AddComponent<Camera>();					//添加Camera组件
+
+		class CameraController :public ScriptableObject
+		{
+		public:
+			void OnCreate()
+			{
+				std::cout << "OnCreate" << std::endl;
+			}
+
+			void OnUpdate(DeltaTime dt)
+			{
+				auto& transform = GetComponent<Transform>();
+				float speed = 5.0f;
+
+				if (Input::IsKeyPressed(KeyCode::W)) {		//上
+					transform.m_Position.y += speed * dt;
+				}
+				if (Input::IsKeyPressed(KeyCode::S)) {		//下
+					transform.m_Position.y -= speed * dt;
+				}
+				if (Input::IsKeyPressed(KeyCode::A)) {		//左
+					transform.m_Position.x -= speed * dt;
+				}
+				if (Input::IsKeyPressed(KeyCode::D)) {		//右
+					transform.m_Position.x += speed * dt;
+				}
+			}
+
+			void OnDestroy()
+			{
+
+			}
+		};
+
+		m_CameraObject.AddComponent<NativeScript>().Bind<CameraController>();	//添加脚本组件 并 绑定CameraController脚本
 	}
 
 	void EditorLayer::OnDetach()

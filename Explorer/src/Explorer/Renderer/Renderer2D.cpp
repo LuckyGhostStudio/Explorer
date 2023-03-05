@@ -115,9 +115,10 @@ namespace Explorer
 
 	}
 
-	void Renderer2D::BeginScene(const Camera& camera, const Transform& transform)
+	void Renderer2D::BeginScene(const Camera& camera, Transform& transform)
 	{
-		glm::mat4 viewProject = camera.GetProjection() * glm::inverse(transform.m_Transform);	//vp = p * v
+		transform.CalculateTransform();	//计算Transform矩阵
+		glm::mat4 viewProject = camera.GetProjection() * glm::inverse((glm::mat4&)transform);	//计算VP矩阵 vp = p * v
 
 		s_Data.TextureShader->Bind();		//绑定Texture着色器
 		s_Data.TextureShader->SetMat4("u_ViewProjectionMatrix", viewProject);	//设置vp矩阵

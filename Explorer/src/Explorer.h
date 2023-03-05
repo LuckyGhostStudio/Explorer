@@ -15,6 +15,7 @@
 
 #include "Explorer/Scene/Scene.h"
 #include "Explorer/Scene/Object.h"
+#include "Explorer/Scene/ScriptableObject.h"
 #include "Explorer/Scene/Components.h"
 
 //------Renderer------

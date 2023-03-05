@@ -6,8 +6,7 @@
 namespace Explorer
 {
 	Camera::Camera() 
-		:Component("Camera"),
-		m_ClearFlag(ClearFlag::Color), m_BackgroundColor({ 0.1f, 0.1f, 0.1f, 1.0f }), m_Type(CameraType::Orthographic)
+		:m_ClearFlag(ClearFlag::Color), m_BackgroundColor({ 0.1f, 0.1f, 0.1f, 1.0f }), m_Type(CameraType::Orthographic)
 	{
 		RecalculateProjection();	//重新计算投影矩阵
 	}

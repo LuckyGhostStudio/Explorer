@@ -173,6 +173,7 @@
     <ClInclude Include="src\Explorer\Scene\Components.h" />
     <ClInclude Include="src\Explorer\Scene\Object.h" />
     <ClInclude Include="src\Explorer\Scene\Scene.h" />
+    <ClInclude Include="src\Explorer\Scene\ScriptableObject.h" />
     <ClInclude Include="src\exppch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />

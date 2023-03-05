@@ -29,13 +29,26 @@ namespace Explorer
 
 	void Scene::OnUpdate(DeltaTime dt)
 	{
+		//遍历所有拥有脚本组件的对象，调用each内的函数
+		m_Registry.view<NativeScript>().each([=](auto object, NativeScript& script)
+		{
+			//脚本未实例化
+			if (!script.Instance) {
+				script.Instance = script.InstantiateScript();		//实例化脚本
+				script.Instance->m_Object = Object{ object, this };	//设置脚本所属的对象
+
+				script.Instance->OnCreate();	//调用脚本的OnCreate函数
+			}
+			script.Instance->OnUpdate(dt);		//调用脚本的OnOpdate函数
+		});
+
 		Camera* mainCamera = nullptr;	//主相机
 		Transform* cameraTransform = nullptr;
 
 		auto view = m_Registry.view<Transform, Camera>();	//返回有Transform和Camera的所有实体
 
 		for (auto entity : view) {
-			auto& [transform, camera] = view.get<Transform, Camera>(entity);
+			auto [transform, camera] = view.get<Transform, Camera>(entity);
 
 			//找到主相机
 			if (camera.m_Primary) {
@@ -51,7 +64,7 @@ namespace Explorer
 
 			Renderer2D::BeginScene(*mainCamera, *cameraTransform);	//开始渲染场景
 			for (auto entity : group) {
-				auto& [transform, sprite] = group.get<Transform, SpriteRenderer>(entity);
+				auto [transform, sprite] = group.get<Transform, SpriteRenderer>(entity);
 
 				Renderer2D::DrawQuad(transform.m_Position, transform.m_Rotation.z, transform.m_Scale, sprite.m_Color);
 			}

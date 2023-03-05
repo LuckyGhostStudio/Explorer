@@ -6,16 +6,16 @@
 
 namespace Explorer
 {
-	bool Input::IsKeyPressed(int keycode)
+	bool Input::IsKeyPressed(KeyCode keycode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::GetInstance().GetWindow().GetNativeWindow());	//GLFW窗口
-		auto state = glfwGetKey(window, keycode);				//获取keycode按键状态
+		auto state = glfwGetKey(window, (int)keycode);				//获取keycode按键状态
 		return state == GLFW_PRESS || state == GLFW_REPEAT;		//按键按下||按键重复
 	}
-	bool Input::IsMouseButtonPressed(int button)
+	bool Input::IsMouseButtonPressed(MouseCode button)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::GetInstance().GetWindow().GetNativeWindow());	//GLFW窗口
-		auto state = glfwGetMouseButton(window, button);		//获取button状态
+		auto state = glfwGetMouseButton(window, (int)button);		//获取button状态
 		return state == GLFW_PRESS;								//按键按下
 	}
 

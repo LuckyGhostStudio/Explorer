@@ -1399,6 +1399,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Renderer3D.h" />
+    <ClInclude Include="src\Explorer\Scene\ScriptableObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Core\Application.cpp">

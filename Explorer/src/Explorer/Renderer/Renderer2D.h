@@ -22,7 +22,7 @@ namespace Explorer
 		/// </summary>
 		/// <param name="camera">相机</param>
 		/// <param name="transform">变换</param>
-		static void BeginScene(const Camera& camera, const Transform& transform);
+		static void BeginScene(const Camera& camera, Transform& transform);
 
 		/// <summary>
 		/// 结束渲染场景
