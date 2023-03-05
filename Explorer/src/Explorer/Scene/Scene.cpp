@@ -19,10 +19,12 @@ namespace Explorer
 
 	}
 
-	Object Scene::CreateEntity(const std::string& name)
+	Object Scene::CreateObject(const std::string& name)
 	{
-		Object object = { m_Registry.create(), this, name };	//创建实体
-		object.AddComponent<Transform>();						//添加Transform组件（默认组件）
+		Object object = { m_Registry.create(), this };	//创建物体
+		object.AddComponent<Transform>();				//添加Transform组件（默认组件）
+		Name& objName = object.AddComponent<Name>();	//添加Name组件（默认组件）
+		objName.m_Name = name;
 
 		return object;
 	}

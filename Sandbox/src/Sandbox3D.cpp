@@ -14,7 +14,7 @@ void Sandbox3D::OnAttach()
 {
 	m_ActiveScene = std::make_shared<Explorer::Scene>();	//创建场景
 
-	m_CameraObject = m_ActiveScene->CreateEntity("Main Camera");	//创建相机对象
+	m_CameraObject = m_ActiveScene->CreateObject("Main Camera");	//创建相机对象
 	m_CameraObject.AddComponent<Explorer::Camera>();				//添加Camera组件
 }
 

@@ -13,16 +13,11 @@ namespace Explorer
 	{
 	private:
 		entt::entity m_ObjectID{ entt::null };	//实体ID
-		Scene* m_Scene = nullptr;		//实体所属场景
-
-		std::string m_Name;
+		Scene* m_Scene = nullptr;				//实体所属场景
 	public:
 		Object() {}
-		Object(entt::entity objectID, Scene* scene, const std::string& name = "Object");
+		Object(entt::entity objectID, Scene* scene);
 		Object(const Object& other) = default;
-
-		inline const std::string& GetName() const { return m_Name; }
-		inline void SetName(const std::string& name) { m_Name = name; }
 
 		/// <summary>
 		/// 添加T类型组件
@@ -76,5 +71,16 @@ namespace Explorer
 		}
 
 		operator bool() const { return m_ObjectID != entt::null; }
+		operator uint32_t() const { return (uint32_t)m_ObjectID; }
+
+		bool operator==(const Object& other)
+		{
+			return m_ObjectID == other.m_ObjectID && m_Scene == other.m_Scene;	//物体id相同 && 所属场景相同
+		}
+
+		bool operator!=(const Object& other)
+		{
+			return !(*this == other);
+		}
 	};
 }

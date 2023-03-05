@@ -9,6 +9,19 @@
 namespace Explorer
 {
 	/// <summary>
+	/// 名字组件
+	/// </summary>
+	class Name
+	{
+	public:
+		std::string m_Name;
+
+		Name() = default;
+		Name(const Name&) = default;
+		Name(const std::string& name) :m_Name(name) {}
+	};
+
+	/// <summary>
 	/// 转换组件
 	/// </summary>
 	class Transform

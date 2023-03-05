@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Explorer.h"
+#include "Panels/SceneHierarchyPanel.h"
 
 namespace Explorer
 {
@@ -23,13 +24,7 @@ namespace Explorer
 		bool m_ViewportHovered = false;				//鼠标悬停在视口
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };	//视口大小
 
-		glm::vec3 m_SquarePosition = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 m_SquareRotation = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 m_SquareScale = { 1.0f, 1.0f, 1.0f };
-
-		glm::vec2 m_TextureTilingFactor = { 1.0f, 1.0f };	//纹理重复因子
-
-		glm::vec4 m_SquareColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+		SceneHierarchyPanel m_HierarchyPanel;	//场景Hierarchy面板
 
 		float fps = 0.0f;
 

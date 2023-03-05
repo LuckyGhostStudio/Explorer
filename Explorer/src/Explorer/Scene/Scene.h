@@ -15,6 +15,7 @@ namespace Explorer
 	{
 	private:
 		friend class Object;	//友元类Object
+		friend class SceneHierarchyPanel;
 
 		entt::registry m_Registry;	//实体注册表：实体id集合（unsigned int集合）
 		std::string m_Name;			//场景名
@@ -29,11 +30,11 @@ namespace Explorer
 		inline void SetName(const std::string& name) { m_Name = name; }
 
 		/// <summary>
-		/// 创建实体
+		/// 创建物体
 		/// </summary>
-		/// <param name="name">实体名</param>
-		/// <returns>实体</returns>
-		Object CreateEntity(const std::string& name = std::string());
+		/// <param name="name">物体名</param>
+		/// <returns>物体</returns>
+		Object CreateObject(const std::string& name = "Object");
 
 		/// <summary>
 		/// 更新：每帧调用

@@ -13,8 +13,6 @@ namespace Explorer
 
 	void EditorLayer::OnAttach()
 	{
-		m_CheckerboardTexture = std::make_shared<Texture2D>("asserts/textures/Checkerboard.png");	//创建纹理
-
 		FramebufferSpecification fbSpec;	//帧缓冲区规范
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
@@ -22,11 +20,11 @@ namespace Explorer
 
 		m_ActiveScene = std::make_shared<Scene>();	//创建场景
 
-		m_SquareObject = m_ActiveScene->CreateEntity("Square");	//创建正方形对象
+		m_SquareObject = m_ActiveScene->CreateObject("Square");		//创建正方形对象
 		m_SquareObject.AddComponent<SpriteRenderer>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));	//添加SpriteRenderer组件
 
-		m_CameraObject = m_ActiveScene->CreateEntity("Main Camera");	//创建相机对象
-		m_CameraObject.AddComponent<Camera>();					//添加Camera组件
+		m_CameraObject = m_ActiveScene->CreateObject("Main Camera");	//创建相机对象
+		m_CameraObject.AddComponent<Camera>();							//添加Camera组件
 
 		class CameraController :public ScriptableObject
 		{
@@ -62,6 +60,8 @@ namespace Explorer
 		};
 
 		m_CameraObject.AddComponent<NativeScript>().Bind<CameraController>();	//添加脚本组件 并 绑定CameraController脚本
+
+		m_HierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy面板的场景
 	}
 
 	void EditorLayer::OnDetach()
@@ -156,6 +156,8 @@ namespace Explorer
 				ImGui::EndMenuBar();
 			}
 
+			m_HierarchyPanel.OnImGuiRender();	//渲染Hierarchy面板
+
 			auto& squareTransform = m_SquareObject.GetComponent<Transform>();
 			auto& squarePos = squareTransform.m_Position;	//位置
 			auto& squareRot = squareTransform.m_Rotation;	//旋转
@@ -175,7 +177,6 @@ namespace Explorer
 			//Sprite Renderer
 			ImGui::Text("Sprite Renderer");
 			ImGui::ColorEdit4("Color", glm::value_ptr(squareColor));	//颜色编辑UI
-			ImGui::DragFloat2("Texture Tiling Factor", glm::value_ptr(m_TextureTilingFactor));
 			ImGui::Separator();
 
 			auto& cameraTransform = m_CameraObject.GetComponent<Transform>();
