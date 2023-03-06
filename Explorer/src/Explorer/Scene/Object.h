@@ -30,8 +30,9 @@ namespace Explorer
 		T& AddComponent(Args&&... args)
 		{
 			EXP_CORE_ASSERT(!HasComponent<T>(), "Object already has component!");	//该组件已存在
-
-			return m_Scene->m_Registry.emplace<T>(m_ObjectID, std::forward<Args>(args)...);	//向m_Scene场景的实体注册表添加T类型组件
+			T& component = m_Scene->m_Registry.emplace<T>(m_ObjectID, std::forward<Args>(args)...);	//向m_Scene场景的实体注册表添加T类型组件
+			m_Scene->OnComponentAdded<T>(*this, component);	//m_Scene向this物体添加T组件时调用
+			return component;
 		}
 
 		/// <summary>
@@ -71,6 +72,7 @@ namespace Explorer
 		}
 
 		operator bool() const { return m_ObjectID != entt::null; }
+		operator entt::entity() const { return m_ObjectID; }
 		operator uint32_t() const { return (uint32_t)m_ObjectID; }
 
 		bool operator==(const Object& other)

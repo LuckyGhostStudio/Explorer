@@ -30,6 +30,11 @@ namespace Explorer
 		return object;
 	}
 
+	void Scene::DestroyEntity(Object object)
+	{
+		m_Registry.destroy(object);	//从注册表移除物体
+	}
+
 	void Scene::OnUpdate(DeltaTime dt)
 	{
 		//遍历所有拥有脚本组件的对象，调用each内的函数
@@ -87,5 +92,46 @@ namespace Explorer
 			auto& camera = view.get<Camera>(entity);	//获得Camera组件
 			camera.SetViewportSize(width, height);		//设置视口大小
 		}
+	}
+
+	template<typename T>
+	void Scene::OnComponentAdded(Object object, T& component)
+	{
+		static_assert(false);
+	}
+
+	template<>
+	void Scene::OnComponentAdded<Transform>(Object object, Transform& component)
+	{
+
+	}
+
+	/// <summary>
+	/// Camera组件被添加时
+	/// </summary>
+	/// <param name="object">物体</param>
+	/// <param name="component">Camera组件</param>
+	template<>
+	void Scene::OnComponentAdded<Camera>(Object object, Camera& component)
+	{
+		component.SetViewportSize(m_ViewportWidth, m_ViewportHeight);	//设置视口
+	}
+
+	template<>
+	void Scene::OnComponentAdded<SpriteRenderer>(Object object, SpriteRenderer& component)
+	{
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<Name>(Object object, Name& component)
+	{
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<NativeScript>(Object object, NativeScript& component)
+	{
+
 	}
 }

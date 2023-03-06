@@ -31,12 +31,44 @@ namespace Explorer
 			DrawObjectNode(object);		//绘制实体结点
 		});
 
+		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {	//鼠标悬停在该窗口 && 点击鼠标 （点击空白位置）
+			m_SelectionObject = {};	//取消选中：置空选中物体
+		}
+
+		//创建物体
+		if (ImGui::BeginPopupContextWindow(0, 1, false)) {	//右键点击窗口白区域弹出菜单：- 右键 不在物体项上
+			if (ImGui::MenuItem("Create Empty Object")) {	//菜单项：创建空物体
+				m_Scene->CreateObject("Empty Object");		//创建空物体
+			}
+			ImGui::EndPopup();
+		}
+
 		ImGui::End();
 
 		//属性面板
 		ImGui::Begin("Properties");
 		if (m_SelectionObject) {				//被选中的物体存在
 			DrawComponents(m_SelectionObject);	//绘制组件
+
+			//添加组件
+			if (ImGui::Button("Add Component")) {
+				ImGui::OpenPopup("AddComponent");	//打开弹出框
+			}
+
+			if (ImGui::BeginPopup("AddComponent")) {	//渲染弹出框
+				//添加Camera组件
+				if (ImGui::MenuItem("Camera")) {
+					m_SelectionObject.AddComponent<Camera>();
+					ImGui::CloseCurrentPopup();
+				}
+				//添加SpriteRenderer组件
+				if (ImGui::MenuItem("Sprite Renderer")) {
+					m_SelectionObject.AddComponent<SpriteRenderer>();
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::EndPopup();
+			}
 		}
 		ImGui::End();
 	}
@@ -53,8 +85,24 @@ namespace Explorer
 			m_SelectionObject = object;		//Object被选中
 		}
 
+		//删除物体
+		bool objectDeleted = false;	//物体是否已删除
+		if (ImGui::BeginPopupContextItem()) {			//右键点击该物体结点
+			if (ImGui::MenuItem("Delete Object")) {		//菜单项：删除物体
+				objectDeleted = true;					//物体标记为已删除：渲染结束后面的UI 再删除该物体
+			}
+			ImGui::EndPopup();
+		}
+
 		if (opened) {			//树结点已打开
 			ImGui::TreePop();	//展开结点
+		}
+
+		if (objectDeleted) {
+			m_Scene->DestroyEntity(object);		//删除物体
+			if (m_SelectionObject == object) {	//删除的物体为已选中物体
+				m_SelectionObject = {};			//清空已选中物体
+			}
 		}
 	}
 
@@ -143,10 +191,12 @@ namespace Explorer
 			}
 		}
 
+		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;	//树节点标志：打开|允许重叠
+
 		//Transform组件
 		if (object.HasComponent<Transform>()) {
-			//Transform组件结点：Transform组件类的哈希值作为结点id 默认打开
-			if (ImGui::TreeNodeEx((void*)typeid(Transform).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform")) {
+			//Transform组件结点：Transform组件类的哈希值作为结点id
+			if (ImGui::TreeNodeEx((void*)typeid(Transform).hash_code(), treeNodeFlags, "Transform")) {
 				auto& transform = object.GetComponent<Transform>();
 
 				DrawVec3Control("Position", transform.m_Position);	//位置
@@ -159,8 +209,8 @@ namespace Explorer
 
 		//Camera组件
 		if (object.HasComponent<Camera>()) {
-			//Camera组件结点：Camera组件类的哈希值作为结点id 默认打开
-			if (ImGui::TreeNodeEx((void*)typeid(Camera).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera")) {
+			//Camera组件结点：Camera组件类的哈希值作为结点id
+			if (ImGui::TreeNodeEx((void*)typeid(Camera).hash_code(), treeNodeFlags, "Camera")) {
 				auto& camera = object.GetComponent<Camera>();
 
 				ImGui::Checkbox("Main Camera", &camera.m_Primary);	//主相机设置框
@@ -215,13 +265,35 @@ namespace Explorer
 
 		//SpriteRenderer组件
 		if (object.HasComponent<SpriteRenderer>()) {
-			//SpriteRenderer组件结点：SpriteRenderer组件类的哈希值作为结点id 默认打开
-			if (ImGui::TreeNodeEx((void*)typeid(SpriteRenderer).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Sprite Renderer")) {
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));	//设置边框样式
+			//SpriteRenderer组件结点：SpriteRenderer组件类的哈希值作为结点id
+			bool opened = ImGui::TreeNodeEx((void*)typeid(SpriteRenderer).hash_code(), treeNodeFlags, "Sprite Renderer");
+			ImGui::SameLine(ImGui::GetWindowWidth() - 25.0f);	//同一行：获取窗口宽度
+			if (ImGui::Button("+", ImVec2(20, 20))) {	//组件设置按钮
+				ImGui::OpenPopup("ComponentSettings");	//打开弹出框
+			}
+			ImGui::PopStyleVar();
+
+			//移除组件
+			bool componentRemoved = false;
+			if (ImGui::BeginPopup("ComponentSettings")) {	//渲染弹出框
+				//移除组件菜单项
+				if (ImGui::MenuItem("Remove Component")) {
+					componentRemoved = true;	//组件标记为移除
+				}
+				ImGui::EndPopup();
+			}
+
+			if (opened) {
 				auto& spriteRenderer = object.GetComponent<SpriteRenderer>();
 
 				ImGui::ColorEdit4("Color", glm::value_ptr(spriteRenderer.m_Color));	//颜色编辑器
 
 				ImGui::TreePop();	//展开结点
+			}
+
+			if (componentRemoved) {
+				object.RemoveComponent<SpriteRenderer>();	//移除SpriteRenderer组件
 			}
 		}
 	}

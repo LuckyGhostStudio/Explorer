@@ -20,8 +20,17 @@ namespace Explorer
 		entt::registry m_Registry;	//实体注册表：实体id集合（unsigned int集合）
 		std::string m_Name;			//场景名
 
-		uint32_t m_ViewportWidth = 0;	//场景视口宽
-		uint32_t m_ViewportHeight = 0;	//场景视口高
+		uint32_t m_ViewportWidth = 1280;	//场景视口宽
+		uint32_t m_ViewportHeight = 720;	//场景视口高
+	private:
+		/// <summary>
+		/// object添加T组件时调用
+		/// </summary>
+		/// <typeparam name="T">组件类型</typeparam>
+		/// <param name="object">物体</param>
+		/// <param name="component">组件</param>
+		template<typename T>
+		void OnComponentAdded(Object object, T& component);
 	public:
 		Scene(const std::string& name = "New Scene");
 		~Scene();
@@ -35,6 +44,12 @@ namespace Explorer
 		/// <param name="name">物体名</param>
 		/// <returns>物体</returns>
 		Object CreateObject(const std::string& name = "Object");
+
+		/// <summary>
+		/// 销毁物体
+		/// </summary>
+		/// <param name="object">物体</param>
+		void DestroyEntity(Object object);
 
 		/// <summary>
 		/// 更新：每帧调用

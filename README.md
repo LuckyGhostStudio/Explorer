@@ -196,6 +196,8 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 53. Transform组件UI
 
+### 54. 添加、移除实体和组件UI
+
 ## 文件说明
 
 ### Explorer 项目
