@@ -68,7 +68,7 @@ namespace Explorer
 			for (auto entity : group) {
 				auto [transform, sprite] = group.get<Transform, SpriteRenderer>(entity);
 
-				Renderer2D::DrawQuad(transform.m_Position, transform.m_Rotation.z, transform.m_Scale, sprite.m_Color);
+				Renderer2D::DrawQuad(transform, sprite.m_Color);
 			}
 			Renderer2D::EndScene();			//Ω· ¯‰÷»æ≥°æ∞
 		}

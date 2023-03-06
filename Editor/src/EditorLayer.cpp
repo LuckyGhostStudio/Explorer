@@ -16,7 +16,7 @@ namespace Explorer
 		FramebufferSpecification fbSpec;	//帧缓冲区规范
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
-		m_Framebuffer = std::make_shared < Framebuffer>(fbSpec);	//创建帧缓冲区
+		m_Framebuffer = std::make_shared<Framebuffer>(fbSpec);	//创建帧缓冲区
 
 		m_ActiveScene = std::make_shared<Scene>();	//创建场景
 
@@ -158,56 +158,14 @@ namespace Explorer
 
 			m_HierarchyPanel.OnImGuiRender();	//渲染Hierarchy面板
 
-			auto& squareTransform = m_SquareObject.GetComponent<Transform>();
-			auto& squarePos = squareTransform.m_Position;	//位置
-			auto& squareRot = squareTransform.m_Rotation;	//旋转
-			auto& squareSca = squareTransform.m_Scale;		//缩放
 			auto& squareColor = m_SquareObject.GetComponent<SpriteRenderer>().m_Color;	//颜色
 
 			//属性面板
 			ImGui::Begin("Inspector");
-			//Transform
-			ImGui::Separator();
-			ImGui::Text("Square");
-			ImGui::Separator();
-			ImGui::Text("Transform");
-			ImGui::DragFloat3("Position", glm::value_ptr(squarePos));
-			ImGui::DragFloat3("Rotation", glm::value_ptr(squareRot));
-			ImGui::DragFloat3("Scale", glm::value_ptr(squareSca));
 			//Sprite Renderer
 			ImGui::Text("Sprite Renderer");
 			ImGui::ColorEdit4("Color", glm::value_ptr(squareColor));	//颜色编辑UI
 			ImGui::Separator();
-
-			auto& cameraTransform = m_CameraObject.GetComponent<Transform>();
-			auto& cameraPos = cameraTransform.m_Position;	//位置
-			auto& cameraRot = cameraTransform.m_Rotation;	//旋转
-			auto& cameraSca = cameraTransform.m_Scale;		//缩放
-			auto& camera = m_CameraObject.GetComponent<Camera>();
-			float cameraSize = camera.GetSize();			//尺寸
-			float cameraNear = camera.GetNearClip();		//近裁剪平面
-			float cameraFar = camera.GetFarClip();			//远裁剪平面
-
-			ImGui::Separator();
-			ImGui::Text("Main Camera");
-			ImGui::Separator();
-			ImGui::Text("Transform");
-			ImGui::DragFloat3("Pos", glm::value_ptr(cameraPos));
-			ImGui::DragFloat3("Rot", glm::value_ptr(cameraRot));
-			ImGui::DragFloat3("Sca", glm::value_ptr(cameraSca));
-
-			ImGui::Text("Camera");
-			if (ImGui::DragFloat("Size", &cameraSize)) {
-				camera.SetSize(cameraSize);
-			}
-			if (ImGui::DragFloat("Near", &cameraNear)) {
-				camera.SetNearClip(cameraNear);
-			}
-			if (ImGui::DragFloat("Far", &cameraFar)) {
-				camera.SetFarClip(cameraFar);
-			}
-			ImGui::Separator();
-
 			ImGui::End();
 
 			//批渲染数据统计

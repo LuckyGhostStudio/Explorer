@@ -120,7 +120,7 @@ namespace Explorer
 		transform.CalculateTransform();	//计算Transform矩阵
 		glm::mat4 viewProject = camera.GetProjection() * glm::inverse((glm::mat4&)transform);	//计算VP矩阵 vp = p * v
 
-		s_Data.TextureShader->Bind();		//绑定Texture着色器
+		s_Data.TextureShader->Bind();	//绑定Texture着色器
 		s_Data.TextureShader->SetMat4("u_ViewProjectionMatrix", viewProject);	//设置vp矩阵
 
 		s_Data.QuadIndexCount = 0;
@@ -161,10 +161,10 @@ namespace Explorer
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color);
+		//DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color)
+	void Renderer2D::DrawQuad(Transform& transform, const glm::vec4& color)
 	{
 		//索引个数超过最大索引数
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
@@ -177,14 +177,11 @@ namespace Explorer
 		const float textureIndex = 0.0f;				//白色纹理索引
 		const glm::vec2 tilingFactor = { 1.0f, 1.0f };	//纹理平铺因子
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
-			* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
-
+		transform.CalculateTransform();	//计算Transform矩阵
 
 		//4个顶点数据
 		for (int i = 0; i < quadVertexCount; i++) {
-			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[i];
+			s_Data.QuadVertexBufferPtr->Position = transform.m_Transform * s_Data.QuadVerticesPositions[i];
 			s_Data.QuadVertexBufferPtr->Color = color;
 			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;

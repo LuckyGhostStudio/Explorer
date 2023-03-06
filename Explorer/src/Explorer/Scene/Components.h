@@ -27,8 +27,6 @@ namespace Explorer
 	class Transform
 	{
 	public:
-		std::string m_Name = "Transform";
-
 		glm::vec3 m_Position{ 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_Rotation{ 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_Scale{ 1.0f, 1.0f, 1.0f };
@@ -71,8 +69,6 @@ namespace Explorer
 	class SpriteRenderer
 	{
 	public:
-		std::string m_Name = "Sprite Renderer";
-
 		glm::vec4 m_Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 		SpriteRenderer() {}
@@ -83,8 +79,6 @@ namespace Explorer
 	class NativeScript
 	{
 	public:
-		std::string m_Name = "NativeScript";
-
 		ScriptableObject* Instance = nullptr;		//可脚本化实体实例：用于调用脚本内的函数
 
 		ScriptableObject* (*InstantiateScript)();	//实例化脚本函数：用来实例化ScriptableEntity脚本

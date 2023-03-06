@@ -22,7 +22,7 @@ namespace Explorer
 
 	void CameraController::OnUpdate(DeltaTime dt)
 	{
-		if (m_Camera.GetType() == CameraType::Orthographic) {	//正交相机
+		if (m_Camera.GetProjectionType() == Camera::ProjectionType::Orthographic) {	//正交相机
 			//相机移动
 			if (Input::IsKeyPressed(KeyCode::A)) {		//左
 				m_CameraPosition.x -= m_CameraTranslationSpeed * dt;
@@ -41,9 +41,6 @@ namespace Explorer
 
 			m_CameraTranslationSpeed = m_ZoomLevel;		//移动速度和缩放比例线性相关
 		}
-		else if (m_Camera.GetType() == CameraType::Perspective) {	//透视相机
-			
-		}
 	}
 
 	void CameraController::OnEvent(Event& e)
@@ -58,12 +55,7 @@ namespace Explorer
 	{
 		m_AspectRatio = width / height;	//设置宽高比
 		
-		if (m_Camera.GetType() == CameraType::Orthographic) {	//正交投影
-			//m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);	//设置投影矩阵
-		}
-		else if (m_Camera.GetType() == CameraType::Perspective) {	//透视投影
-			//m_Camera.SetProjection(std::atan(height / (2 * m_Camera.GetClippingPlane().x)), m_AspectRatio, m_Camera.GetClippingPlane());	//设置投影矩阵
-		}
+		//m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);	//设置投影矩阵
 	}
 
 	bool CameraController::OnMouseScrolled(MouseScrolledEvent& e)

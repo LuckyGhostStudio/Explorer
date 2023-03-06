@@ -1,6 +1,7 @@
 #include "SceneHierarchyPanel.h"
 
 #include "Explorer/Scene/Components.h"
+#include "Explorer/Renderer/Camera.h"
 
 #include <imgui/imgui.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -58,7 +59,8 @@ namespace Explorer
 
 	void SceneHierarchyPanel::DrawComponents(Object object)
 	{
-		if (object.HasComponent<Name>()) {	//名字组件存在
+		//Name组件
+		if (object.HasComponent<Name>()) {
 			auto& name = object.GetComponent<Name>().m_Name;	//物体名
 
 			char buffer[256];								//输入框内容buffer
@@ -68,7 +70,9 @@ namespace Explorer
 				name = std::string(buffer);	//物体name设为buffer
 			}
 		}
-		if (object.HasComponent<Transform>()) {	//Transform组件存在
+
+		//Transform组件
+		if (object.HasComponent<Transform>()) {
 			//Transform组件结点：Transform组件类的哈希值作为结点id 默认打开
 			if (ImGui::TreeNodeEx((void*)typeid(Transform).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform")) {
 				auto& transform = object.GetComponent<Transform>();
@@ -79,7 +83,62 @@ namespace Explorer
 
 				ImGui::TreePop();	//展开结点
 			}
+		}
 
+		//Camera组件
+		if (object.HasComponent<Camera>()) {
+			//Camera组件结点：Camera组件类的哈希值作为结点id 默认打开
+			if (ImGui::TreeNodeEx((void*)typeid(Camera).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera")) {
+				auto& camera = object.GetComponent<Camera>();
+
+				ImGui::Checkbox("Main Camera", &camera.m_Primary);	//主相机设置框
+
+				const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };	//投影类型：透视 正交 
+				const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];	//当前投影类型
+
+				//下拉框 选择投影类型
+				if (ImGui::BeginCombo("Projection", currentProjectionTypeString)) {
+					for (int i = 0; i < 2; i++) {
+						bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];	//被选中：当前投影类型==第i个投影类型
+						//可选择项，该项改变时：投影类型 已选中
+						if (ImGui::Selectable(projectionTypeStrings[i], isSelected)) {
+							currentProjectionTypeString = projectionTypeStrings[i];		//设置当前投影类型
+							camera.SetProjectionType((Camera::ProjectionType)i);		//设置相机投影类型
+						}
+
+						if (isSelected) {
+							ImGui::SetItemDefaultFocus();	//设置默认选中项
+						}
+					}
+					ImGui::EndCombo();
+				}
+
+				if (camera.GetProjectionType() == Camera::ProjectionType::Perspective) {	//透视投影
+					float verticalFov = camera.GetFOV();	//垂直张角
+					if (ImGui::DragFloat("Vertical Fov", &verticalFov)) {
+						camera.SetFOV(verticalFov);
+					}
+				}
+
+				if (camera.GetProjectionType() == Camera::ProjectionType::Orthographic) {	//正交投影
+					float size = camera.GetSize();		//尺寸
+					if (ImGui::DragFloat("Size", &size)) {
+						camera.SetSize(size);
+					}
+				}
+
+				float nearClip = camera.GetNearClip();	//近裁剪平面
+				if (ImGui::DragFloat("Near", &nearClip)) {
+					camera.SetNearClip(nearClip);
+				}
+
+				float farClip = camera.GetFarClip();	//远裁剪平面
+				if (ImGui::DragFloat("Far", &farClip)) {
+					camera.SetFarClip(farClip);
+				}
+
+				ImGui::TreePop();	//展开结点
+			}
 		}
 	}
 }
