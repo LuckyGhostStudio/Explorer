@@ -20,8 +20,8 @@ namespace Explorer
 
 		m_ActiveScene = std::make_shared<Scene>();	//创建场景
 
-		m_SquareObject = m_ActiveScene->CreateObject("Square");		//创建正方形对象
-		m_SquareObject.AddComponent<SpriteRenderer>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));	//添加SpriteRenderer组件
+		Object cube = m_ActiveScene->CreateObject("Cube");				//创建Cube对象
+		cube.AddComponent<SpriteRenderer>(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));	//添加SpriteRenderer组件
 
 		m_CameraObject = m_ActiveScene->CreateObject("Main Camera");	//创建相机对象
 		m_CameraObject.AddComponent<Camera>();							//添加Camera组件
@@ -158,18 +158,8 @@ namespace Explorer
 
 			m_HierarchyPanel.OnImGuiRender();	//渲染Hierarchy面板
 
-			auto& squareColor = m_SquareObject.GetComponent<SpriteRenderer>().m_Color;	//颜色
-
-			//属性面板
-			ImGui::Begin("Inspector");
-			//Sprite Renderer
-			ImGui::Text("Sprite Renderer");
-			ImGui::ColorEdit4("Color", glm::value_ptr(squareColor));	//颜色编辑UI
-			ImGui::Separator();
-			ImGui::End();
-
 			//批渲染数据统计
-			ImGui::Begin("Renderer2D Stats");
+			ImGui::Begin("Stats");
 			auto stats = Renderer2D::GetStats();
 			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 			ImGui::Text("Quad: %d", stats.QuadCount);

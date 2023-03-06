@@ -22,7 +22,7 @@ namespace Explorer
 		/// </summary>
 		/// <param name="camera">相机</param>
 		/// <param name="transform">变换</param>
-		static void BeginScene(const Camera& camera, Transform& transform);
+		static void BeginScene(const Camera& camera, const Transform& transform);
 
 		/// <summary>
 		/// 结束渲染场景
@@ -48,7 +48,7 @@ namespace Explorer
 		/// </summary>
 		/// <param name="transform">变换</param>
 		/// <param name="color">颜色</param>
-		static void DrawQuad(Transform& transform, const glm::vec4& color);
+		static void DrawQuad(const Transform& transform, const glm::vec4& color);
 
 		/// <summary>
 		/// 绘制长方形

@@ -192,6 +192,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 51. 相机组件
 
+### 52. Sprite Renderer组件UI
+
+### 53. Transform组件UI
+
 ## 文件说明
 
 ### Explorer 项目

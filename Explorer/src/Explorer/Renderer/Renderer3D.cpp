@@ -82,7 +82,7 @@ namespace Explorer
 
 	void Renderer3D::BeginScene(const Camera& camera, const Transform& transform)
 	{
-		glm::mat4 viewProject = camera.GetProjection() * glm::inverse(transform.m_Transform);	//vp = p * v
+		glm::mat4 viewProject = camera.GetProjection() * glm::inverse(transform.GetTransform());	//vp = p * v
 
 		s_Data.m_Shader->Bind();			//绑定着色器
 		s_Data.m_Shader->SetMat4("u_ViewProjectionMatrix", viewProject);	//设置vp矩阵
@@ -102,13 +102,7 @@ namespace Explorer
 		s_Data.m_VertexArray->Bind();
 		s_Data.m_Shader->Bind();
 
-		glm::mat4 trans = glm::translate(glm::mat4(1.0f), transform.m_Position)
-			* glm::rotate(glm::mat4(1.0f), glm::radians(transform.m_Rotation.x), glm::vec3(1.0f, 0, 0))
-			* glm::rotate(glm::mat4(1.0f), glm::radians(transform.m_Rotation.y), glm::vec3(0, 1.0f, 0))
-			* glm::rotate(glm::mat4(1.0f), glm::radians(transform.m_Rotation.z), glm::vec3(0, 0, 1.0f))
-			* glm::scale(glm::mat4(1.0f), transform.m_Scale);
-
-		s_Data.m_Shader->SetMat4("u_Transform", trans);	//设置transform矩阵
+		s_Data.m_Shader->SetMat4("u_Transform", transform.GetTransform());	//设置transform矩阵
 
 		RenderCommand::DrawIndexed(s_Data.m_VertexArray, 36);
 	}

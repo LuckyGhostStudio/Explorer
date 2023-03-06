@@ -4,6 +4,7 @@
 #include "Explorer/Renderer/Camera.h"
 
 #include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Explorer
@@ -57,6 +58,77 @@ namespace Explorer
 		}
 	}
 
+	/// <summary>
+	/// 绘制Vector3控件
+	/// </summary>
+	/// <param name="label">标签</param>
+	/// <param name="values">值</param>
+	/// <param name="resetValue">重置值</param>
+	/// <param name="columnWidth">每列宽度</param>
+	static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f)
+	{
+		ImGui::PushID(label.c_str());	//设置控件标签
+
+		//标签列
+		ImGui::Columns(2);
+		ImGui::SetColumnWidth(0, columnWidth);	//设置0号列宽
+		ImGui::Text(label.c_str());
+		ImGui::NextColumn();
+
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());			//设置3个列宽
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });	//Var样式
+
+		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;	//行高 = 字体大小 + 边框.y * 2
+		ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };	//重置值按钮大小
+
+		//X分量UI
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.1f, 0.15f, 1.0f));		//按钮颜色
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.3f, 0.35f, 1.0f));	//鼠标悬停在按钮时的颜色
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9f, 0.1f, 0.15f, 1.0f));	//按钮按下颜色
+		if (ImGui::Button("X", buttonSize)) {		//X按钮按下
+			values.x = resetValue;					//重置x分量
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();							//在同一行
+		ImGui::DragFloat("##X", &values.x, 0.1f);	//X分量列 ##不显示标签 拖动精度0.1
+		ImGui::PopItemWidth();						//推出第一个列宽
+		ImGui::SameLine();
+
+		//Y分量UI
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));			//按钮颜色
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.9f, 0.4f, 1.0f));	//鼠标悬停在按钮时的颜色
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));	//按钮按下颜色
+		if (ImGui::Button("Y", buttonSize)) {		//Y按钮按下
+			values.y = resetValue;					//重置Y分量
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();							//在同一行
+		ImGui::DragFloat("##Y", &values.y, 0.1f);	//Y分量列 ##不显示标签 拖动精度0.1
+		ImGui::PopItemWidth();						//推出第一个列宽
+		ImGui::SameLine();
+
+		//Z分量UI
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.25f, 0.8f, 1.0f));		//按钮颜色
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.4f, 0.8f, 1.0f));	//鼠标悬停在按钮时的颜色
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.35f, 0.25f, 0.9f, 1.0f));	//按钮按下颜色
+		if (ImGui::Button("Z", buttonSize)) {		//Z按钮按下
+			values.z = resetValue;					//重置Z分量
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();							//在同一行
+		ImGui::DragFloat("##Z", &values.z, 0.1f);	//Z分量列 ##不显示标签 拖动精度0.1
+		ImGui::PopItemWidth();						//推出第一个列宽
+
+		ImGui::PopStyleVar();
+
+		ImGui::Columns(1);
+
+		ImGui::PopID();	//弹出控件标签
+	}
+
 	void SceneHierarchyPanel::DrawComponents(Object object)
 	{
 		//Name组件
@@ -77,9 +149,9 @@ namespace Explorer
 			if (ImGui::TreeNodeEx((void*)typeid(Transform).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform")) {
 				auto& transform = object.GetComponent<Transform>();
 
-				ImGui::DragFloat3("Position", glm::value_ptr(transform.m_Position), 0.1f);	//位置：拖动速度0.1
-				ImGui::DragFloat3("Rotation", glm::value_ptr(transform.m_Rotation), 0.1f);	//旋转：拖动速度0.1
-				ImGui::DragFloat3("Scale", glm::value_ptr(transform.m_Scale), 0.1f);		//缩放：拖动速度0.1
+				DrawVec3Control("Position", transform.m_Position);	//位置
+				DrawVec3Control("Rotation", transform.m_Rotation);	//旋转
+				DrawVec3Control("Scale", transform.m_Scale, 1.0f);	//缩放：默认值1.0f
 
 				ImGui::TreePop();	//展开结点
 			}
@@ -136,6 +208,18 @@ namespace Explorer
 				if (ImGui::DragFloat("Far", &farClip)) {
 					camera.SetFarClip(farClip);
 				}
+
+				ImGui::TreePop();	//展开结点
+			}
+		}
+
+		//SpriteRenderer组件
+		if (object.HasComponent<SpriteRenderer>()) {
+			//SpriteRenderer组件结点：SpriteRenderer组件类的哈希值作为结点id 默认打开
+			if (ImGui::TreeNodeEx((void*)typeid(SpriteRenderer).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Sprite Renderer")) {
+				auto& spriteRenderer = object.GetComponent<SpriteRenderer>();
+
+				ImGui::ColorEdit4("Color", glm::value_ptr(spriteRenderer.m_Color));	//颜色编辑器
 
 				ImGui::TreePop();	//展开结点
 			}

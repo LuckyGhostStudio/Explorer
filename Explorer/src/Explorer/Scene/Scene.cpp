@@ -2,6 +2,7 @@
 #include "Scene.h"
 
 #include "Explorer/Renderer/Renderer2D.h"
+#include "Explorer/Renderer/Renderer3D.h"
 
 #include "Components.h"
 
@@ -64,13 +65,14 @@ namespace Explorer
 		if (mainCamera) {
 			auto group = m_Registry.group<Transform>(entt::get<SpriteRenderer>);	//返回有Transform和SpriteRenderer的所有实体
 
-			Renderer2D::BeginScene(*mainCamera, *cameraTransform);	//开始渲染场景
+			Renderer3D::BeginScene(*mainCamera, *cameraTransform);	//开始渲染场景
 			for (auto entity : group) {
 				auto [transform, sprite] = group.get<Transform, SpriteRenderer>(entity);
 
-				Renderer2D::DrawQuad(transform, sprite.m_Color);
+				//Renderer2D::DrawQuad(transform, sprite.m_Color);
+				Renderer3D::DrawMesh(transform);	//绘制网格
 			}
-			Renderer2D::EndScene();			//结束渲染场景
+			Renderer3D::EndScene();			//结束渲染场景
 		}
 	}
 	

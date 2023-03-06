@@ -31,36 +31,22 @@ namespace Explorer
 		glm::vec3 m_Rotation{ 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_Scale{ 1.0f, 1.0f, 1.0f };
 
-		glm::mat4 m_Transform{ 1.0f };
-
-		Transform()
-		{
-			CalculateTransform();
-		}
-
-		Transform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) 
-			:m_Position(position), m_Rotation(rotation), m_Scale(scale)
-		{
-			CalculateTransform();
-		}
-
+		Transform() = default;
 		Transform(const Transform&) {}
-		Transform(const glm::mat4& transform) :m_Transform(transform) {}
+		Transform(const glm::vec3& position) :m_Position(position) {}
 
 		/// <summary>
-		/// º∆À„Transformæÿ’Û
+		/// ∑µªÿTransformæÿ’Û
 		/// </summary>
-		void CalculateTransform()
+		/// <returns>Transformæÿ’Û</returns>
+		glm::mat4& GetTransform() const
 		{
-			m_Transform = glm::translate(glm::mat4(1.0f), m_Position)
-				* glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.x), glm::vec3(1.0f, 0, 0))
-				* glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.y), glm::vec3(0, 1.0f, 0))
-				* glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.z), glm::vec3(0, 0, 1.0f))
-				* glm::scale(glm::mat4(1.0f), m_Scale);
-		}
+			glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.x), { 1, 0, 0 })
+				* glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.y), { 0, 1, 0 })
+				* glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.z), { 0, 0, 1 });
 
-		operator glm::mat4& () { return m_Transform; }
-		operator const glm::mat4& () const { return m_Transform; }
+			return glm::translate(glm::mat4(1.0f), m_Position) * rotation * glm::scale(glm::mat4(1.0f), m_Scale);
+		}
 	};
 
 	/// <summary>
