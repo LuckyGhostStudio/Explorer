@@ -21,8 +21,10 @@ void main()
 
 	//镜面反射颜色
 	vec3 reflectDir = reflect(u_LightDir, v_Normal);							//反射光方向
-	float specularIntensity = pow(max(dot(reflectDir, cameraDir), 0), 1.0f);	//镜面反射强度 [0, 1]
+	float specularIntensity = pow(max(dot(reflectDir, cameraDir), 0), 32.0f);	//镜面反射强度 [0, 1]
 	vec3 specularColor = specularIntensity * u_LightColor;						//镜面反射颜色 =  镜面反射强度 * 灯光颜色
+
+	vec3 ambientColor = u_AmbientColor * v_Color.rgb;
 
 	color = v_Color * vec4(u_AmbientColor + diffuseColor + specularColor, 1.0f);
 }

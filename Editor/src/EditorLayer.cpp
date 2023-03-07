@@ -100,10 +100,10 @@ namespace Explorer
 
 	void EditorLayer::OnImGuiRender()
 	{
-		static bool dockSpaceOpen = true;	//停靠空间是否开启
+		static bool dockspaceOpen = true;
 		static bool opt_fullscreen_persistant = true;
-		static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
 		bool opt_fullscreen = opt_fullscreen_persistant;
+		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
 		// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
 		// because it would be confusing to have two docking targets within each others.
@@ -120,72 +120,81 @@ namespace Explorer
 			window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 		}
 
-		// When using ImGuiDockNodeFlags_PassthruDockspace, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
-		if (opt_flags & ImGuiDockNodeFlags_PassthruDockspace)
+		// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
+		if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
 			window_flags |= ImGuiWindowFlags_NoBackground;
 
+		// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
+		// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive, 
+		// all active windows docked into it will lose their parent and become undocked.
+		// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise 
+		// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+		ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
+		ImGui::PopStyleVar();
 
-		ImGui::Begin("DockSpace Demo", &dockSpaceOpen, window_flags);	//停靠空间
+		if (opt_fullscreen)
+			ImGui::PopStyleVar(2);
+
+		// 停靠空间
+		ImGuiIO& io = ImGui::GetIO();
+		ImGuiStyle& style = ImGui::GetStyle();	//样式
+		float minWinSizeX = style.WindowMinSize.x;	//最小窗口大小
+		style.WindowMinSize.x = 370.0f;
+
+		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
-			ImGui::PopStyleVar();
-
-			if (opt_fullscreen)
-				ImGui::PopStyleVar(2);
-
-			//UI停靠空间
-			ImGuiIO& io = ImGui::GetIO();
-			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-			{
-				ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
-				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), opt_flags);
-			}
-
-			//菜单条
-			if (ImGui::BeginMenuBar())
-			{
-				//菜单：File
-				if (ImGui::BeginMenu("File"))
-				{
-					if (ImGui::MenuItem("Exit")) {	//菜单项：退出
-						Application::GetInstance().Close();	//退出程序
-					}
-					ImGui::EndMenu();
-				}
-
-				ImGui::EndMenuBar();
-			}
-
-			m_HierarchyPanel.OnImGuiRender();	//渲染Hierarchy面板
-
-			//批渲染数据统计
-			ImGui::Begin("Stats");
-			auto stats = Renderer2D::GetStats();
-			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-			ImGui::Text("Quad: %d", stats.QuadCount);
-			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-			ImGui::Text("FPS: %.3f", fps);	//帧率
-			ImGui::End();
-
-			//场景视口
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
-			ImGui::Begin("Scene");
-
-			m_ViewportFocused = ImGui::IsWindowFocused();	//当前窗口被聚焦
-			m_ViewportHovered = ImGui::IsWindowHovered();	//鼠标悬停在当前窗口
-
-			Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);	//阻止ImGui事件
-
-			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Gui面板大小
-
-			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
-
-			uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区ID
-			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));
-			ImGui::End();
-			ImGui::PopStyleVar();
+			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 		}
+
+		style.WindowMinSize.x = minWinSizeX;
+
+		//菜单条
+		if (ImGui::BeginMenuBar())
+		{
+			//菜单：File
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("Exit")) {	//菜单项：退出
+					Application::GetInstance().Close();	//退出程序
+				}
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndMenuBar();
+		}
+
+		m_HierarchyPanel.OnImGuiRender();	//渲染Hierarchy面板
+
+		//批渲染数据统计
+		ImGui::Begin("Stats");
+		auto stats = Renderer2D::GetStats();
+		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+		ImGui::Text("Quad: %d", stats.QuadCount);
+		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+		ImGui::Text("FPS: %.3f", fps);	//帧率
+		ImGui::End();
+
+		//场景视口
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
+		ImGui::Begin("Scene");
+
+		m_ViewportFocused = ImGui::IsWindowFocused();	//当前窗口被聚焦
+		m_ViewportHovered = ImGui::IsWindowHovered();	//鼠标悬停在当前窗口
+
+		Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);	//阻止ImGui事件
+
+		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Gui面板大小
+
+		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
+
+		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区ID
+		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::End();
+		ImGui::PopStyleVar();
+		
 		ImGui::End();
 	}
 

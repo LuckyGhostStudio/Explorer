@@ -27,12 +27,12 @@ namespace Explorer
 	class Transform
 	{
 	public:
-		glm::vec3 m_Position{ 0.0f, 0.0f, 0.0f };
-		glm::vec3 m_Rotation{ 0.0f, 0.0f, 0.0f };
-		glm::vec3 m_Scale{ 1.0f, 1.0f, 1.0f };
+		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 m_Rotation = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 m_Scale = { 1.0f, 1.0f, 1.0f };
 
 		Transform() = default;
-		Transform(const Transform&) {}
+		Transform(const Transform&) = default;
 		Transform(const glm::vec3& position) :m_Position(position) {}
 
 		/// <summary>
