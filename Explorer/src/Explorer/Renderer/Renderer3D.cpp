@@ -31,17 +31,40 @@ namespace Explorer
 		float cubeVertices[] =
 		{
             //-----位置坐标-----  ---------颜色---------  ------法向量------
-			 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f, -1.0f,  1.0f,	// A 0
-			 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f, -1.0f, -1.0f,	// B 1
-			 0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f,  1.0f, -1.0f,	// C 2
-			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f,  1.0f,  1.0f,	// D 3
-			-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f, -1.0f, -1.0f,  1.0f,	// E 4
-			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f,	// F 5
-			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f, -1.0f,  1.0f, -1.0f,	// G 6
-			-0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f, -1.0f,  1.0f,  1.0f,	// H 7
+			 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f,  0.0f,  0.0f,	// A 0
+			 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f, -1.0f,  0.0f,	// A 1
+			 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f,  1.0f,	// A 2
+
+			 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f,  0.0f,  0.0f,	// B 3
+			 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f, -1.0f,  0.0f,	// B 4
+			 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f, -1.0f,	// B 5
+
+			 0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f,  0.0f,  0.0f,	// C 6
+			 0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  1.0f,  0.0f,	// C 7
+			 0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f, -1.0f,	// C 8
+
+			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f,  0.0f,  0.0f,	// D 9
+			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  1.0f,  0.0f,	// D 10
+			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f,  1.0f,	// D 11
+
+			-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f, -1.0f,  0.0f,  0.0f,	// E 12
+			-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f, -1.0f,  0.0f,	// E 13
+			-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f,  1.0f,	// E 14
+
+			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f, -1.0f,  0.0f,  0.0f,	// F 15
+			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f, -1.0f,  0.0f,	// F 16
+			-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f, -1.0f,	// F 17
+
+			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f, -1.0f,  0.0f,  0.0f,	// G 18
+			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  1.0f,  0.0f,	// G 19
+			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f, -1.0f,	// G 20
+
+			-0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f, -1.0f,  0.0f,  0.0f,	// H 21
+			-0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  1.0f,  0.0f,	// H 22
+			-0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f,  1.0f,	// H 23
 		};
 
-		s_Data.m_VertexBuffer = std::make_shared<VertexBuffer>(cubeVertices, 8 * 10 * sizeof(float));	//创建VBO
+		s_Data.m_VertexBuffer = std::make_shared<VertexBuffer>(cubeVertices, 8 * 3 * 10 * sizeof(float));	//创建VBO
 
 		//设置顶点缓冲区布局
 		s_Data.m_VertexBuffer->SetLayout({
@@ -54,18 +77,18 @@ namespace Explorer
 		//顶点索引
 		uint32_t cubeIndices[] =
 		{
-			0, 1, 2,	// A B C
-			2, 3, 0,	// C D A
-			6, 5, 4,	// G F E
-			4, 7, 6,	// G H E
-			7, 2, 6,	// H C G
-			2, 7, 3,	// C D H
-			4, 5, 1,	// E F B
-			1, 0, 4,	// B A E
-			7, 4, 0,	// H E A
-			0, 3, 7,	// A D H
-			6, 1, 5,	// G B F
-			1, 6, 2,	// B G C
+			0, 3, 6,	// A B C x+
+			6, 9, 0,	// C D A x+
+			18, 15, 12,	// G F E x-
+			18, 21, 12,	// G H E x-
+			22, 7, 19,	// H C G y+
+			7, 10, 22,	// C D H y+
+			13, 16, 4,	// E F B y-
+			4, 1, 13,	// B A E y-
+			23, 14, 2,	// H E A z+
+			2, 11, 23,	// A D H z+
+			20, 5, 17,	// G B F z-
+			5, 20, 8,	// B G C z-
 		};
 
 		std::shared_ptr<IndexBuffer> cubeEBO = std::make_shared<IndexBuffer>(cubeIndices, 36);	//创建EBO
@@ -87,9 +110,9 @@ namespace Explorer
 		s_Data.m_Shader->Bind();			//绑定着色器
 		s_Data.m_Shader->SetMat4("u_ViewProjectionMatrix", viewProject);	//设置vp矩阵
 		s_Data.m_Shader->SetFloat3("u_CameraPos", transform.m_Position);	//设置相机位置
-		s_Data.m_Shader->SetFloat3("u_LightDir", { 1.0f, 1.0f, 1.0f });		//设置灯光照射方向
-		s_Data.m_Shader->SetFloat3("u_LightColor", { 1.0f, 1.0f, 1.0f });	//设置相机位置
-		s_Data.m_Shader->SetFloat3("u_AmbientColor", { 0.3f, 0.3f, 0.3f });	//设置环境光颜色
+		s_Data.m_Shader->SetFloat3("u_LightPos", { 10.0f, 10.0f, 10.0f });	//设置灯光位置
+		s_Data.m_Shader->SetFloat3("u_LightColor", { 1.0f, 1.0f, 1.0f });	//设置灯光颜色
+		s_Data.m_Shader->SetFloat3("u_AmbientColor", { 0.2f, 0.2f, 0.2f });	//设置环境光颜色
 	}
 
 	void Renderer3D::EndScene()

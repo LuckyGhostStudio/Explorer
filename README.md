@@ -200,6 +200,8 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 55. 优化UI样式和布局
 
+### 56. 序列化和反序列化场景
+
 ## 文件说明
 
 ### Explorer 项目
@@ -355,6 +357,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - ScriptableObject.h
 
   可脚本化对象，所有本地脚本的基类。
+  
+- SceneSerializer.h/.cpp
+
+  场景序列化器，可序列化和反序列化场景。
 
 ### Editor 项目
 

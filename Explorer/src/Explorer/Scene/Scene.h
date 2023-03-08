@@ -16,6 +16,7 @@ namespace Explorer
 	private:
 		friend class Object;	//友元类Object
 		friend class SceneHierarchyPanel;
+		friend class SceneSerializer;
 
 		entt::registry m_Registry;	//实体注册表：实体id集合（unsigned int集合）
 		std::string m_Name;			//场景名

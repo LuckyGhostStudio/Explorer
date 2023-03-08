@@ -19,11 +19,13 @@ IncludeDir["ImGui"] = "Explorer/vendor/imgui"
 IncludeDir["glm"] = "Explorer/vendor/glm"
 IncludeDir["stb_image"] = "Explorer/vendor/stb_image"
 IncludeDir["entt"] = "Explorer/vendor/entt/include"
+IncludeDir["yaml_cpp"] = "Explorer/vendor/yaml-cpp/include"
 
 group "Dependencies"
 	include "Explorer/vendor/GLFW"		--包含GLFW目录
 	include "Explorer/vendor/GLAD"		--包含GLAD目录
 	include "Explorer/vendor/imgui"		--包含imgui目录
+	include "Explorer/vendor/yaml-cpp"
 
 group ""
 
@@ -64,7 +66,8 @@ project "Explorer"		--项目
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml_cpp}"
 	}
 
 	links
@@ -72,6 +75,7 @@ project "Explorer"		--项目
 		"GLFW",			--引用GLFW
 		"GLAD",			--引用GLAD
 		"ImGui",		--引用imgui
+		"yaml-cpp",		--引用yaml-cpp
 		"opengl32.lib"
 	}
 
