@@ -64,5 +64,11 @@ namespace Explorer
 		/// <param name="width">宽</param>
 		/// <param name="height">高</param>
 		void OnViewportResize(uint32_t width, uint32_t height);
+
+		/// <summary>
+		/// 返回主相机
+		/// </summary>
+		/// <returns>主相机</returns>
+		Object GetPrimaryCameraObject();
 	};
 }

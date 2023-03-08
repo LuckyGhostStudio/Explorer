@@ -1,8 +1,10 @@
 #pragma once
 
 #include <glm/glm.hpp>
-
 #include <glm/gtc/matrix_transform.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 #include "Explorer/Scene/ScriptableObject.h"
 
@@ -39,11 +41,9 @@ namespace Explorer
 		/// 返回Transform矩阵
 		/// </summary>
 		/// <returns>Transform矩阵</returns>
-		glm::mat4& GetTransform() const
+		glm::mat4 GetTransform() const
 		{
-			glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.x), { 1, 0, 0 })
-				* glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.y), { 0, 1, 0 })
-				* glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation.z), { 0, 0, 1 });
+			glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(m_Rotation)));	//旋转矩阵：四元数旋转
 
 			return glm::translate(glm::mat4(1.0f), m_Position) * rotation * glm::scale(glm::mat4(1.0f), m_Scale);
 		}

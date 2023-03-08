@@ -18,14 +18,4 @@
       <Filter>Panels</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="asserts\shaders\DefaultShader.frag" />
-    <None Include="asserts\shaders\DefaultShader.vert" />
-    <None Include="asserts\shaders\FlatColorShader.frag" />
-    <None Include="asserts\shaders\FlatColorShader.vert" />
-    <None Include="asserts\shaders\TextureShader.frag" />
-    <None Include="asserts\shaders\TextureShader.vert" />
-    <None Include="asserts\shaders\TriangleShader.frag" />
-    <None Include="asserts\shaders\TriangleShader.vert" />
-  </ItemGroup>
 </Project>

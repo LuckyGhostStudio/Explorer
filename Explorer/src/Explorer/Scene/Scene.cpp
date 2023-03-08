@@ -53,10 +53,10 @@ namespace Explorer
 		Camera* mainCamera = nullptr;	//主相机
 		Transform* cameraTransform = nullptr;
 
-		auto view = m_Registry.view<Transform, Camera>();	//返回有Transform和Camera的所有实体
+		auto view = m_Registry.view<Transform, Camera>();	//返回有Transform和Camera的所有物体
 
-		for (auto entity : view) {
-			auto [transform, camera] = view.get<Transform, Camera>(entity);
+		for (auto object : view) {
+			auto [transform, camera] = view.get<Transform, Camera>(object);
 
 			//找到主相机
 			if (camera.m_Primary) {
@@ -68,11 +68,11 @@ namespace Explorer
 
 		//主相机存在
 		if (mainCamera) {
-			auto group = m_Registry.group<Transform>(entt::get<SpriteRenderer>);	//返回有Transform和SpriteRenderer的所有实体
+			auto group = m_Registry.group<Transform>(entt::get<SpriteRenderer>);	//返回有Transform和SpriteRenderer的所有物体
 
 			Renderer3D::BeginScene(*mainCamera, *cameraTransform);	//开始渲染场景
-			for (auto entity : group) {
-				auto [transform, sprite] = group.get<Transform, SpriteRenderer>(entity);
+			for (auto object : group) {
+				auto [transform, sprite] = group.get<Transform, SpriteRenderer>(object);
 
 				//Renderer2D::DrawQuad(transform, sprite.m_Color);
 				Renderer3D::DrawMesh(transform);	//绘制网格
@@ -86,12 +86,26 @@ namespace Explorer
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
 
-		auto view = m_Registry.view<Camera>();	//所有有Camera组件的实体
+		auto view = m_Registry.view<Camera>();	//所有有Camera组件的物体
 
-		for (auto entity : view) {
-			auto& camera = view.get<Camera>(entity);	//获得Camera组件
+		for (auto object : view) {
+			auto& camera = view.get<Camera>(object);	//获得Camera组件
 			camera.SetViewportSize(width, height);		//设置视口大小
 		}
+	}
+
+	Object Scene::GetPrimaryCameraObject()
+	{
+		auto view = m_Registry.view<Camera>();	//返回有Camera组件的物体
+		for (auto object : view) {
+			const auto& camera = view.get<Camera>(object);	//Camera组件
+			//主相机
+			if (camera.m_Primary) {
+				return Object{ object, this };	//相机实体
+			}
+		}
+
+		return {};
 	}
 
 	template<typename T>

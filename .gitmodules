@@ -13,3 +13,6 @@
 [submodule "Explorer/vendor/yaml-cpp"]
 	path = Explorer/vendor/yaml-cpp
 	url = https://github.com/TheCherno/yaml-cpp.git
+[submodule "Explorer/vendor/ImGuizmo"]
+	path = Explorer/vendor/ImGuizmo
+	url = https://github.com/TheCherno/ImGuizmo.git

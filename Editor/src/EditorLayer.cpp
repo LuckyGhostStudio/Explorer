@@ -7,6 +7,9 @@
 #include "Explorer/Scene/SceneSerializer.h"
 #include "Explorer/Utils/PlatformUtils.h"
 
+#include "ImGuizmo.h"
+#include "Explorer/Math/Math.h"
+
 namespace Explorer
 {
 	EditorLayer::EditorLayer() :Layer("EditorLayer")//, m_CameraController(1280.0f / 720.0f) 
@@ -203,14 +206,61 @@ namespace Explorer
 		m_ViewportFocused = ImGui::IsWindowFocused();	//当前窗口被聚焦
 		m_ViewportHovered = ImGui::IsWindowHovered();	//鼠标悬停在当前窗口
 
-		Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);	//阻止ImGui事件
+		Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);	//阻止ImGui事件
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Gui面板大小
-
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
 
 		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区ID
-		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
+
+		//Gizmo
+		Object selectedObject = m_HierarchyPanel.GetSelectedObject();	//被选中物体
+		//选中物体存在 && Gizmo类型存在
+		if (selectedObject && m_GizmoType != -1) {
+			ImGuizmo::SetOrthographic(false);	//透视投影
+			ImGuizmo::SetDrawlist();			//设置绘制列表
+			float windowWidth = (float)ImGui::GetWindowWidth();		//视口宽
+			float windowHeight = (float)ImGui::GetWindowHeight();	//视口高
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);	//设置绘制区域
+
+			//Camera
+			auto cameraObject = m_ActiveScene->GetPrimaryCameraObject();	//主相机实体
+			const auto& camera = cameraObject.GetComponent<Camera>();		//相机
+			const glm::mat4& cameraProjection = camera.GetProjection();		//投影矩阵
+			glm::mat4 cameraView = glm::inverse(cameraObject.GetComponent<Transform>().GetTransform());	//视图矩阵
+
+			//被选中物体transform
+			auto& transformComponent = selectedObject.GetComponent<Transform>();	//Transform组件
+			glm::mat4 transform = transformComponent.GetTransform();
+
+			bool span = Input::IsKeyPressed(Key::LeftControl);	//Ctrl刻度捕捉：操作时固定delta刻度
+			float spanValue = 0.5f;	//平移缩放间隔：0.5m
+			//旋转间隔值：5度
+			if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) {
+				spanValue = 5.0f;
+			}
+
+			float spanValues[3] = { spanValue, spanValue, spanValue };	//xyz轴刻度捕捉值
+
+			//绘制操作Gizmo：相机视图矩阵 相机投影矩阵 Gizmo类型 本地 选中物体transform 增量矩阵 刻度捕捉值
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+				(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+				nullptr, span ? spanValues : nullptr);
+
+			//Gizmo被使用
+			if (ImGuizmo::IsUsing()) {
+				glm::vec3 position, rotation, scale;
+				Math::DecomposeTransform(transform, position, rotation, scale);	//分解transform矩阵
+
+				glm::vec3 deltaRotation = rotation - transformComponent.m_Rotation;	//旋转增量
+
+				transformComponent.m_Position = position;		//更新位置
+				transformComponent.m_Rotation += deltaRotation;	//更新旋转：累加增量，避免万向节锁
+				transformComponent.m_Scale = scale;				//更新缩放
+			}
+		}
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 		
@@ -235,6 +285,7 @@ namespace Explorer
 		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);	//Ctrl键按下
 		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);		//Shift键按下
 
+		//菜单快捷键
 		switch (e.GetKeyCode()) {
 		case Key::N:
 			if (control) {
@@ -250,6 +301,20 @@ namespace Explorer
 			if (control && shift) {
 				SaveSceneAs();	//场景另存为：Ctrl+Shift+S
 			}
+			break;
+		}
+
+		//Gizmo
+		switch (e.GetKeyCode())
+		{
+		case Key::G:
+			m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;	//平移
+			break;
+		case Key::R:
+			m_GizmoType = ImGuizmo::OPERATION::ROTATE;		//旋转
+			break;
+		case Key::S:
+			m_GizmoType = ImGuizmo::OPERATION::SCALE;		//缩放
 			break;
 		}
 	}

@@ -2,24 +2,6 @@ Scene: Untitled
 Objects:
   - Object: 12837192831273
     Name Component:
-      Name: Cube
-    Transform Component:
-      Position: [1.89999998, 0, -4.5]
-      Rotation: [18.2999992, 16.1000004, 0]
-      Scale: [1, 1, 1]
-    SpriteRenderer Component:
-      Color: [0.717355072, 0.980695009, 0.018932309, 1]
-  - Object: 12837192831273
-    Name Component:
-      Name: Cube
-    Transform Component:
-      Position: [0, 0, -3.79999995]
-      Rotation: [17.8999996, -113.099998, 0]
-      Scale: [1, 1, 1]
-    SpriteRenderer Component:
-      Color: [1, 1, 1, 1]
-  - Object: 12837192831273
-    Name Component:
       Name: Main Camera
     Transform Component:
       Position: [0.800000012, 0, 0]
@@ -32,3 +14,21 @@ Objects:
       Near: 0.00999999978
       Far: 1000
       Primary: true
+  - Object: 12837192831273
+    Name Component:
+      Name: Cube
+    Transform Component:
+      Position: [-0.222894907, -0.0398671404, -4.05921555]
+      Rotation: [-162.100006, -66.9000244, -180]
+      Scale: [1.00000048, 1, 0.999999881]
+    SpriteRenderer Component:
+      Color: [1, 1, 1, 1]
+  - Object: 12837192831273
+    Name Component:
+      Name: Cube
+    Transform Component:
+      Position: [1.74245977, 0.0566078648, -4.52678585]
+      Rotation: [81.7024078, 16.8704433, -58.4230766]
+      Scale: [0.49999994, 2.53417802, 0.499997795]
+    SpriteRenderer Component:
+      Color: [1, 1, 1, 1]

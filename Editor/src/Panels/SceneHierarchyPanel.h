@@ -46,5 +46,11 @@ namespace Explorer
 		/// 渲染ImGui
 		/// </summary>
 		void OnImGuiRender();
+
+		/// <summary>
+		/// 返回被选中物体
+		/// </summary>
+		/// <returns>被选中物体</returns>
+		Object GetSelectedObject() const { return m_SelectionObject; }
 	};
 }

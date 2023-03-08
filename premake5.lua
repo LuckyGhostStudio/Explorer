@@ -20,6 +20,7 @@ IncludeDir["glm"] = "Explorer/vendor/glm"
 IncludeDir["stb_image"] = "Explorer/vendor/stb_image"
 IncludeDir["entt"] = "Explorer/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "Explorer/vendor/yaml-cpp/include"
+IncludeDir["ImGuizmo"] = "Explorer/vendor/ImGuizmo"
 
 group "Dependencies"
 	include "Explorer/vendor/GLFW"		--包含GLFW目录
@@ -49,7 +50,9 @@ project "Explorer"		--项目
 		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
+		"%{prj.name}/vendor/glm/glm/**.inl",
+		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.h",
+		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.cpp"
 	}
 
 	defines
@@ -67,7 +70,8 @@ project "Explorer"		--项目
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml_cpp}"
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links
@@ -78,6 +82,9 @@ project "Explorer"		--项目
 		"yaml-cpp",		--引用yaml-cpp
 		"opengl32.lib"
 	}
+
+	filter "files:Explorer/vendor/ImGuizmo/**.cpp"
+	flags {"NoPCH"}		--该cpp文件不使用预编译头文件
 
 	filter "system:windows"	--windows系统
         systemversion "latest"	--sdk版本
@@ -181,7 +188,8 @@ project "Editor"		--项目
 		"Explorer/vendor",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links

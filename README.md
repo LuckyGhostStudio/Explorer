@@ -204,6 +204,8 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 57. 打开和保存场景文件
 
+### 58. Transform Gizmo
+
 ## 文件说明
 
 ### Explorer 项目
@@ -291,6 +293,12 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - ImGuiLayer.h/.cpp
 
   ImGui层，渲染ImGui。
+
+##### Math
+
+- Math.h/.cpp
+
+  数学库，包括分解transform矩阵函数，将transform矩阵分解为position、rotation和scale向量。
 
 ##### Renderer
 
