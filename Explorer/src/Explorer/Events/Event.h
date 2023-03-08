@@ -58,7 +58,7 @@ namespace Explorer
 	/// <summary>
 	/// 事件类
 	/// </summary>
-	class EXPLORER_API Event
+	class Event
 	{
 		friend class EventDispatcher;	//事件调度器
 	public:

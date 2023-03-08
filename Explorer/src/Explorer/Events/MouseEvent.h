@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Event.h"
+#include "Explorer/Core/MouseButtonCodes.h"
 
 namespace Explorer
 {
 	/// <summary>
 	/// 鼠标移动事件
 	/// </summary>
-	class EXPLORER_API MouseMovedEvent :public Event
+	class MouseMovedEvent :public Event
 	{
 	private:
 		float m_MouseX;		//鼠标 x 坐标
@@ -65,7 +66,7 @@ namespace Explorer
 	/// <summary>
 	/// 鼠标滚轮滚动事件
 	/// </summary>
-	class EXPLORER_API MouseScrolledEvent :public Event
+	class MouseScrolledEvent :public Event
 	{
 	private:
 		float m_XOffset;	//鼠标水平滚动偏移量
@@ -123,14 +124,14 @@ namespace Explorer
 	/// <summary>
 	/// 鼠标按钮事件
 	/// </summary>
-	class EXPLORER_API MouseButtonEvent :public Event
+	class MouseButtonEvent :public Event
 	{
 	protected:
-		int m_Button;	//鼠标按钮
+		MouseCode m_Button;	//鼠标按钮代码
 
-		MouseButtonEvent(int button) :m_Button(button) {}
+		MouseButtonEvent(const MouseCode button) :m_Button(button) {}
 	public:
-		inline int GetMouseButton() const { return m_Button; }
+		inline MouseCode GetMouseButton() const { return m_Button; }
 
 		/// <summary>
 		/// 返回事件种类标志
@@ -145,10 +146,10 @@ namespace Explorer
 	/// <summary>
 	/// 鼠标按钮按下事件
 	/// </summary>
-	class EXPLORER_API MouseButtonPressedEvent :public MouseButtonEvent
+	class MouseButtonPressedEvent :public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(int button) :MouseButtonEvent(button) {}
+		MouseButtonPressedEvent(const MouseCode button) :MouseButtonEvent(button) {}
 
 		std::string ToString() const override
 		{
@@ -188,10 +189,10 @@ namespace Explorer
 	/// <summary>
 	/// 鼠标按钮抬起事件
 	/// </summary>
-	class EXPLORER_API MouseButtonReleasedEvent :public MouseButtonEvent
+	class MouseButtonReleasedEvent :public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(int button) :MouseButtonEvent(button) {}
+		MouseButtonReleasedEvent(const MouseCode button) :MouseButtonEvent(button) {}
 
 		std::string ToString() const override
 		{

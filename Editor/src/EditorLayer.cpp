@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Explorer/Scene/SceneSerializer.h"
+#include "Explorer/Utils/PlatformUtils.h"
 
 namespace Explorer
 {
@@ -158,15 +159,23 @@ namespace Explorer
 			//菜单：File
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Serialize")) {		//菜单项：序列化（保存场景）
-					SceneSerializer serializer(m_ActiveScene);				//m_ActiveScene场景序列化器
-					serializer.Serialize("asserts/scenes/Example.explor");	//序列化
+				//创建新场景
+				if (ImGui::MenuItem("New", "Ctrl+N")) {
+					NewScene();
 				}
-				if (ImGui::MenuItem("Deserialize")) {	//菜单项：反序列化（加载场景）
-					SceneSerializer serializer(m_ActiveScene);				//m_ActiveScene场景序列化器
-					serializer.Deserialize("asserts/scenes/Example.explor");	//反序列化
+
+				//打开文件：加载场景
+				if (ImGui::MenuItem("Open...", "Ctrl+O")) {
+					OpenScene();
 				}
-				if (ImGui::MenuItem("Exit")) {	//菜单项：退出
+
+				//另存为：保存场景
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
+					SaveSceneAs();
+				}
+
+				//退出
+				if (ImGui::MenuItem("Quit")) {
 					Application::GetInstance().Close();	//退出程序
 				}
 				ImGui::EndMenu();
@@ -211,5 +220,68 @@ namespace Explorer
 	void EditorLayer::OnEvent(Event& event)
 	{
 		//m_CameraController.OnEvent(event);	//调用相机事件函数
+
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<KeyPressedEvent>(EXP_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));	//调用按键按下事件
+	}
+
+	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+	{
+		//快捷键：重复次数==0
+		if (e.GetRepeatCount() > 0) {
+			return false;
+		}
+
+		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);	//Ctrl键按下
+		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);		//Shift键按下
+
+		switch (e.GetKeyCode()) {
+		case Key::N:
+			if (control) {
+				NewScene();		//创建新场景：Ctrl+N
+			}
+			break;
+		case Key::O:
+			if (control) {
+				OpenScene();	//打开场景：Ctrl+O
+			}
+			break;
+		case Key::S:
+			if (control && shift) {
+				SaveSceneAs();	//场景另存为：Ctrl+Shift+S
+			}
+			break;
+		}
+	}
+
+	void EditorLayer::NewScene()
+	{
+		m_ActiveScene = std::make_shared<Scene>();	//创建新场景
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
+		m_HierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
+	}
+
+	void EditorLayer::OpenScene()
+	{
+		std::string filepath = FileDialogs::OpenFile("Explorer Scene(*.explor)\0*.explor\0");	//打开文件对话框（文件类型名\0 文件类型.explor）
+		//路径不为空
+		if (!filepath.empty()) {
+			m_ActiveScene = std::make_shared<Scene>();	//创建新场景
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
+			m_HierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
+
+			SceneSerializer serializer(m_ActiveScene);	//场景序列化器
+			serializer.Deserialize(filepath);			//反序列化：加载文件场景到新场景
+		}
+	}
+
+	void EditorLayer::SaveSceneAs()
+	{
+		std::string filepath = FileDialogs::SaveFile("Explorer Scene(*.explor)\0*.explor\0");	//保存文件对话框（文件类型名\0 文件类型.explor）
+		//路径不为空
+		if (!filepath.empty()) {
+			SceneSerializer serializer(m_ActiveScene);	//场景序列化器
+			serializer.Serialize(filepath);				//序列化：保存场景
+		}
 	}
 }

@@ -17,6 +17,7 @@ namespace Explorer
 	void SceneHierarchyPanel::SetScene(const std::shared_ptr<Scene>& scene)
 	{
 		m_Scene = scene;
+		m_SelectionObject = {};	//置空旧场景被选中物体
 	}
 	
 	void SceneHierarchyPanel::OnImGuiRender()

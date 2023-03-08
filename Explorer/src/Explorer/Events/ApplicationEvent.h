@@ -7,7 +7,7 @@ namespace Explorer
 	/// <summary>
 	/// 窗口改变大小事件
 	/// </summary>
-	class EXPLORER_API WindowResizeEvent :public Event
+	class WindowResizeEvent :public Event
 	{
 	private:
 		unsigned int m_Width;	//被调整到的窗口宽
@@ -65,7 +65,7 @@ namespace Explorer
 	/// <summary>
 	/// 窗口关闭事件
 	/// </summary>
-	class EXPLORER_API WindowCloseEvent :public Event
+	class WindowCloseEvent :public Event
 	{
 	public:
 		WindowCloseEvent() {}
@@ -110,7 +110,7 @@ namespace Explorer
 	/// <summary>
 	/// App时钟事件
 	/// </summary>
-	class EXPLORER_API AppTickEvent :public Event
+	class AppTickEvent :public Event
 	{
 	public:
 		AppTickEvent() {}
@@ -155,7 +155,7 @@ namespace Explorer
 	/// <summary>
 	/// App更新事件
 	/// </summary>
-	class EXPLORER_API AppUpdateEvent :public Event
+	class AppUpdateEvent :public Event
 	{
 	public:
 		AppUpdateEvent() {}
@@ -200,7 +200,7 @@ namespace Explorer
 	/// <summary>
 	/// App渲染事件
 	/// </summary>
-	class EXPLORER_API AppRenderEvent :public Event
+	class AppRenderEvent :public Event
 	{
 	public:
 		AppRenderEvent() {}

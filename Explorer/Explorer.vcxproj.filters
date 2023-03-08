@@ -1405,6 +1405,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Scene\SceneSerializer.h" />
+    <ClInclude Include="src\Explorer\Utils\PlatformUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Core\Application.cpp">
@@ -1483,5 +1484,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\Explorer\Utils\PlatformUtils.cpp" />
   </ItemGroup>
 </Project>

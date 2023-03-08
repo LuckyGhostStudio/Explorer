@@ -24,16 +24,16 @@ namespace Explorer
 	{
 		if (m_Camera.GetProjectionType() == Camera::ProjectionType::Orthographic) {	//正交相机
 			//相机移动
-			if (Input::IsKeyPressed(KeyCode::A)) {		//左
+			if (Input::IsKeyPressed(Key::A)) {		//左
 				m_CameraPosition.x -= m_CameraTranslationSpeed * dt;
 			}
-			else if (Input::IsKeyPressed(KeyCode::D)) {	//右
+			else if (Input::IsKeyPressed(Key::D)) {	//右
 				m_CameraPosition.x += m_CameraTranslationSpeed * dt;
 			}
-			if (Input::IsKeyPressed(KeyCode::W)) {		//上
+			if (Input::IsKeyPressed(Key::W)) {		//上
 				m_CameraPosition.y += m_CameraTranslationSpeed * dt;
 			}
-			else if (Input::IsKeyPressed(KeyCode::S)) {	//下
+			else if (Input::IsKeyPressed(Key::S)) {	//下
 				m_CameraPosition.y -= m_CameraTranslationSpeed * dt;
 			}
 

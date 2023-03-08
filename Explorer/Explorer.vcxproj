@@ -175,6 +175,7 @@
     <ClInclude Include="src\Explorer\Scene\Scene.h" />
     <ClInclude Include="src\Explorer\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Explorer\Scene\ScriptableObject.h" />
+    <ClInclude Include="src\Explorer\Utils\PlatformUtils.h" />
     <ClInclude Include="src\exppch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
@@ -619,6 +620,7 @@
     <ClCompile Include="src\Explorer\Scene\Object.cpp" />
     <ClCompile Include="src\Explorer\Scene\Scene.cpp" />
     <ClCompile Include="src\Explorer\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\Explorer\Utils\PlatformUtils.cpp" />
     <ClCompile Include="src\exppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

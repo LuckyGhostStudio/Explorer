@@ -66,5 +66,27 @@ namespace Explorer
 		/// </summary>
 		/// <param name="event">事件</param>
 		virtual void OnEvent(Event& event) override;
+
+		/// <summary>
+		/// 创建新场景
+		/// </summary>
+		void NewScene();
+
+		/// <summary>
+		/// 打开场景
+		/// </summary>
+		void OpenScene();
+
+		/// <summary>
+		/// 场景另存为
+		/// </summary>
+		void SaveSceneAs();
+	private:
+		/// <summary>
+		/// 按键按下时调用
+		/// </summary>
+		/// <param name="e">按键按下事件</param>
+		/// <returns>处理结果</returns>
+		bool OnKeyPressed(KeyPressedEvent& e);
 	};
 }
