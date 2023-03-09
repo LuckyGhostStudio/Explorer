@@ -35,6 +35,20 @@ namespace Explorer
 		m_Registry.destroy(object);	//从注册表移除物体
 	}
 
+	void Scene::OnUpdateEditor(DeltaTime dt, EditorCamera& camera)
+	{
+		Renderer3D::BeginScene(camera);	//开始渲染场景
+
+		auto group = m_Registry.group<Transform>(entt::get<SpriteRenderer>);	//返回有Transform和SpriteRenderer的所有物体
+
+		for (auto object : group) {
+			auto [transform, sprite] = group.get<Transform, SpriteRenderer>(object);
+
+			Renderer3D::DrawMesh(transform);	//绘制网格
+		}
+		Renderer3D::EndScene();			//结束渲染场景
+	}
+
 	void Scene::OnUpdate(DeltaTime dt)
 	{
 		//遍历所有拥有脚本组件的对象，调用each内的函数

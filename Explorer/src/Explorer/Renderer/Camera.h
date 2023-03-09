@@ -7,7 +7,7 @@
 namespace Explorer
 {
 	/// <summary>
-	/// 相机
+	/// 相机组件
 	/// </summary>
 	class Camera
 	{

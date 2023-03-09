@@ -24,13 +24,14 @@ namespace Explorer
 		fbSpec.Height = 720;
 		m_Framebuffer = std::make_shared<Framebuffer>(fbSpec);	//创建帧缓冲区
 
-		m_ActiveScene = std::make_shared<Scene>();	//创建场景
-#if 0
-		Object cube = m_ActiveScene->CreateObject("Cube");				//创建Cube对象
-		cube.AddComponent<SpriteRenderer>(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));	//添加SpriteRenderer组件
+		m_ActiveScene = std::make_shared<Scene>();						//创建场景
+		m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f);	//创建编辑器相机
 
-		m_CameraObject = m_ActiveScene->CreateObject("Main Camera");	//创建相机对象
-		m_CameraObject.AddComponent<Camera>();							//添加Camera组件
+		m_Camera = m_ActiveScene->CreateObject("Camera");	//创建默认相机对象
+		m_Camera.AddComponent<Camera>();					//添加Camera组件
+		m_Cube = m_ActiveScene->CreateObject("Cube");		//创建默认Cube
+		m_Cube.AddComponent<SpriteRenderer>(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));	//添加SpriteRenderer组件
+#if 0
 
 		class CameraController :public ScriptableObject
 		{
@@ -84,14 +85,14 @@ namespace Explorer
 			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
 		{
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置帧缓冲区大小
-			//m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);				//重置相机大小
 
+			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);							//设置视口大小
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
 		}
 
-		if (m_ViewportFocused) {	//视口被聚焦
-			//m_CameraController.OnUpdate(dt);	//更新相机控制器
+		if (m_ViewportFocused) {			//视口被聚焦
 		}
+			m_EditorCamera.OnUpdate(dt);	//更新编辑器相机
 
 		//Renderer
 		Renderer2D::ResetStats();	//重置统计数据
@@ -99,7 +100,7 @@ namespace Explorer
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });	//设置清屏颜色
 		RenderCommand::Clear();										//清除
 
-		m_ActiveScene->OnUpdate(dt);	//更新场景
+		m_ActiveScene->OnUpdateEditor(dt, m_EditorCamera);	//更新编辑器场景
 
 		m_Framebuffer->Unbind();	//解除绑定帧缓冲区
 	}
@@ -202,65 +203,72 @@ namespace Explorer
 		//场景视口
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
 		ImGui::Begin("Scene");
+		{
+			m_ViewportFocused = ImGui::IsWindowFocused();	//当前窗口被聚焦
+			m_ViewportHovered = ImGui::IsWindowHovered();	//鼠标悬停在当前窗口
 
-		m_ViewportFocused = ImGui::IsWindowFocused();	//当前窗口被聚焦
-		m_ViewportHovered = ImGui::IsWindowHovered();	//鼠标悬停在当前窗口
+			Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);	//阻止ImGui事件
 
-		Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);	//阻止ImGui事件
+			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Gui面板大小
+			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
 
-		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Gui面板大小
-		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
+			uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区ID
+			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
 
-		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区ID
-		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
-
-		//Gizmo
-		Object selectedObject = m_HierarchyPanel.GetSelectedObject();	//被选中物体
-		//选中物体存在 && Gizmo类型存在
-		if (selectedObject && m_GizmoType != -1) {
-			ImGuizmo::SetOrthographic(false);	//透视投影
-			ImGuizmo::SetDrawlist();			//设置绘制列表
+			//Gizmo
+			ImGuizmo::SetOrthographic(false);						//透视投影
+			ImGuizmo::SetDrawlist();								//设置绘制列表
 			float windowWidth = (float)ImGui::GetWindowWidth();		//视口宽
 			float windowHeight = (float)ImGui::GetWindowHeight();	//视口高
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);	//设置绘制区域
 
-			//Camera
-			auto cameraObject = m_ActiveScene->GetPrimaryCameraObject();	//主相机实体
-			const auto& camera = cameraObject.GetComponent<Camera>();		//相机
-			const glm::mat4& cameraProjection = camera.GetProjection();		//投影矩阵
-			glm::mat4 cameraView = glm::inverse(cameraObject.GetComponent<Transform>().GetTransform());	//视图矩阵
+			//编辑器相机
+			const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();	//投影矩阵
+			glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();				//视图矩阵
 
-			//被选中物体transform
-			auto& transformComponent = selectedObject.GetComponent<Transform>();	//Transform组件
-			glm::mat4 transform = transformComponent.GetTransform();
+			//绘制坐标系
+			ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), glm::value_ptr(glm::mat4(1.0f)), 10);
 
-			bool span = Input::IsKeyPressed(Key::LeftControl);	//Ctrl刻度捕捉：操作时固定delta刻度
-			float spanValue = 0.5f;	//平移缩放间隔：0.5m
-			//旋转间隔值：5度
-			if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) {
-				spanValue = 5.0f;
-			}
+			Object selectedObject = m_HierarchyPanel.GetSelectedObject();	//被选中物体
+			//选中物体存在 && Gizmo类型存在
+			if (selectedObject && m_GizmoType != -1) {
+				////Camera
+				//auto cameraObject = m_ActiveScene->GetPrimaryCameraObject();	//主相机实体
+				//const auto& camera = cameraObject.GetComponent<Camera>();		//相机
+				//const glm::mat4& cameraProjection = camera.GetProjection();		//投影矩阵
+				//glm::mat4 cameraView = glm::inverse(cameraObject.GetComponent<Transform>().GetTransform());	//视图矩阵
 
-			float spanValues[3] = { spanValue, spanValue, spanValue };	//xyz轴刻度捕捉值
+				//被选中物体transform
+				auto& transformComponent = selectedObject.GetComponent<Transform>();	//Transform组件
+				glm::mat4 transform = transformComponent.GetTransform();
 
-			//绘制操作Gizmo：相机视图矩阵 相机投影矩阵 Gizmo类型 本地 选中物体transform 增量矩阵 刻度捕捉值
-			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
-				(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
-				nullptr, span ? spanValues : nullptr);
+				bool span = Input::IsKeyPressed(Key::LeftControl);	//Ctrl刻度捕捉：操作时固定delta刻度
+				float spanValue = 0.5f;	//平移缩放间隔：0.5m
+				//旋转间隔值：5度
+				if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) {
+					spanValue = 5.0f;
+				}
 
-			//Gizmo被使用
-			if (ImGuizmo::IsUsing()) {
-				glm::vec3 position, rotation, scale;
-				Math::DecomposeTransform(transform, position, rotation, scale);	//分解transform矩阵
+				float spanValues[3] = { spanValue, spanValue, spanValue };	//xyz轴刻度捕捉值
 
-				glm::vec3 deltaRotation = rotation - transformComponent.m_Rotation;	//旋转增量
+				//绘制操作Gizmo：相机视图矩阵 相机投影矩阵 Gizmo类型 本地坐标系 选中物体transform 增量矩阵 刻度捕捉值
+				ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+					(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+					nullptr, span ? spanValues : nullptr);
 
-				transformComponent.m_Position = position;		//更新位置
-				transformComponent.m_Rotation += deltaRotation;	//更新旋转：累加增量，避免万向节锁
-				transformComponent.m_Scale = scale;				//更新缩放
+				//Gizmo被使用
+				if (ImGuizmo::IsUsing()) {
+					glm::vec3 position, rotation, scale;
+					Math::DecomposeTransform(transform, position, rotation, scale);	//分解transform矩阵
+
+					glm::vec3 deltaRotation = rotation - transformComponent.m_Rotation;	//旋转增量
+
+					transformComponent.m_Position = position;		//更新位置
+					transformComponent.m_Rotation += deltaRotation;	//更新旋转：累加增量，避免万向节锁
+					transformComponent.m_Scale = scale;				//更新缩放
+				}
 			}
 		}
-
 		ImGui::End();
 		ImGui::PopStyleVar();
 		
@@ -269,7 +277,7 @@ namespace Explorer
 
 	void EditorLayer::OnEvent(Event& event)
 	{
-		//m_CameraController.OnEvent(event);	//调用相机事件函数
+		m_EditorCamera.OnEvent(event);	//编辑器相机事件
 
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KeyPressedEvent>(EXP_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));	//调用按键按下事件

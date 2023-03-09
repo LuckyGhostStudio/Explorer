@@ -2,6 +2,7 @@
 
 #include "Explorer.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Explorer/Renderer/EditorCamera.h"
 
 namespace Explorer
 {
@@ -17,8 +18,11 @@ namespace Explorer
 		std::shared_ptr<Framebuffer> m_Framebuffer;			//帧缓冲区
 
 		std::shared_ptr<Scene> m_ActiveScene;	//活动场景
-		Object m_SquareObject;					//正方形对象
-		Object m_CameraObject;					//相机对象
+		EditorCamera m_EditorCamera;			//编辑器相机
+
+		Object m_Camera;						//场景默认相机
+		Object m_Cube;							//场景默认正方体
+		//TODO:添加场景默认Light
 
 		bool m_ViewportFocused = false;				//视口被聚焦
 		bool m_ViewportHovered = false;				//鼠标悬停在视口

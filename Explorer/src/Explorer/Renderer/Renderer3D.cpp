@@ -115,6 +115,16 @@ namespace Explorer
 		s_Data.m_Shader->SetFloat3("u_AmbientColor", { 0.2f, 0.2f, 0.2f });	//设置环境光颜色
 	}
 
+	void Renderer3D::BeginScene(const EditorCamera& camera)
+	{
+		s_Data.m_Shader->Bind();			//绑定着色器
+		s_Data.m_Shader->SetMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());	//设置vp矩阵
+		s_Data.m_Shader->SetFloat3("u_CameraPos", camera.GetPosition());	//设置相机位置
+		s_Data.m_Shader->SetFloat3("u_LightPos", { 10.0f, 10.0f, 10.0f });	//设置灯光位置
+		s_Data.m_Shader->SetFloat3("u_LightColor", { 1.0f, 1.0f, 1.0f });	//设置灯光颜色
+		s_Data.m_Shader->SetFloat3("u_AmbientColor", { 0.2f, 0.2f, 0.2f });	//设置环境光颜色
+	}
+
 	void Renderer3D::EndScene()
 	{
 

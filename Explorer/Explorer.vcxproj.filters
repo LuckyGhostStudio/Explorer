@@ -1420,6 +1420,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Math\Math.h" />
+    <ClInclude Include="src\Explorer\Renderer\EditorCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Core\Application.cpp">
@@ -1507,5 +1508,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Math\Math.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\EditorCamera.cpp" />
   </ItemGroup>
 </Project>

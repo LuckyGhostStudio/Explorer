@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "Explorer/Scene/Components.h"
+#include "Explorer/Renderer/EditorCamera.h"
 
 namespace Explorer
 {
@@ -34,6 +35,12 @@ namespace Explorer
 		/// </summary>
 		/// <param name="camera">相机</param>
 		static void BeginScene(const Camera& camera, const Transform& transform);
+
+		/// <summary>
+		/// 开始渲染场景
+		/// </summary>
+		/// <param name="camera">编辑器相机</param>
+		static void BeginScene(const EditorCamera& camera);
 
 		/// <summary>
 		/// 结束渲染场景

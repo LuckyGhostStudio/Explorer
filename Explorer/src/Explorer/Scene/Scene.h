@@ -3,6 +3,7 @@
 #include "entt.hpp"
 
 #include "Explorer/Core/DeltaTime.h"
+#include "Explorer/Renderer/EditorCamera.h"
 
 namespace Explorer
 {
@@ -51,6 +52,13 @@ namespace Explorer
 		/// </summary>
 		/// <param name="object">物体</param>
 		void DestroyEntity(Object object);
+
+		/// <summary>
+		/// 编辑器更新：每帧调用
+		/// </summary>
+		/// <param name="dt">帧间隔</param>
+		/// <param name="camera">编辑器相机</param>
+		void OnUpdateEditor(DeltaTime dt, EditorCamera& camera);
 
 		/// <summary>
 		/// 更新：每帧调用

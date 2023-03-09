@@ -206,6 +206,8 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 58. Transform Gizmo
 
+### 59. EditorCamera
+
 ## 文件说明
 
 ### Explorer 项目
@@ -349,6 +351,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Framebuffer.h/.cpp
 
   帧缓冲区，可创建帧缓冲区，包括颜色缓冲区和深度缓冲区，可将颜色缓冲区显示在ImGui上。
+  
+- EditorCamera.h/.cpp
+
+  编辑器相机，编辑器内场景渲染相机，可自由移动，用来查看场景，不同于相机组件。
 
 ##### Scene
 
