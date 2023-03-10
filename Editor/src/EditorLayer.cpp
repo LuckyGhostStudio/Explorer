@@ -12,7 +12,7 @@
 
 namespace Explorer
 {
-	EditorLayer::EditorLayer() :Layer("EditorLayer")//, m_CameraController(1280.0f / 720.0f) 
+	EditorLayer::EditorLayer() :Layer("EditorLayer")
 	{
 		
 	}
@@ -20,6 +20,7 @@ namespace Explorer
 	void EditorLayer::OnAttach()
 	{
 		FramebufferSpecification fbSpec;	//帧缓冲区规范
+		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
 		m_Framebuffer = std::make_shared<Framebuffer>(fbSpec);	//创建帧缓冲区
@@ -212,7 +213,7 @@ namespace Explorer
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Gui面板大小
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
 
-			uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区ID
+			uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区0 ID
 			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
 
 			//Gizmo
@@ -227,7 +228,7 @@ namespace Explorer
 			glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();				//视图矩阵
 
 			//绘制坐标系
-			ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), glm::value_ptr(glm::mat4(1.0f)), 10);
+			//ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), glm::value_ptr(glm::mat4(1.0f)), 10);
 
 			Object selectedObject = m_HierarchyPanel.GetSelectedObject();	//被选中物体
 			//选中物体存在 && Gizmo类型存在

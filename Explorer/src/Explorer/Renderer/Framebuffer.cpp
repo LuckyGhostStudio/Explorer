@@ -7,15 +7,125 @@ namespace Explorer
 {
 	static uint32_t s_MaxFramebufferSize = 8192;	//帧缓冲区最大大小
 
+	namespace Utils
+	{
+		/// <summary>
+		/// 纹理采样目标
+		/// </summary>
+		/// <param name="multisampled">是否多重采样</param>
+		/// <returns>纹理类型</returns>
+		static GLenum TextureTarget(bool multisampled)
+		{
+			return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;	//Texture2D多重采样 Texture2D
+		}
+
+		/// <summary>
+		/// 创建缓冲区纹理
+		/// </summary>
+		/// <param name="multisampled">是否多重采样</param>
+		/// <param name="outID">输出纹理ID</param>
+		/// <param name="count">纹理数量</param>
+		static void CreateTextures(bool multisampled, uint32_t* outID, uint32_t count)
+		{
+			glCreateTextures(TextureTarget(multisampled), count, outID);	//创建纹理
+		}
+
+		/// <summary>
+		/// 绑定纹理
+		/// </summary>
+		/// <param name="multisampled">是否多重采样</param>
+		/// <param name="id">纹理id</param>
+		static void BindTexture(bool multisampled, uint32_t id)
+		{
+			glBindTexture(TextureTarget(multisampled), id);	//绑定纹理
+		}
+
+		/// <summary>
+		/// 附加颜色纹理
+		/// </summary>
+		/// <param name="id">颜色缓冲区id</param>
+		/// <param name="samples">采样数量</param>
+		/// <param name="format">格式</param>
+		/// <param name="width">宽</param>
+		/// <param name="height">高</param>
+		/// <param name="index">颜色缓冲区id索引</param>
+		static void AttachColorTexture(uint32_t id, int samples, GLenum format, uint32_t width, uint32_t height, int index)
+		{
+			bool multisampled = samples > 1;	//是否是多重采样
+			if (multisampled) {
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);	//多重采样纹理图像
+			}
+			else {
+				//纹理图像：- - 内部格式（存储格式）- - - 外部格式（传入格式）
+				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+				//设置纹理参数
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	//缩小过滤器 线性插值
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	//放大过滤器 线性插值
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			}
+
+			//颜色纹理附加到帧缓冲区
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampled), id, 0);
+		}
+
+		static void AttachDepthTexture(uint32_t id, int samples, GLenum format, GLenum attachmentType, uint32_t width, uint32_t height)
+		{
+			bool multisampled = samples > 1;	//是否是多重采样
+			if (multisampled) {
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);	//多重采样纹理图像
+			}
+			else {
+				//深度缓冲区纹理存储 24位深度缓冲区 8位模板缓冲区
+				glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
+				//设置纹理参数
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	//缩小过滤器 线性插值
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	//放大过滤器 线性插值
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			}
+
+			//深度纹理附加到帧缓冲区
+			glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(multisampled), id, 0);
+		}
+
+		/// <summary>
+		/// 缓冲区纹理是否是深度格式
+		/// </summary>
+		/// <param name="format">格式</param>
+		/// <returns>结果</returns>
+		static bool IsDepthFormat(FramebufferTextureFormat format)
+		{
+			switch (format)
+			{
+				case FramebufferTextureFormat::DEFPTH24STENCIL8: return true;
+			}
+
+			return false;
+		}
+	}
+
 	Framebuffer::Framebuffer(const FramebufferSpecification& spec) :m_Specification(spec)
 	{
+		//遍历帧缓冲区规范附件列表
+		for (auto format : spec.Attachments.Attachments) {
+			if (!Utils::IsDepthFormat(format.TextureFormat)) {	//不是深度格式
+				m_ColorAttachmentSpecs.emplace_back(format);	//添加到颜色缓冲区规范列表
+			}
+			else {
+				m_DepthAttachmentSpec = format;	//深度缓冲区规范格式
+			}
+		}
+
 		Invalidate();
 	}
 	
 	Framebuffer::~Framebuffer()
 	{
 		glDeleteFramebuffers(1, &m_RendererID);	//删除帧缓冲区
-		glDeleteTextures(1, &m_ColorAttachment);	//删除颜色缓冲区
+		glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());	//删除颜色缓冲区
 		glDeleteTextures(1, &m_DepthAttachment);	//删除深度缓冲区
 	}
 	
@@ -24,29 +134,52 @@ namespace Explorer
 		//帧缓冲区存在
 		if (m_RendererID) {
 			glDeleteFramebuffers(1, &m_RendererID);		//删除帧缓冲区
-			glDeleteTextures(1, &m_ColorAttachment);	//删除颜色缓冲区
+			glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());	//删除颜色缓冲区
 			glDeleteTextures(1, &m_DepthAttachment);	//删除深度缓冲区
+
+			m_ColorAttachments.clear();	//清空颜色缓冲区id列表
+			m_DepthAttachment = 0;		//清零深度缓冲区id
 		}
 
 		glCreateFramebuffers(1, &m_RendererID);				//创建帧缓冲区
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);	//绑定帧缓冲区
 
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_ColorAttachment);	//创建颜色缓冲区
-		glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);		//绑定颜色缓冲区
-		//纹理图像
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Specification.Width, m_Specification.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-		//设置纹理参数
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	//缩小过滤器 线性插值
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	//放大过滤器 线性插值
+		bool multisampled = m_Specification.Samples > 1;	//是否是多重采样
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorAttachment, 0);	//帧缓冲区颜色纹理
+		//颜色缓冲区附件存在
+		if (m_ColorAttachmentSpecs.size()) {
+			m_ColorAttachments.resize(m_ColorAttachmentSpecs.size());	//设置颜色缓冲区ID列表大小
+			Utils::CreateTextures(multisampled, m_ColorAttachments.data(), m_ColorAttachments.size());	//创建颜色缓冲区纹理
+			//遍历颜色缓冲区ID列表
+			for (size_t i = 0; i < m_ColorAttachments.size(); i++) {
+				Utils::BindTexture(multisampled, m_ColorAttachments[i]);	//绑定颜色缓冲区纹理
+				switch (m_ColorAttachmentSpecs[i].TextureFormat) {
+					case FramebufferTextureFormat::RGBA8:
+						Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, m_Specification.Width, m_Specification.Height, i);
+					break;
+				}
+			}
+		}
 
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_DepthAttachment);	//创建深度缓冲区
-		glBindTexture(GL_TEXTURE_2D, m_DepthAttachment);		//绑定深度缓冲区
-		//深度缓冲区纹理存储 24位深度缓冲区 8位模板缓冲区
-		glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, m_Specification.Width, m_Specification.Height);
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_Specification.Width, m_Specification.Height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthAttachment, 0);	//帧缓冲区深度纹理
+		//深度缓冲区附件存在
+		if (m_DepthAttachmentSpec.TextureFormat != FramebufferTextureFormat::None) {
+			Utils::CreateTextures(multisampled, &m_DepthAttachment, 1);	//创建深度缓冲区纹理
+			Utils::BindTexture(multisampled, m_DepthAttachment);		//绑定深度缓冲区纹理
+			switch (m_DepthAttachmentSpec.TextureFormat) {
+				case FramebufferTextureFormat::DEFPTH24STENCIL8:
+					Utils::AttachDepthTexture(m_DepthAttachment, m_Specification.Samples, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_Specification.Width, m_Specification.Height);
+				break;
+			}
+		}
+
+		if (m_ColorAttachments.size() > 1) {
+			EXP_CORE_ASSERT(m_ColorAttachments.size() <= 4, "m_ColorAttachments.size() > 4");	//颜色缓冲区不超过4
+			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+			glDrawBuffers(m_ColorAttachments.size(), buffers);	//绘制缓冲区
+		}
+		else if (m_ColorAttachments.empty()) {	//颜色缓冲区空
+			glDrawBuffer(GL_NONE);	//Depth 不绘制
+		}
 
 		//检查帧缓冲区状态
 		EXP_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete！");

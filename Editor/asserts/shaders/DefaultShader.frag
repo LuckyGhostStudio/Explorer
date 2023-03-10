@@ -1,6 +1,7 @@
 #version 330 core
 			
-layout(location = 0) out vec4 color;	//片元输出颜色
+layout(location = 0) out vec4 color;	//颜色缓冲区0片元输出颜色
+layout(location = 1) out vec4 color1;	//颜色缓冲区1片元输出颜色
 
 in vec3 v_FragPos;	//片元位置
 in vec4 v_Color;	//颜色
@@ -30,4 +31,6 @@ void main()
 	vec3 resultColor = v_Color.rgb * (u_AmbientColor + diffuseColor + specularColor);
 
 	color = vec4(resultColor, 1.0f);
+
+	color1 = vec4(v_FragPos, 1.0);
 }
