@@ -20,7 +20,11 @@ namespace Explorer
 	void EditorLayer::OnAttach()
 	{
 		FramebufferSpecification fbSpec;	//帧缓冲区规范
-		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+		fbSpec.Attachments = {
+			FramebufferTextureFormat::RGBA8,		//颜色缓冲区0格式
+			FramebufferTextureFormat::RED_INTEGER,	//颜色缓冲区1格式：作为id实现鼠标点击拾取
+			FramebufferTextureFormat::Depth			//深度缓冲区格式
+		};
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
 		m_Framebuffer = std::make_shared<Framebuffer>(fbSpec);	//创建帧缓冲区
@@ -102,6 +106,22 @@ namespace Explorer
 		RenderCommand::Clear();										//清除
 
 		m_ActiveScene->OnUpdateEditor(dt, m_EditorCamera);	//更新编辑器场景
+
+		auto [mx, my] = ImGui::GetMousePos();	//鼠标位置
+		//计算鼠标相对于视口左上角的位置
+		mx -= m_ViewportBounds[0].x;
+		my -= m_ViewportBounds[0].y;
+
+		glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];	//视口大小：包括tab bar
+		my = viewportSize.y - my;	//翻转y坐标 左下角0,0（纹理坐标左下角为0,0）
+		//鼠标相对于视口左上角的位置
+		int mouseX = (int)mx;
+		int mouseY = (int)my;
+		//鼠标在视口内
+		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
+			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);	//读取1号颜色缓冲区像素
+			EXP_CORE_WARN("pixelData:{0}", pixelData);
+		}
 
 		m_Framebuffer->Unbind();	//解除绑定帧缓冲区
 	}
@@ -205,6 +225,8 @@ namespace Explorer
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
 		ImGui::Begin("Scene");
 		{
+			auto viewportOffset = ImGui::GetCursorPos();	//视口偏移量：视口左上角位置（相对于视口面板左上角的偏移量）
+
 			m_ViewportFocused = ImGui::IsWindowFocused();	//当前窗口被聚焦
 			m_ViewportHovered = ImGui::IsWindowHovered();	//鼠标悬停在当前窗口
 
@@ -215,6 +237,17 @@ namespace Explorer
 
 			uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区0 ID
 			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
+
+			auto windowSize = ImGui::GetWindowSize();	//视口大小 包括tab bar
+			ImVec2 minBound = ImGui::GetWindowPos();	//最小边界：视口面板左上角位置（相对于屏幕左上角）
+			//最小边界为视口左上角
+			minBound.x += viewportOffset.x;
+			minBound.x += viewportOffset.x;
+
+			ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };	//最大边界：右下角
+
+			m_ViewportBounds[0] = { minBound.x, minBound.y };	//视口最小边界：左上角
+			m_ViewportBounds[1] = { maxBound.x, maxBound.y };	//视口最大边界：右下角
 
 			//Gizmo
 			ImGuizmo::SetOrthographic(false);						//透视投影

@@ -210,6 +210,8 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 60. 多渲染目标缓冲区
 
+### 61. 获取鼠标位置的帧缓冲区像素
+
 ## 文件说明
 
 ### Explorer 项目

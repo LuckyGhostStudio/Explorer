@@ -45,19 +45,20 @@ namespace Explorer
 		/// </summary>
 		/// <param name="id">颜色缓冲区id</param>
 		/// <param name="samples">采样数量</param>
-		/// <param name="format">格式</param>
+		/// <param name="internalFormat">内部格式</param>
+		/// <param name="format">外部格式</param>
 		/// <param name="width">宽</param>
 		/// <param name="height">高</param>
 		/// <param name="index">颜色缓冲区id索引</param>
-		static void AttachColorTexture(uint32_t id, int samples, GLenum format, uint32_t width, uint32_t height, int index)
+		static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, int index)
 		{
 			bool multisampled = samples > 1;	//是否是多重采样
 			if (multisampled) {
-				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);	//多重采样纹理图像
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);	//多重采样纹理图像
 			}
 			else {
-				//纹理图像：- - 内部格式（存储格式）- - - 外部格式（传入格式）
-				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+				//纹理图像：- - 内部格式（存储格式）- - - 外部格式（访问格式）
+				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
 				//设置纹理参数
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	//缩小过滤器 线性插值
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	//放大过滤器 线性插值
@@ -155,8 +156,11 @@ namespace Explorer
 				Utils::BindTexture(multisampled, m_ColorAttachments[i]);	//绑定颜色缓冲区纹理
 				switch (m_ColorAttachmentSpecs[i].TextureFormat) {
 					case FramebufferTextureFormat::RGBA8:
-						Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, m_Specification.Width, m_Specification.Height, i);
-					break;
+						Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, GL_RGBA, m_Specification.Width, m_Specification.Height, i);
+						break;
+					case FramebufferTextureFormat::RED_INTEGER:
+						Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_R32I, GL_RED_INTEGER, m_Specification.Width, m_Specification.Height, i);
+						break;
 				}
 			}
 		}
@@ -168,7 +172,7 @@ namespace Explorer
 			switch (m_DepthAttachmentSpec.TextureFormat) {
 				case FramebufferTextureFormat::DEFPTH24STENCIL8:
 					Utils::AttachDepthTexture(m_DepthAttachment, m_Specification.Samples, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_Specification.Width, m_Specification.Height);
-				break;
+					break;
 			}
 		}
 
@@ -209,5 +213,17 @@ namespace Explorer
 		m_Specification.Height = height;
 
 		Invalidate();
+	}
+	
+	int Framebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y)
+	{
+		EXP_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "index越界！");
+
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);	//读第attachmentIndex个颜色缓冲区
+
+		int pixelData;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);	//读x,y位置的像素 返回int类型像素数据
+
+		return pixelData;	//输出到attachmentIndex颜色缓冲区的数据
 	}
 }
