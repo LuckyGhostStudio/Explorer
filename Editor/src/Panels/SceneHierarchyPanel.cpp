@@ -53,6 +53,11 @@ namespace Explorer
 		}
 		ImGui::End();
 	}
+
+	void SceneHierarchyPanel::SetSelectedObject(Object object)
+	{
+		m_SelectionObject = object;
+	}
 	
 	void SceneHierarchyPanel::DrawObjectNode(Object object)
 	{

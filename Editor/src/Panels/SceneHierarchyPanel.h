@@ -52,5 +52,11 @@ namespace Explorer
 		/// </summary>
 		/// <returns>被选中物体</returns>
 		Object GetSelectedObject() const { return m_SelectionObject; }
+
+		/// <summary>
+		/// 设置被选中物体
+		/// </summary>
+		/// <param name="object">被选中物体</param>
+		void SetSelectedObject(Object object);
 	};
 }

@@ -123,8 +123,8 @@ namespace Explorer
 		//鼠标在视口内
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
 			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);	//读取1号颜色缓冲区像素
-			//被鼠标悬停的物体
-			m_HoveredObject = pixelData == -1 ? Object() : Object((entt::entity)pixelData, m_ActiveScene.get());
+			//被鼠标拾取的物体
+			m_PickedObject = pixelData == -1 ? Object() : Object((entt::entity)pixelData, m_ActiveScene.get());
 			EXP_CORE_WARN("pixelData:{0}", pixelData);
 		}
 
@@ -219,7 +219,7 @@ namespace Explorer
 		//批渲染数据统计
 		ImGui::Begin("Stats");
 
-		std::string name = m_HoveredObject ? m_HoveredObject.GetComponent<Name>().m_Name : "None";
+		std::string name = m_PickedObject ? m_PickedObject.GetComponent<Name>().m_Name : "None";
 		ImGui::Text("Hovered Object: %s", name.c_str());
 
 		auto stats = Renderer3D::GetStats();
@@ -319,6 +319,7 @@ namespace Explorer
 
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KeyPressedEvent>(EXP_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));	//调用按键按下事件
+		dispatcher.Dispatch<MouseButtonPressedEvent>(EXP_BIND_EVENT_FUNC(EditorLayer::OnMouseButtonPressed));	//调用鼠标按钮按下事件
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
@@ -353,16 +354,29 @@ namespace Explorer
 		//Gizmo
 		switch (e.GetKeyCode())
 		{
-		case Key::G:
-			m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;	//平移
-			break;
-		case Key::R:
-			m_GizmoType = ImGuizmo::OPERATION::ROTATE;		//旋转
-			break;
-		case Key::S:
-			m_GizmoType = ImGuizmo::OPERATION::SCALE;		//缩放
-			break;
+			case Key::G:
+				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;	//平移
+				break;
+			case Key::R:
+				m_GizmoType = ImGuizmo::OPERATION::ROTATE;		//旋转
+				break;
+			case Key::S:
+				m_GizmoType = ImGuizmo::OPERATION::SCALE;		//缩放
+				break;
 		}
+	}
+
+	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+	{
+		//鼠标左键按下
+		if (e.GetMouseButton() == Mouse::ButtonLeft) {
+			//鼠标在视口内 Gizmo控制没结束
+			if (m_ViewportHovered && !ImGuizmo::IsOver()) {
+				m_HierarchyPanel.SetSelectedObject(m_PickedObject);	//设置被选中物体
+			}
+		}
+
+		return false;
 	}
 
 	void EditorLayer::NewScene()

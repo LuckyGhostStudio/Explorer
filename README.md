@@ -212,6 +212,8 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 61. 获取鼠标位置的帧缓冲区像素
 
+### 62. 鼠标点击选择物体
+
 ## 文件说明
 
 ### Explorer 项目
