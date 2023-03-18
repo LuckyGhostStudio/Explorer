@@ -24,6 +24,8 @@ namespace Explorer
 		Object m_Cube;							//场景默认正方体
 		//TODO:添加场景默认Light
 
+		Object m_HoveredObject;					//被鼠标悬停的物体
+
 		bool m_ViewportFocused = false;				//视口被聚焦
 		bool m_ViewportHovered = false;				//鼠标悬停在视口
 
@@ -32,9 +34,7 @@ namespace Explorer
 
 		int m_GizmoType = -1;	//Gizmo操作类型 -1无 0平移 1旋转 2缩放
 
-		SceneHierarchyPanel m_HierarchyPanel;	//场景Hierarchy面板
-
-		float fps = 0.0f;
+		SceneHierarchyPanel m_HierarchyPanel;	//场景Hierarchy面板s
 
 		//性能测试结果
 		struct ProfileResult

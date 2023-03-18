@@ -15,7 +15,7 @@ namespace Explorer
 	{
 		glCreateBuffers(1, &m_RendererID);								//创建缓冲区
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);					//绑定顶点缓冲
-		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);	//绑定顶点数据（动态）
+		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);	//绑定顶点数据（动态）
 	}
 
 	VertexBuffer::VertexBuffer(float* vertices, uint32_t size)

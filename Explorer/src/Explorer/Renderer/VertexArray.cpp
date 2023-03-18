@@ -16,17 +16,17 @@ namespace Explorer
 	{
 		switch (type)
 		{
-		case Explorer::ShaderDataType::Float:	return GL_FLOAT;
-		case Explorer::ShaderDataType::Float2:	return GL_FLOAT;
-		case Explorer::ShaderDataType::Float3:	return GL_FLOAT;
-		case Explorer::ShaderDataType::Float4:	return GL_FLOAT;
-		case Explorer::ShaderDataType::Mat3:	return GL_FLOAT;
-		case Explorer::ShaderDataType::Mat4:	return GL_FLOAT;
-		case Explorer::ShaderDataType::Int:		return GL_INT;
-		case Explorer::ShaderDataType::Int2:	return GL_INT;
-		case Explorer::ShaderDataType::Int3:	return GL_INT;
-		case Explorer::ShaderDataType::Int4:	return GL_INT;
-		case Explorer::ShaderDataType::Bool:	return GL_BOOL;
+			case Explorer::ShaderDataType::Float:	return GL_FLOAT;
+			case Explorer::ShaderDataType::Float2:	return GL_FLOAT;
+			case Explorer::ShaderDataType::Float3:	return GL_FLOAT;
+			case Explorer::ShaderDataType::Float4:	return GL_FLOAT;
+			case Explorer::ShaderDataType::Mat3:	return GL_FLOAT;
+			case Explorer::ShaderDataType::Mat4:	return GL_FLOAT;
+			case Explorer::ShaderDataType::Int:		return GL_INT;
+			case Explorer::ShaderDataType::Int2:	return GL_INT;
+			case Explorer::ShaderDataType::Int3:	return GL_INT;
+			case Explorer::ShaderDataType::Int4:	return GL_INT;
+			case Explorer::ShaderDataType::Bool:	return GL_BOOL;
 		}
 
 		EXP_CORE_ASSERT(false, "Unknow ShaderDataType!");
@@ -64,18 +64,79 @@ namespace Explorer
 		const auto& layout = vertexBuffer->GetLayout();			//顶点缓冲区布局
 
 		uint32_t index = 0;
-		for (const auto& element : layout) {
-			glEnableVertexAttribArray(index);					//启用顶点属性
+		for (const auto& element : layout)
+		{
+			switch (element.Type)
+			{
+				case ShaderDataType::Float:
+				case ShaderDataType::Float2:
+				case ShaderDataType::Float3:
+				case ShaderDataType::Float4:
+				{
+					glEnableVertexAttribArray(index);					//启用顶点属性
 
-			glVertexAttribPointer(index,						//顶点属性位置编号
-				element.GetComponentCount(),					//顶点属性数据个数
-				ShaderDataTypeToOpenGLBaseType(element.Type), 	//数据类型
-				element.Normalized ? GL_TRUE : GL_FALSE, 		//是否标准化
-				layout.GetStride(), 							//顶点大小（字节）
-				(const void*)element.Offset);					//顶点属性偏移量（字节）
+					glVertexAttribPointer(index,						//顶点属性位置编号
+						element.GetComponentCount(),					//顶点属性数据个数
+						ShaderDataTypeToOpenGLBaseType(element.Type), 	//数据类型
+						element.Normalized ? GL_TRUE : GL_FALSE, 		//是否标准化
+						layout.GetStride(), 							//顶点大小（字节）
+						(const void*)element.Offset);					//顶点属性偏移量（字节）
 
-			index++;
+					index++;
+					break;
+				}
+				case ShaderDataType::Int:
+				case ShaderDataType::Int2:
+				case ShaderDataType::Int3:
+				case ShaderDataType::Int4:
+				case ShaderDataType::Bool:
+				{
+					glEnableVertexAttribArray(index);
+					glVertexAttribIPointer(index,
+						element.GetComponentCount(),
+						ShaderDataTypeToOpenGLBaseType(element.Type),
+						layout.GetStride(),
+						(const void*)element.Offset);
+
+					index++;
+					break;
+				}
+				case ShaderDataType::Mat3:
+				case ShaderDataType::Mat4:
+				{
+					uint8_t count = element.GetComponentCount();
+					for (uint8_t i = 0; i < count; i++)
+					{
+						glEnableVertexAttribArray(index);
+						glVertexAttribPointer(index,
+							count,
+							ShaderDataTypeToOpenGLBaseType(element.Type),
+							element.Normalized ? GL_TRUE : GL_FALSE,
+							layout.GetStride(),
+							(const void*)(element.Offset + sizeof(float) * count * i));
+						glVertexAttribDivisor(index, 1);
+						index++;
+					}
+					break;
+				}
+				default:
+					EXP_CORE_ASSERT(false, "Unknown ShaderDataType!");
+			}
 		}
+
+		//uint32_t index = 0;
+		//for (const auto& element : layout) {
+		//	glEnableVertexAttribArray(index);					//启用顶点属性
+		//
+		//	glVertexAttribPointer(index,						//顶点属性位置编号
+		//		element.GetComponentCount(),					//顶点属性数据个数
+		//		ShaderDataTypeToOpenGLBaseType(element.Type), 	//数据类型
+		//		element.Normalized ? GL_TRUE : GL_FALSE, 		//是否标准化
+		//		layout.GetStride(), 							//顶点大小（字节）
+		//		(const void*)element.Offset);					//顶点属性偏移量（字节）
+		//
+		//	index++;
+		//}
 
 		m_VertexBuffers.push_back(vertexBuffer);	//添加VBO到列表
 	}

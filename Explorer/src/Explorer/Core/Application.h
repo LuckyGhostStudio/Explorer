@@ -30,6 +30,14 @@ namespace Explorer
 
 		float m_LastFrameTime = 0.0f;		//上一帧时间
 
+		float m_FramesPerSecond = 0.0f;		//帧率
+
+		/// <summary>
+		/// 设置帧率
+		/// </summary>
+		/// <param name="dt">帧间隔</param>
+		inline void SetFPS(DeltaTime dt) { m_FramesPerSecond = 1.0f / dt; }
+
 		/// <summary>
 		/// 窗口关闭回调函数
 		/// </summary>
@@ -56,6 +64,12 @@ namespace Explorer
 		/// 关闭程序
 		/// </summary>
 		void Close();
+
+		/// <summary>
+		/// 返回帧率
+		/// </summary>
+		/// <returns>帧率</returns>
+		inline float GetFPS() const { return m_FramesPerSecond; }
 
 		/// <summary>
 		/// 事件回调函数

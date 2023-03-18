@@ -26,17 +26,17 @@ namespace Explorer
 	/// </summary>
 	struct Renderer2DData
 	{
-		static const uint32_t MaxQuads = 10000;					//最大四边形数量
-		static const uint32_t MaxVertices = MaxQuads * 4;		//最大顶点数
-		static const uint32_t MaxIndices = MaxQuads * 6;			//最大索引数（4个顶点6个索引）
-		static const uint32_t MaxTextureSlots = 32;	//最大纹理槽数
+		static const uint32_t MaxQuads = 10000;				//最大四边形数量
+		static const uint32_t MaxVertices = MaxQuads * 4;	//最大顶点数
+		static const uint32_t MaxIndices = MaxQuads * 6;	//最大索引数（4个顶点6个索引）
+		static const uint32_t MaxTextureSlots = 32;			//最大纹理槽数
 
 		std::shared_ptr<VertexArray> QuadVertexArray;	//四边形顶点数组
 		std::shared_ptr<VertexBuffer> QuadVertexBuffer;	//四边形顶点缓冲区
 		std::shared_ptr<Shader>	TextureShader;			//纹理着色器
 		std::shared_ptr<Texture2D>	WhiteTexture;		//白色纹理
 
-		uint32_t QuadIndexCount = 0;		//四边形索引个数
+		uint32_t QuadIndexCount = 0;		//四边形实际索引个数
 
 		QuadVertex* QuadVertexBufferBase = nullptr;		//顶点数据
 		QuadVertex* QuadVertexBufferPtr = nullptr;
@@ -298,58 +298,6 @@ namespace Explorer
 			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;	//添加texture到 第 s_Data.TextureSlotIndex个纹理槽
 			s_Data.TextureSlotIndex++;	//纹理槽索引++
 		}
-
-		//4个顶点数据
-		for (int i = 0; i < quadVertexCount; i++) {
-			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVerticesPositions[i];
-			s_Data.QuadVertexBufferPtr->Color = color;
-			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-			s_Data.QuadVertexBufferPtr++;
-		}
-
-		s_Data.QuadIndexCount += 6;	//索引个数增加
-
-		s_Data.Stats.QuadCount++;	//四边形个数++
-	}
-
-	void Renderer2D::DrawQuad(const glm::vec2& position, float rotation, const glm::vec2& scale, const glm::vec4& color, const std::shared_ptr<SubTexture2D>& subTexture, const glm::vec2& tilingFactor)
-	{
-		DrawQuad({ position.x, position.y, 0.0f }, rotation, { scale.x, scale.y, 1.0f }, color, subTexture, tilingFactor);
-	}
-
-	void Renderer2D::DrawQuad(const glm::vec3& position, float rotation, const glm::vec3& scale, const glm::vec4& color, const std::shared_ptr<SubTexture2D>& subTexture, const glm::vec2& tilingFactor)
-	{
-		//索引个数超过最大索引数
-		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
-			FlushAndReset();	//开始新一批渲染
-		}
-
-		int quadVertexCount = 4;	//顶点个数
-		const glm::vec2* textureCoords = subTexture->GetTexCoords();	//子纹理坐标
-		std::shared_ptr<Texture2D> texture = subTexture->GetTexture();	//纹理
-
-		float textureIndex = 0.0f;	//当前纹理索引
-
-		//遍历所有已存在的纹理
-		for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++) {
-			if (*s_Data.TextureSlots[i].get() == *texture.get()) {	//texture在纹理槽中
-				textureIndex = (float)i;							//设置当前纹理索引
-				break;
-			}
-		}
-
-		//当前纹理不在纹理槽中
-		if (textureIndex == 0.0f) {
-			textureIndex = (float)s_Data.TextureSlotIndex;
-			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;	//添加texture到 第 s_Data.TextureSlotIndex个纹理槽
-			s_Data.TextureSlotIndex++;	//纹理槽索引++
-		}
-
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1.0f))
-			* glm::scale(glm::mat4(1.0f), { scale.x, scale.y, 1.0f });
 
 		//4个顶点数据
 		for (int i = 0; i < quadVertexCount; i++) {

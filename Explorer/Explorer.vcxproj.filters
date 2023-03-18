@@ -111,9 +111,6 @@
     <ClInclude Include="src\Explorer\Renderer\Camera.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Renderer\CameraController.h">
-      <Filter>src\Explorer\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Framebuffer.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
@@ -126,16 +123,10 @@
     <ClInclude Include="src\Explorer\Renderer\Renderer.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Renderer\Renderer2D.h">
-      <Filter>src\Explorer\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Renderer3D.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Shader.h">
-      <Filter>src\Explorer\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Explorer\Renderer\SubTexture2D.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Texture.h">
@@ -1421,6 +1412,8 @@
     </ClInclude>
     <ClInclude Include="src\Explorer\Math\Math.h" />
     <ClInclude Include="src\Explorer\Renderer\EditorCamera.h" />
+    <ClInclude Include="src\Explorer\Renderer\Mesh.h" />
+    <ClInclude Include="src\Explorer\Renderer\Material.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Core\Application.cpp">
@@ -1453,9 +1446,6 @@
     <ClCompile Include="src\Explorer\Renderer\Camera.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Renderer\CameraController.cpp">
-      <Filter>src\Explorer\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Framebuffer.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
@@ -1468,16 +1458,10 @@
     <ClCompile Include="src\Explorer\Renderer\Renderer.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Renderer\Renderer2D.cpp">
-      <Filter>src\Explorer\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Renderer3D.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Shader.cpp">
-      <Filter>src\Explorer\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Explorer\Renderer\SubTexture2D.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Texture.cpp">
@@ -1509,5 +1493,7 @@
     </ClCompile>
     <ClCompile Include="src\Explorer\Math\Math.cpp" />
     <ClCompile Include="src\Explorer\Renderer\EditorCamera.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\Mesh.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\Material.cpp" />
   </ItemGroup>
 </Project>

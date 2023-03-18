@@ -34,8 +34,11 @@ namespace Explorer
 
 		m_Camera = m_ActiveScene->CreateObject("Camera");	//创建默认相机对象
 		m_Camera.AddComponent<Camera>();					//添加Camera组件
-		m_Cube = m_ActiveScene->CreateObject("Cube");		//创建默认Cube
+		m_Cube = m_ActiveScene->CreateObject("Cube 1");		//创建默认Cube
 		m_Cube.AddComponent<SpriteRenderer>(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));	//添加SpriteRenderer组件
+
+		auto Cube = m_ActiveScene->CreateObject("Cube 2");		//创建默认Cube
+		Cube.AddComponent<SpriteRenderer>(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));	//添加SpriteRenderer组件
 #if 0
 
 		class CameraController :public ScriptableObject
@@ -83,8 +86,6 @@ namespace Explorer
 
 	void EditorLayer::OnUpdate(DeltaTime dt)
 	{
-		fps = 1.0f / dt;	//帧率
-
 		if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
 			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
 			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
@@ -100,10 +101,12 @@ namespace Explorer
 			m_EditorCamera.OnUpdate(dt);	//更新编辑器相机
 
 		//Renderer
-		Renderer2D::ResetStats();	//重置统计数据
+		Renderer3D::ResetStats();	//重置统计数据
 		m_Framebuffer->Bind();										//绑定帧缓冲区
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });	//设置清屏颜色
 		RenderCommand::Clear();										//清除
+
+		m_Framebuffer->ClearAttachment(1, -1);	//清除颜色缓冲区1（物体id缓冲区）为 -1
 
 		m_ActiveScene->OnUpdateEditor(dt, m_EditorCamera);	//更新编辑器场景
 
@@ -120,6 +123,8 @@ namespace Explorer
 		//鼠标在视口内
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
 			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);	//读取1号颜色缓冲区像素
+			//被鼠标悬停的物体
+			m_HoveredObject = pixelData == -1 ? Object() : Object((entt::entity)pixelData, m_ActiveScene.get());
 			EXP_CORE_WARN("pixelData:{0}", pixelData);
 		}
 
@@ -213,48 +218,47 @@ namespace Explorer
 
 		//批渲染数据统计
 		ImGui::Begin("Stats");
-		auto stats = Renderer2D::GetStats();
+
+		std::string name = m_HoveredObject ? m_HoveredObject.GetComponent<Name>().m_Name : "None";
+		ImGui::Text("Hovered Object: %s", name.c_str());
+
+		auto stats = Renderer3D::GetStats();
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-		ImGui::Text("Quad: %d", stats.QuadCount);
-		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-		ImGui::Text("FPS: %.3f", fps);	//帧率
+		ImGui::Text("Triangle Count: %d", stats.TriangleCount);
+		ImGui::Text("Vertex Count: %d", stats.VertexCount);
+		ImGui::Text("Index Count: %d", stats.IndexCount);
+		ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());	//帧率
 		ImGui::End();
 
 		//场景视口
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
 		ImGui::Begin("Scene");
 		{
-			auto viewportOffset = ImGui::GetCursorPos();	//视口偏移量：视口左上角位置（相对于视口面板左上角的偏移量）
+			auto viewportMinRegion = ImGui::GetWindowContentRegionMin();	//视口可用区域最小值（视口左上角相对于视口左上角位置）
+			auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();	//视口可用区域最大值（视口右下角相对于视口左上角位置）
+			auto viewportOffset = ImGui::GetWindowPos();	//视口偏移量：视口面板左上角位置（相对于屏幕左上角）
+
+			m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+			m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
 
 			m_ViewportFocused = ImGui::IsWindowFocused();	//当前窗口被聚焦
 			m_ViewportHovered = ImGui::IsWindowHovered();	//鼠标悬停在当前窗口
 
 			Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);	//阻止ImGui事件
 
-			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Gui面板大小
+			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Scene面板可用区域大小
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
 
 			uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区0 ID
 			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
-
-			auto windowSize = ImGui::GetWindowSize();	//视口大小 包括tab bar
-			ImVec2 minBound = ImGui::GetWindowPos();	//最小边界：视口面板左上角位置（相对于屏幕左上角）
-			//最小边界为视口左上角
-			minBound.x += viewportOffset.x;
-			minBound.x += viewportOffset.x;
-
-			ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };	//最大边界：右下角
-
-			m_ViewportBounds[0] = { minBound.x, minBound.y };	//视口最小边界：左上角
-			m_ViewportBounds[1] = { maxBound.x, maxBound.y };	//视口最大边界：右下角
 
 			//Gizmo
 			ImGuizmo::SetOrthographic(false);						//透视投影
 			ImGuizmo::SetDrawlist();								//设置绘制列表
 			float windowWidth = (float)ImGui::GetWindowWidth();		//视口宽
 			float windowHeight = (float)ImGui::GetWindowHeight();	//视口高
-			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);	//设置绘制区域
+			//设置绘制区域
+			ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
 			//编辑器相机
 			const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();	//投影矩阵

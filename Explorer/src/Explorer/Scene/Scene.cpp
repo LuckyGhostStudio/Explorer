@@ -44,7 +44,7 @@ namespace Explorer
 		for (auto object : group) {
 			auto [transform, sprite] = group.get<Transform, SpriteRenderer>(object);
 
-			Renderer3D::DrawMesh(transform);	//绘制网格
+			Renderer3D::DrawMesh(transform, (int)object);	//绘制网格
 		}
 		Renderer3D::EndScene();			//结束渲染场景
 	}
@@ -89,7 +89,7 @@ namespace Explorer
 				auto [transform, sprite] = group.get<Transform, SpriteRenderer>(object);
 
 				//Renderer2D::DrawQuad(transform, sprite.m_Color);
-				Renderer3D::DrawMesh(transform);	//绘制网格
+				//Renderer3D::DrawMesh(transform);	//绘制网格
 			}
 			Renderer3D::EndScene();			//结束渲染场景
 		}

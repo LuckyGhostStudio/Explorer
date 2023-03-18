@@ -106,6 +106,22 @@ namespace Explorer
 
 			return false;
 		}
+
+		/// <summary>
+		/// 帧缓冲区纹理格式转GL
+		/// </summary>
+		/// <param name="format">帧缓冲区纹理格式</param>
+		/// <returns>GL纹理格式</returns>
+		static GLenum FramebufferTextureFormatToGL(FramebufferTextureFormat format)
+		{
+			switch (format) {
+			case FramebufferTextureFormat::RGBA8: return GL_RGBA8;
+			case FramebufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+			}
+
+			EXP_CORE_ASSERT(false, "No format");
+			return 0;
+		}
 	}
 
 	Framebuffer::Framebuffer(const FramebufferSpecification& spec) :m_Specification(spec)
@@ -225,5 +241,15 @@ namespace Explorer
 		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);	//读x,y位置的像素 返回int类型像素数据
 
 		return pixelData;	//输出到attachmentIndex颜色缓冲区的数据
+	}
+
+	void Framebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
+	{
+		EXP_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "index越界！");
+
+		auto& spec = m_ColorAttachmentSpecs[attachmentIndex];	//attachmentIndex号颜色缓冲区规范
+
+		glClearTexImage(m_ColorAttachments[attachmentIndex], 0,
+			Utils::FramebufferTextureFormatToGL(spec.TextureFormat), GL_INT, &(value));	//清除attachmentIndex号颜色缓冲区的值为value
 	}
 }
