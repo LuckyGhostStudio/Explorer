@@ -214,6 +214,8 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 62. 鼠标点击选择物体
 
+### 63. 添加灯光组件（平行光、点光源、聚光源）
+
 ## 文件说明
 
 ### Explorer 项目

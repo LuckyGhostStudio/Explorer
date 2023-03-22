@@ -36,6 +36,7 @@ namespace Explorer
 		Transform() = default;
 		Transform(const Transform&) = default;
 		Transform(const glm::vec3& position) :m_Position(position) {}
+		Transform(const glm::vec3& position, const glm::vec3& rotation) :m_Position(position), m_Rotation(rotation) {}
 
 		/// <summary>
 		/// 返回Transform矩阵
@@ -47,6 +48,33 @@ namespace Explorer
 
 			return glm::translate(glm::mat4(1.0f), m_Position) * rotation * glm::scale(glm::mat4(1.0f), m_Scale);
 		}
+
+		/// <summary>
+		/// 返回right方向向量（x+）
+		/// </summary>
+		/// <returns>right方向向量</returns>
+		glm::vec3 GetRightDirection() const
+		{
+			return glm::rotate(glm::quat(glm::radians(m_Rotation)), glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+
+		/// <summary>
+		/// 返回up方向向量（y+）
+		/// </summary>
+		/// <returns>up方向向量</returns>
+		glm::vec3 GetUpDirection() const
+		{
+			return glm::rotate(glm::quat(glm::radians(m_Rotation)), glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+
+		/// <summary>
+		/// 返回forward方向向量（z+）
+		/// </summary>
+		/// <returns>forward方向向量</returns>
+		glm::vec3 GetForwardDirection() const
+		{
+			return glm::rotate(glm::quat(glm::radians(m_Rotation)), glm::vec3(0.0f, 0.0f, 1.0f));
+		}
 	};
 
 	/// <summary>
@@ -57,11 +85,14 @@ namespace Explorer
 	public:
 		glm::vec4 m_Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 
-		SpriteRenderer() {}
-		SpriteRenderer(const SpriteRenderer&) {}
+		SpriteRenderer() = default;
+		SpriteRenderer(const SpriteRenderer&) = default;
 		SpriteRenderer(const glm::vec4& color) :m_Color(color) {}
 	};
 
+	/// <summary>
+	/// 本地脚本组件
+	/// </summary>
 	class NativeScript
 	{
 	public:

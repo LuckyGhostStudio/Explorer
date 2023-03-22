@@ -1,7 +1,8 @@
 #include "SceneHierarchyPanel.h"
 
 #include "Explorer/Scene/Components.h"
-#include "Explorer/Renderer/Camera.h"
+#include "Explorer/Components/Camera.h"
+#include "Explorer/Components/Light.h"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
@@ -38,9 +39,29 @@ namespace Explorer
 
 		//创建物体
 		if (ImGui::BeginPopupContextWindow(0, 1, false)) {	//右键点击窗口白区域弹出菜单：- 右键 不在物体项上
-			if (ImGui::MenuItem("Create Empty Object")) {	//菜单项：创建空物体
-				m_Scene->CreateObject("Empty Object");		//创建空物体
+			if (ImGui::MenuItem("Create Empty")) {	//菜单项：创建空物体
+				m_Scene->CreateEmptyObject("Object");	//创建空物体
 			}
+			if (ImGui::MenuItem("Camera")) {		//菜单项：创建相机
+				m_Scene->CreateCameraObject();
+			}
+
+			//父菜单项：光源
+			if (ImGui::BeginMenu("Light"))
+			{
+				if (ImGui::MenuItem("Directional Light")) {		//子菜单项：创建平行光源
+					m_Scene->CreateLightObject(Light::Type::Directional);
+				}
+				if (ImGui::MenuItem("Point Light")) {			//子菜单项：创建点光源
+					m_Scene->CreateLightObject(Light::Type::Point);
+				}
+				if (ImGui::MenuItem("Spot Light")) {			//子菜单项：创建聚光源
+					m_Scene->CreateLightObject(Light::Type::Spot);
+				}
+
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndPopup();
 		}
 
@@ -74,9 +95,9 @@ namespace Explorer
 
 		//删除物体
 		bool objectDeleted = false;	//物体是否已删除
-		if (ImGui::BeginPopupContextItem()) {			//右键点击该物体结点
-			if (ImGui::MenuItem("Delete Object")) {		//菜单项：删除物体
-				objectDeleted = true;					//物体标记为已删除：渲染结束后面的UI 再删除该物体
+		if (ImGui::BeginPopupContextItem()) {		//右键点击该物体结点
+			if (ImGui::MenuItem("Delete")) {		//菜单项：删除物体
+				objectDeleted = true;				//物体标记为已删除：渲染结束后面的UI 再删除该物体
 			}
 			ImGui::EndPopup();
 		}
@@ -86,7 +107,7 @@ namespace Explorer
 		}
 
 		if (objectDeleted) {
-			m_Scene->DestroyEntity(object);		//删除物体
+			m_Scene->DestroyObject(object);		//删除物体
 			if (m_SelectionObject == object) {	//删除的物体为已选中物体
 				m_SelectionObject = {};			//清空已选中物体
 			}
@@ -131,7 +152,7 @@ namespace Explorer
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();							//在同一行
-		ImGui::DragFloat("##X", &values.x, 0.1f);	//X分量列 ##不显示标签 拖动精度0.1
+		ImGui::DragFloat("##X", &values.x, 0.01f);	//X分量列 ##不显示标签 拖动精度0.01
 		ImGui::PopItemWidth();						//推出第一个列宽
 		ImGui::SameLine();
 
@@ -147,7 +168,7 @@ namespace Explorer
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();							//在同一行
-		ImGui::DragFloat("##Y", &values.y, 0.1f);	//Y分量列 ##不显示标签 拖动精度0.1
+		ImGui::DragFloat("##Y", &values.y, 0.01f);	//Y分量列 ##不显示标签 拖动精度0.01
 		ImGui::PopItemWidth();						//推出第一个列宽
 		ImGui::SameLine();
 
@@ -163,7 +184,7 @@ namespace Explorer
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();							//在同一行
-		ImGui::DragFloat("##Z", &values.z, 0.1f);	//Z分量列 ##不显示标签 拖动精度0.1
+		ImGui::DragFloat("##Z", &values.z, 0.01f);	//Z分量列 ##不显示标签 拖动精度0.01
 		ImGui::PopItemWidth();						//推出第一个列宽
 
 		ImGui::PopStyleVar();
@@ -194,7 +215,7 @@ namespace Explorer
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));	//设置边框样式
 			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;	//行高 = 字体大小 + 边框y * 2
-			ImGui::Separator();	//分隔符
+			
 			//组件结点：组件类的哈希值作为结点id
 			bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
 			ImGui::PopStyleVar();
@@ -222,8 +243,36 @@ namespace Explorer
 			if (componentRemoved) {
 				object.RemoveComponent<T>();	//移除T组件
 			}
+
+			ImGui::Separator();	//分隔符
 		}
 	}
+
+/*	template<typename T, typename UIFunction>
+	static void DrawDropdownList(const std::string& name, const std::vector<std::string>& itemStringValues, const uint32_t itemCount, int currentItemIndex, UIFunction uiFunction)
+	{
+		const char* itemStringCharValues[itemCount] = itemStringValues[currentItemIndex].c_str(); //当前项值
+		const char* currentItemStringValue = itemStringCharValues[itemCount];
+
+		//下拉框 选择
+		if (ImGui::BeginCombo(name.c_str(), currentItemStringValue)) {
+			//查找被选中项
+			for (int i = 0; i < itemCount; i++) {
+				bool isSelected = currentItemStringValue == itemStringCharValues[i];	//被选中：当前项==第i项
+				//可选择项，该项改变时：i项已选中
+				if (ImGui::Selectable(itemStringCharValues[i], isSelected)) {
+					currentItemStringValue = itemStringCharValues[i];	//设置当前项为选中项i
+
+					uiFunction((T)i);	//调用下拉框选项选中功能函数
+				}
+
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus();	//设置默认选中项
+				}
+			}
+			ImGui::EndCombo();
+		}
+	}*/
 
 	void SceneHierarchyPanel::DrawComponents(Object object)
 	{
@@ -264,6 +313,8 @@ namespace Explorer
 
 		ImGui::PopItemWidth();
 
+		ImGui::Separator();	//分隔符
+
 		//绘制Transform组件
 		DrawComponent<Transform>("Transform", object, [](Transform& transform)
 		{
@@ -272,22 +323,97 @@ namespace Explorer
 			DrawVec3Control("Scale", transform.m_Scale, 1.0f);	//缩放：默认值1.0f
 		});
 
+		//绘制Light组件
+		DrawComponent<Light>("Light", object, [](Light& light)
+		{
+			const char* types[] = { "Directional", "Point", "Spot"};	//光源类型：透视 正交 
+			const char* currentType = types[(int)light.GetType()];		//当前光源类型
+
+			//下拉框 选择光源类型
+			if (ImGui::BeginCombo("Type", currentType)) {
+				//查找选中项
+				for (int i = 0; i < 3; i++) {
+					bool isSelected = currentType == types[i];	//被选中：当前光源类型==第i个光源类型
+					//可选择项，该项改变时：光源类型 已选中
+					if (ImGui::Selectable(types[i], isSelected)) {
+						currentType = types[i];			//设置当前光源类型
+						light.SetType((Light::Type)i);	//设置光源类型
+					}
+
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();	//设置默认选中项
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			//点光源 | 聚光源
+			if (light.GetType() == Light::Type::Point || light.GetType() == Light::Type::Spot) {
+				float range = light.GetRange();		//光照半径
+				if (ImGui::DragFloat("Range", &range, 0.01f, 0.0f, 1000.0f)) {	//拖动精度0.01
+					light.SetRange(range);
+				}
+			}
+
+			//聚光源
+			if (light.GetType() == Light::Type::Spot) {
+				float spotOuterAngle = light.GetSpotOuterAngle();	//Spot外张角（阴影外边缘）
+
+				if (ImGui::SliderFloat("Spot Angle", &spotOuterAngle, 1.0f, 179.0f)) {	//Outer = [1, 179]
+					light.SetSpotOuterAngle(spotOuterAngle);
+				}
+
+				light.SetSpotInnerAngle(spotOuterAngle - spotOuterAngle / 12.0f);	//设置内张角 = Outer - Outer / 12
+			}
+
+			ImGui::ColorEdit3("Color", glm::value_ptr(light.m_Color));	//灯光颜色选择器
+
+			float intensity = light.GetIntensity();		//光照强度
+			if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 1000.0f)) {	//拖动精度0.01
+				light.SetIntensity(intensity);
+			}
+
+			ImGui::Checkbox("Render Shadow", &light.m_RenderShadow);	//是否渲染阴影设置框
+		});
+
 		//绘制Camera组件
 		DrawComponent<Camera>("Camera", object, [](Camera& camera)
 		{
 			ImGui::Checkbox("Main Camera", &camera.m_Primary);	//主相机设置框
 
-			const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };	//投影类型：透视 正交 
-			const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];	//当前投影类型
+			const char* clearFlags[] = { "Color", "Skybox" };						//清屏标志：颜色 天空盒 
+			const char* currentClearFlag = clearFlags[(int)camera.GetClearFlag()];	//当前清屏标志
+
+			//下拉框 选择清屏标志
+			if (ImGui::BeginCombo("Clear Flags", currentClearFlag)) {
+				for (int i = 0; i < 2; i++) {
+					bool isSelected = currentClearFlag == clearFlags[i];	//被选中：当前清屏标志==第i个清屏标志
+					//可选择项，该项改变时：清屏标志 已选中
+					if (ImGui::Selectable(clearFlags[i], isSelected)) {
+						currentClearFlag = clearFlags[i];			//设置当前清屏标志
+						camera.SetClearFlag((Camera::ClearFlag)i);	//设置相机清屏标志
+					}
+
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();	//设置默认选中项
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::ColorEdit4("Background", glm::value_ptr(camera.m_BackgroundColor));	//背景颜色选择器
+
+			const char* projectionTypes[] = { "Perspective", "Orthographic" };						//投影类型：透视 正交 
+			const char* currentProjectionType = projectionTypes[(int)camera.GetProjectionType()];	//当前投影类型
 
 			//下拉框 选择投影类型
-			if (ImGui::BeginCombo("Projection", currentProjectionTypeString)) {
+			if (ImGui::BeginCombo("Projection", currentProjectionType)) {
 				for (int i = 0; i < 2; i++) {
-					bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];	//被选中：当前投影类型==第i个投影类型
+					bool isSelected = currentProjectionType == projectionTypes[i];	//被选中：当前投影类型==第i个投影类型
 					//可选择项，该项改变时：投影类型 已选中
-					if (ImGui::Selectable(projectionTypeStrings[i], isSelected)) {
-						currentProjectionTypeString = projectionTypeStrings[i];		//设置当前投影类型
-						camera.SetProjectionType((Camera::ProjectionType)i);		//设置相机投影类型
+					if (ImGui::Selectable(projectionTypes[i], isSelected)) {
+						currentProjectionType = projectionTypes[i];				//设置当前投影类型
+						camera.SetProjectionType((Camera::ProjectionType)i);	//设置相机投影类型
 					}
 
 					if (isSelected) {
@@ -299,7 +425,7 @@ namespace Explorer
 
 			if (camera.GetProjectionType() == Camera::ProjectionType::Perspective) {	//透视投影
 				float verticalFov = camera.GetFOV();	//垂直张角
-				if (ImGui::DragFloat("Vertical Fov", &verticalFov)) {
+				if (ImGui::SliderFloat("Vertical Fov", &verticalFov, 1.0f, 179.0f)) {
 					camera.SetFOV(verticalFov);
 				}
 			}
@@ -311,13 +437,14 @@ namespace Explorer
 				}
 			}
 
-			float nearClip = camera.GetNearClip();	//近裁剪平面
-			if (ImGui::DragFloat("Near", &nearClip)) {
+			float nearClip = camera.GetNearClip();	//近裁剪平面	[0.01, far]
+			float farClip = camera.GetFarClip();	//远裁剪平面	[near, +∞]
+			
+			if (ImGui::DragFloat("Near", &nearClip, 0.1f, 0.01f, farClip)) {
 				camera.SetNearClip(nearClip);
 			}
 
-			float farClip = camera.GetFarClip();	//远裁剪平面
-			if (ImGui::DragFloat("Far", &farClip)) {
+			if (ImGui::DragFloat("Far", &farClip, 0.1f, nearClip, 10000.0f)) {
 				camera.SetFarClip(farClip);
 			}
 		});

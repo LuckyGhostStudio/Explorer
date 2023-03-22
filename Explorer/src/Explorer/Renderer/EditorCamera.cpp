@@ -127,7 +127,7 @@ namespace Explorer
 
 	glm::vec3 EditorCamera::GetForwardDirection() const
 	{
-		return glm::rotate(GetOrientation(), glm::vec3(0.0f, 0.0f, -1.0f));	//相机forward z-
+		return glm::rotate(GetOrientation(), glm::vec3(0.0f, 0.0f, -1.0f));	//按照相机旋转四元数旋转z-方向向量 得到 相机forward z- 实际朝向
 	}
 
 	glm::vec3 EditorCamera::CalculatePosition() const
@@ -137,6 +137,6 @@ namespace Explorer
 
 	glm::quat EditorCamera::GetOrientation() const
 	{
-		return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f));
+		return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f));	//相机旋转四元数
 	}
 }

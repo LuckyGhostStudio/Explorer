@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RenderCommand.h"
-#include "Camera.h"
+#include "Explorer/Components/Camera.h"
 #include "Shader.h"
 
 namespace Explorer
@@ -26,6 +26,8 @@ namespace Explorer
 		/// 初始化渲染器
 		/// </summary>
 		static void Init();
+
+		static void Shutdown();
 
 		/// <summary>
 		/// 窗口缩放时调用

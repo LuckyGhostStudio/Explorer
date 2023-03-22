@@ -30,7 +30,7 @@ namespace Explorer
 
 	Application::~Application()
 	{
-
+		Renderer::Shutdown();	//πÿ±’‰÷»æ∆˜
 	}
 
 	void Application::PushLayer(Layer* layer)

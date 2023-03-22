@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Camera.h"
+#include "Explorer/Components/Camera.h"
+#include "Explorer/Components/Light.h"
 #include "Explorer/Scene/Components.h"
 #include "Explorer/Renderer/EditorCamera.h"
 
@@ -40,7 +41,8 @@ namespace Explorer
 		/// 开始渲染场景
 		/// </summary>
 		/// <param name="camera">编辑器相机</param>
-		static void BeginScene(const EditorCamera& camera);
+		/// <param name="lightObjects">场景所有光源对象</param>
+		static void BeginScene(const EditorCamera& camera, std::vector<Object>& lightObjects);
 
 		/// <summary>
 		/// 结束渲染场景
@@ -48,19 +50,19 @@ namespace Explorer
 		static void EndScene();
 
 		/// <summary>
-		/// 开始批处理：设置批渲染初始参数
+		/// 开始网格处理：设置网格渲染初始参数
 		/// </summary>
-		static void StartBatchProcessing();
+		static void StartMeshProcessing();
 
 		/// <summary>
-		/// 开始下一批处理：结束上一批渲染 开始下一批
+		/// 开始下一个网格处理：结束上一个网格渲染 开始下一个
 		/// </summary>
-		static void NextBatchProcessing();
+		static void NextMeshProcessing();
 
 		/// <summary>
-		/// 批渲染过程
+		/// 网格渲染处理过程
 		/// </summary>
-		static void BatchProcessing();
+		static void MeshProcessing();
 
 		static void DrawMesh(const Transform& transform, int objectID = -1);
 

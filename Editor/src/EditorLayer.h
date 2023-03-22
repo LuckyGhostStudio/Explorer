@@ -12,9 +12,6 @@ namespace Explorer
 	class EditorLayer :public Layer
 	{
 	private:
-		//Temp
-		std::shared_ptr<VertexArray> m_SquareVA;			//正方形顶点数组
-		std::shared_ptr<Texture2D> m_CheckerboardTexture;	//棋盘纹理
 		std::shared_ptr<Framebuffer> m_Framebuffer;			//帧缓冲区
 
 		std::shared_ptr<Scene> m_ActiveScene;	//活动场景
@@ -22,7 +19,7 @@ namespace Explorer
 
 		Object m_Camera;						//场景默认相机
 		Object m_Cube;							//场景默认正方体
-		//TODO:添加场景默认Light
+		Object m_Light;							//场景默认光源
 
 		Object m_PickedObject;					//被鼠标拾取的物体
 
@@ -35,15 +32,6 @@ namespace Explorer
 		int m_GizmoType = -1;	//Gizmo操作类型 -1无 0平移 1旋转 2缩放
 
 		SceneHierarchyPanel m_HierarchyPanel;	//场景Hierarchy面板s
-
-		//性能测试结果
-		struct ProfileResult
-		{
-			const char* Name;	//测试程序段名
-			float Time;			//运行时间
-		};
-
-		std::vector<ProfileResult> m_ProfileResults;	//性能测试结果集合
 	public:
 		EditorLayer();
 		virtual ~EditorLayer() = default;

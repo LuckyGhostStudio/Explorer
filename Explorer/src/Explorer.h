@@ -30,5 +30,8 @@
 #include "Explorer/Renderer/Texture.h"
 #include "Explorer/Renderer/VertexArray.h"
 
-#include "Explorer/Renderer/Camera.h"
+#include "Explorer/Components/Camera.h"
+#include "Explorer/Components/Light.h"
+#include "Explorer/Components/Mesh.h"
+#include "Explorer/Components/Material.h"
 //---------------------------------

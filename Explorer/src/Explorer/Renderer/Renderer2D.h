@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Camera.h"
+#include "Explorer/Components/Camera.h"
 #include "Texture.h"
 #include "Explorer/Scene/Components.h"
 

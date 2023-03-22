@@ -1,7 +1,6 @@
 #include "exppch.h"
 #include "Scene.h"
 
-#include "Explorer/Renderer/Renderer2D.h"
 #include "Explorer/Renderer/Renderer3D.h"
 
 #include "Components.h"
@@ -20,24 +19,75 @@ namespace Explorer
 
 	}
 
-	Object Scene::CreateObject(const std::string& name)
+	Object Scene::CreateEmptyObject(const std::string& name)
 	{
-		Object object = { m_Registry.create(), this };	//创建物体
+		Object object = { m_Registry.create(), this };	//创建空物体
 		object.AddComponent<Transform>();				//添加Transform组件（默认组件）
-		Name& objName = object.AddComponent<Name>();	//添加Name组件（默认组件）
-		objName.m_Name = name;
+		object.AddComponent<Name>(name);				//添加Name组件（默认组件）
 
 		return object;
 	}
 
-	void Scene::DestroyEntity(Object object)
+	Object Scene::CreateCameraObject(const std::string& name)
+	{
+		Object camera = { m_Registry.create(), this };		//创建Camera
+
+		glm::vec3 position = { 3.7f, 2.5f, 3.5f };			//初始位置
+		glm::vec3 rotation = { 30.5f, -53.0f, 175.5f };		//初始旋转
+
+		camera.AddComponent<Transform>(position, rotation);	//添加Transform组件
+		camera.AddComponent<Name>(name);				//添加Name组件
+		camera.AddComponent<Camera>();						//添加Camera组件
+
+		return camera;
+	}
+
+	Object Scene::CreateLightObject(Light::Type type, const std::string& name)
+	{
+		std::string tempName = name;
+		switch (type)
+		{
+			case Light::Type::Directional:
+				tempName = "Directional Light";
+				break;
+			case Light::Type::Point:
+				tempName = "Point Light";
+				break;
+			case Light::Type::Spot:
+				tempName = "Spot Light";
+				break;
+		}
+		 
+		Object lightObj = { m_Registry.create(), this };		//创建Light
+
+		glm::vec3 position = { 2.0f, 2.95f, -0.85f };			//初始位置
+		glm::vec3 rotation = { 37.3f, 107.0f, 97.0f };			//初始旋转
+
+		lightObj.AddComponent<Transform>(position, rotation);	//添加Transform组件
+		lightObj.AddComponent<Name>(tempName);					//添加Name组件
+		lightObj.AddComponent<Light>(type);						//添加Light组件：type类型光源
+
+		return lightObj;
+	}
+
+	void Scene::DestroyObject(Object object)
 	{
 		m_Registry.destroy(object);	//从注册表移除物体
 	}
 
 	void Scene::OnUpdateEditor(DeltaTime dt, EditorCamera& camera)
 	{
-		Renderer3D::BeginScene(camera);	//开始渲染场景
+		auto lights = m_Registry.view<Light>();	//所有拥有Light组件的物体
+		
+		std::vector<Object> lightObjects;		//场景所有Light对象
+		lightObjects.reserve(lights.size());	//预留空间
+
+		//遍历场景所有Light对象
+		for (auto object : lights) {
+			lightObjects.push_back(Object{ object, this });	//添加到Light列表
+		}
+
+		Renderer3D::BeginScene(camera, lightObjects);	//开始渲染场景
 
 		auto group = m_Registry.group<Transform>(entt::get<SpriteRenderer>);	//返回有Transform和SpriteRenderer的所有物体
 
@@ -130,6 +180,12 @@ namespace Explorer
 
 	template<>
 	void Scene::OnComponentAdded<Transform>(Object object, Transform& component)
+	{
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<Light>(Object object, Light& component)
 	{
 
 	}

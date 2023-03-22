@@ -4,6 +4,7 @@
 
 #include "Explorer/Core/DeltaTime.h"
 #include "Explorer/Renderer/EditorCamera.h"
+#include "Explorer/Components/Light.h"
 
 namespace Explorer
 {
@@ -41,17 +42,32 @@ namespace Explorer
 		inline void SetName(const std::string& name) { m_Name = name; }
 
 		/// <summary>
-		/// 创建物体
+		/// 创建空物体
 		/// </summary>
 		/// <param name="name">物体名</param>
 		/// <returns>物体</returns>
-		Object CreateObject(const std::string& name = "Object");
+		Object CreateEmptyObject(const std::string& name = "Object");
+		
+		/// <summary>
+		/// 创建Camera
+		/// </summary>
+		/// <param name="name">相机名</param>
+		/// <returns>相机</returns>
+		Object CreateCameraObject(const std::string& name = "Camera");
+
+		/// <summary>
+		/// 创建Light
+		/// </summary>
+		/// <param name="type">光源类型</param>
+		/// <param name="name">光源名</param>
+		/// <returns>光源</returns>
+		Object CreateLightObject(Light::Type type = Light::Type::Point, const std::string& name = "Light");
 
 		/// <summary>
 		/// 销毁物体
 		/// </summary>
 		/// <param name="object">物体</param>
-		void DestroyEntity(Object object);
+		void DestroyObject(Object object);
 
 		/// <summary>
 		/// 编辑器更新：每帧调用

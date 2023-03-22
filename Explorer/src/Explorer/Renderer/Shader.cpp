@@ -131,6 +131,12 @@ namespace Explorer
 	{
 		glUseProgram(0);
 	}
+	
+	void Shader::SetLightData(const LightData& lightData)
+	{
+		//TODO:…Ë÷√Light ˝æ›
+		//SetFloat3("u_Light.Position", lightData.Position);
+	}
 
 	void Shader::SetInt(const std::string& name, int value)
 	{

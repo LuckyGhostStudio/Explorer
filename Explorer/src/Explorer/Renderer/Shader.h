@@ -4,6 +4,8 @@
 
 namespace Explorer
 {
+	struct LightData;
+
 	/// <summary>
 	/// 着色器
 	/// </summary>
@@ -42,6 +44,12 @@ namespace Explorer
 		/// 解除绑定：调试时使用
 		/// </summary>
 		void UnBind() const;
+
+		/// <summary>
+		/// 设置Light数据：上传Light数据到着色器
+		/// </summary>
+		/// <param name="lightData">光源数据</param>
+		void SetLightData(const LightData& lightData);
 
 		/// <summary>
 		/// 设置uniform Int变量

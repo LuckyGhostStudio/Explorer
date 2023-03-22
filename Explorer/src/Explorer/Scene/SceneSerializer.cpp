@@ -3,11 +3,11 @@
 
 #include "Object.h"
 #include "Components.h"
-#include "Explorer/Renderer/Camera.h"
+#include "Explorer/Components/Camera.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
-
+//TODO:添加Light组件序列化
 namespace YAML 
 {
 	/// <summary>
@@ -223,7 +223,7 @@ namespace Explorer
 
 				EXP_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-				Object deserializedObject = m_Scene->CreateObject(name);	//创建物体
+				Object deserializedObject = m_Scene->CreateEmptyObject(name);	//创建物体
 
 				auto transformNode = object["Transform Component"];	//Transform组件结点
 				//Transform组件结点存在

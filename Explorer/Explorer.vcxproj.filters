@@ -108,7 +108,7 @@
     <ClInclude Include="src\Explorer\Renderer\Buffer.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Renderer\Camera.h">
+    <ClInclude Include="src\Explorer\Components\Camera.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Framebuffer.h">
@@ -1412,8 +1412,9 @@
     </ClInclude>
     <ClInclude Include="src\Explorer\Math\Math.h" />
     <ClInclude Include="src\Explorer\Renderer\EditorCamera.h" />
-    <ClInclude Include="src\Explorer\Renderer\Mesh.h" />
-    <ClInclude Include="src\Explorer\Renderer\Material.h" />
+    <ClInclude Include="src\Explorer\Components\Mesh.h" />
+    <ClInclude Include="src\Explorer\Components\Material.h" />
+    <ClInclude Include="src\Explorer\Components\Light.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Core\Application.cpp">
@@ -1443,7 +1444,7 @@
     <ClCompile Include="src\Explorer\Renderer\Buffer.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Renderer\Camera.cpp">
+    <ClCompile Include="src\Explorer\Components\Camera.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Framebuffer.cpp">
@@ -1493,7 +1494,8 @@
     </ClCompile>
     <ClCompile Include="src\Explorer\Math\Math.cpp" />
     <ClCompile Include="src\Explorer\Renderer\EditorCamera.cpp" />
-    <ClCompile Include="src\Explorer\Renderer\Mesh.cpp" />
-    <ClCompile Include="src\Explorer\Renderer\Material.cpp" />
+    <ClCompile Include="src\Explorer\Components\Mesh.cpp" />
+    <ClCompile Include="src\Explorer\Components\Material.cpp" />
+    <ClCompile Include="src\Explorer\Components\Light.cpp" />
   </ItemGroup>
 </Project>

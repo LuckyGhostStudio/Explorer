@@ -8,7 +8,7 @@
 /// <summary>
 /// 示例层
 /// </summary>
-ExampleLayer::ExampleLayer() :Layer("Example"), m_CameraController(1280.0f / 720.0f)
+ExampleLayer::ExampleLayer() :Layer("Example")//, m_CameraController(1280.0f / 720.0f)
 {
 	m_VertexArray.reset(new Explorer::VertexArray());		//创建顶点数组对象
 
@@ -78,12 +78,12 @@ ExampleLayer::ExampleLayer() :Layer("Example"), m_CameraController(1280.0f / 720
 
 void ExampleLayer::OnUpdate(Explorer::DeltaTime dt)
 {
-	m_CameraController.OnUpdate(dt);	//更新相机控制器
+	//m_CameraController.OnUpdate(dt);	//更新相机控制器
 
 	Explorer::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 	Explorer::RenderCommand::Clear();
 
-	Explorer::Renderer::BeginScene(m_CameraController.GetCamera());				//开始渲染场景
+	//Explorer::Renderer::BeginScene(m_CameraController.GetCamera());				//开始渲染场景
 
 	static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
@@ -120,5 +120,5 @@ void ExampleLayer::OnImGuiRender()
 
 void ExampleLayer::OnEvent(Explorer::Event& event)
 {
-	m_CameraController.OnEvent(event);	//调用相机事件函数 
+	//m_CameraController.OnEvent(event);	//调用相机事件函数 
 }

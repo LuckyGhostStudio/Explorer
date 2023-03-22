@@ -2,8 +2,6 @@
 
 #include <glm/glm.hpp>
 
-#include "Explorer/Scene/Components.h"
-
 namespace Explorer
 {
 	/// <summary>
@@ -23,9 +21,9 @@ namespace Explorer
 		/// 投影类型
 		/// </summary>
 		enum class ProjectionType { Perspective = 0, Orthographic = 1 };
+		glm::vec4 m_BackgroundColor = { 0.1f, 0.1f, 0.1f, 1.0f };		//背景颜色：清屏颜色
 	private:
 		ClearFlag m_ClearFlag = ClearFlag::Color;						//清屏类型
-		glm::vec4 m_BackgroundColor = { 0.1f, 0.1f, 0.1f, 1.0f };		//背景颜色：清屏颜色
 		ProjectionType m_ProjectionType = ProjectionType::Perspective;	//投影类型
 
 		float m_Fov = 45.0f;			//透视相机张角：垂直方向（度）
@@ -71,10 +69,7 @@ namespace Explorer
 		const glm::mat4& GetProjection() const { return m_Projection; }
 		
 		ClearFlag GetClearFlag() const { return m_ClearFlag; }
-		void SetClearFlag(const ClearFlag& flag) { m_ClearFlag = flag; }
-
-		const glm::vec4& GetBackgroundColor() const { return m_BackgroundColor; }
-		void SetBackgroundColor(const glm::vec4& background) { m_BackgroundColor = background; }
+		void SetClearFlag(const ClearFlag flag) { m_ClearFlag = flag; }
 
 		ProjectionType GetProjectionType() const { return m_ProjectionType; }
 		void SetProjectionType(ProjectionType type) { m_ProjectionType = type; RecalculateProjection(); }
