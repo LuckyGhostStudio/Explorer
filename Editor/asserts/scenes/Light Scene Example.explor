@@ -1,0 +1,79 @@
+Scene: Untitled
+Objects:
+  - Object: 12837192831273
+    Name Component:
+      Name: Camera
+    Transform Component:
+      Position: [3.70000005, 2.5, 3.5]
+      Rotation: [30.5, -53, 175.5]
+      Scale: [1, 1, 1]
+    Camera Component:
+      ProjectionType: 0
+      Size: 5
+      FOV: 45
+      Near: 0.00999999978
+      Far: 1000
+      Primary: true
+  - Object: 12837192831273
+    Name Component:
+      Name: Point Light
+    Transform Component:
+      Position: [2, 2.95000005, -0.850000024]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light Component:
+      Type: 1
+      Range: 100
+      SpotOuterAngle: 20
+      SpotInnerAngle: 18.2999992
+      Color: [0.934362948, 0.133480415, 0.133480415]
+      Intensity: 1
+      RenderShadow: true
+  - Object: 12837192831273
+    Name Component:
+      Name: Plane
+    Transform Component:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [19.4541874, 0.181331471, 19.4541874]
+    SpriteRenderer Component:
+      Color: [1, 1, 1, 1]
+  - Object: 12837192831273
+    Name Component:
+      Name: Spot Light 2
+    Transform Component:
+      Position: [5.61891747, 3.04163027, 0.724134445]
+      Rotation: [-130.434982, 20.1740627, -49.8610802]
+      Scale: [0.99999994, 0.999996364, 0.999995351]
+    Light Component:
+      Type: 2
+      Range: 96.9000015
+      SpotOuterAngle: 32.6279984
+      SpotInnerAngle: 29.9089985
+      Color: [0.0154440403, 0.41983223, 1]
+      Intensity: 1.47000003
+      RenderShadow: true
+  - Object: 12837192831273
+    Name Component:
+      Name: Spot Light
+    Transform Component:
+      Position: [-5.65338278, 3.21132231, 1.02002758e-07]
+      Rotation: [-106.538147, 0, 46.2665176]
+      Scale: [1, 1, 1.00000012]
+    Light Component:
+      Type: 2
+      Range: 100
+      SpotOuterAngle: 23.066
+      SpotInnerAngle: 21.1438332
+      Color: [0.999989986, 1, 0.999992728]
+      Intensity: 0.850000024
+      RenderShadow: true
+  - Object: 12837192831273
+    Name Component:
+      Name: Cube
+    Transform Component:
+      Position: [0, 0.809760571, -3.62817097]
+      Rotation: [0, 0, 0]
+      Scale: [33.4480972, 24.0777493, 1.12965667]
+    SpriteRenderer Component:
+      Color: [1, 1, 1, 1]

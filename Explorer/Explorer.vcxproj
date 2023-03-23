@@ -76,7 +76,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>exppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;EXP_PLATFORM_WINDOWS;EXP_BUILD_DLL;GLFW_INCLUDE_NONE;EXP_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;EXP_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -96,7 +96,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>exppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;EXP_PLATFORM_WINDOWS;EXP_BUILD_DLL;GLFW_INCLUDE_NONE;EXP_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;EXP_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -120,7 +120,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>exppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;EXP_PLATFORM_WINDOWS;EXP_BUILD_DLL;GLFW_INCLUDE_NONE;EXP_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;EXP_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -141,7 +141,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Explorer.h" />
+    <ClInclude Include="src\Explorer\Components\Camera.h" />
+    <ClInclude Include="src\Explorer\Components\Components.h" />
     <ClInclude Include="src\Explorer\Components\Light.h" />
+    <ClInclude Include="src\Explorer\Components\Material.h" />
+    <ClInclude Include="src\Explorer\Components\Mesh.h" />
+    <ClInclude Include="src\Explorer\Components\Transform.h" />
     <ClInclude Include="src\Explorer\Core\Application.h" />
     <ClInclude Include="src\Explorer\Core\Core.h" />
     <ClInclude Include="src\Explorer\Core\DeltaTime.h" />
@@ -157,22 +162,20 @@
     <ClInclude Include="src\Explorer\Events\Event.h" />
     <ClInclude Include="src\Explorer\Events\KeyEvent.h" />
     <ClInclude Include="src\Explorer\Events\MouseEvent.h" />
+    <ClInclude Include="src\Explorer\ImGui\Gizmo.h" />
     <ClInclude Include="src\Explorer\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Explorer\Math\Math.h" />
     <ClInclude Include="src\Explorer\Renderer\Buffer.h" />
-    <ClInclude Include="src\Explorer\Components\Camera.h" />
     <ClInclude Include="src\Explorer\Renderer\EditorCamera.h" />
     <ClInclude Include="src\Explorer\Renderer\Framebuffer.h" />
-    <ClInclude Include="src\Explorer\Components\Material.h" />
-    <ClInclude Include="src\Explorer\Components\Mesh.h" />
     <ClInclude Include="src\Explorer\Renderer\OpenGLContext.h" />
     <ClInclude Include="src\Explorer\Renderer\RenderCommand.h" />
     <ClInclude Include="src\Explorer\Renderer\Renderer.h" />
+    <ClInclude Include="src\Explorer\Renderer\Renderer2D.h" />
     <ClInclude Include="src\Explorer\Renderer\Renderer3D.h" />
     <ClInclude Include="src\Explorer\Renderer\Shader.h" />
     <ClInclude Include="src\Explorer\Renderer\Texture.h" />
     <ClInclude Include="src\Explorer\Renderer\VertexArray.h" />
-    <ClInclude Include="src\Explorer\Scene\Components.h" />
     <ClInclude Include="src\Explorer\Scene\Object.h" />
     <ClInclude Include="src\Explorer\Scene\Scene.h" />
     <ClInclude Include="src\Explorer\Scene\SceneSerializer.h" />
@@ -599,25 +602,26 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Explorer\Components\Light.cpp" />
+    <ClCompile Include="src\Explorer\Components\Camera.cpp" />
+    <ClCompile Include="src\Explorer\Components\Material.cpp" />
+    <ClCompile Include="src\Explorer\Components\Mesh.cpp" />
     <ClCompile Include="src\Explorer\Core\Application.cpp" />
     <ClCompile Include="src\Explorer\Core\Input.cpp" />
     <ClCompile Include="src\Explorer\Core\Layer.cpp" />
     <ClCompile Include="src\Explorer\Core\LayerStack.cpp" />
     <ClCompile Include="src\Explorer\Core\Log.cpp" />
     <ClCompile Include="src\Explorer\Core\Window.cpp" />
+    <ClCompile Include="src\Explorer\ImGui\Gizmo.cpp" />
     <ClCompile Include="src\Explorer\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Explorer\Math\Math.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Buffer.cpp" />
-    <ClCompile Include="src\Explorer\Components\Camera.cpp" />
     <ClCompile Include="src\Explorer\Renderer\EditorCamera.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Framebuffer.cpp" />
-    <ClCompile Include="src\Explorer\Components\Material.cpp" />
-    <ClCompile Include="src\Explorer\Components\Mesh.cpp" />
     <ClCompile Include="src\Explorer\Renderer\OpenGLContext.cpp" />
     <ClCompile Include="src\Explorer\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Renderer3D.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Shader.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Texture.cpp" />

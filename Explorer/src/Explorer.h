@@ -12,11 +12,11 @@
 #include "Explorer/Core/MouseButtonCodes.h"
 
 #include "Explorer/ImGui/ImGuiLayer.h"
+#include "Explorer/ImGui/Gizmo.h"
 
 #include "Explorer/Scene/Scene.h"
 #include "Explorer/Scene/Object.h"
 #include "Explorer/Scene/ScriptableObject.h"
-#include "Explorer/Scene/Components.h"
 
 //------Renderer------
 #include "Explorer/Renderer/Renderer.h"
@@ -30,6 +30,9 @@
 #include "Explorer/Renderer/Texture.h"
 #include "Explorer/Renderer/VertexArray.h"
 
+//Components
+#include "Explorer/Components/Components.h"
+#include "Explorer/Components/Transform.h"
 #include "Explorer/Components/Camera.h"
 #include "Explorer/Components/Light.h"
 #include "Explorer/Components/Mesh.h"

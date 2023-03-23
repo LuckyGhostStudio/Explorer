@@ -14,7 +14,7 @@ namespace Explorer
 	/// <summary>
 	/// ≤„’ª£∫¥Ê∑≈≤„
 	/// </summary>
-	class EXPLORER_API LayerStack
+	class LayerStack
 	{
 	private:
 		std::vector<Layer*> m_Layers;			//≤„¡–±Ì

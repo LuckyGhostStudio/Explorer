@@ -27,7 +27,7 @@ namespace Explorer
 		bool m_ViewportHovered = false;				//鼠标悬停在视口
 
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };	//视口大小
-		glm::vec2 m_ViewportBounds[2];				//视口边界
+		glm::vec2 m_ViewportBounds[2];				//视口边界位置
 
 		int m_GizmoType = -1;	//Gizmo操作类型 -1无 0平移 1旋转 2缩放
 

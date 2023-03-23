@@ -216,6 +216,12 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 ### 63. 添加灯光组件（平行光、点光源、聚光源）
 
+- Light.h
+
+### 64. 封装Gizmo类
+
+- Gizmo.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -340,10 +346,6 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
   渲染命令，执行最底层的OpenGL渲染命令。
   
-- Camera.h/.cpp
-
-  相机，进行相机变换，包括计算投影矩阵、视图矩阵，进行视图变换和投影变换。
-  
 - Texture.h/.cpp
 
   纹理类，进行纹理加载和纹理格式设置。
@@ -352,10 +354,6 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
   子纹理，根据子纹理坐标从Texture中裁剪。
 
-- CameraController.h/.cpp
-
-  相机控制器，控制相机移动、旋转，窗口缩放。
-  
 - Framebuffer.h/.cpp
 
   帧缓冲区，可创建帧缓冲区，包括颜色缓冲区和深度缓冲区，可将颜色缓冲区显示在ImGui上。
@@ -370,10 +368,6 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
   场景，包括所有的实体对象。
 
-- Components.h
-
-  组件，所有组件。
-  
 - Object.h/.cpp
 
   实体，场景中的物体对象，保存物体id，和其他参数，通过id关联所有组件。
@@ -389,6 +383,24 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - PlatformUtils.h/.cpp
 
   平台工具，包括文件对话框，可打开打开文件和保存文件对话框。
+
+##### Components
+
+- Camera.h/.cpp
+
+  相机组件，不同于编辑器相机。
+
+- Components.h
+
+  组件，所有组件。
+
+- Light.h
+
+  光源组件，包括平行光源、点光源、聚光源。添加该组件可以实现照明效果。
+
+- Transform.h
+
+  变换组件。
 
 ### Editor 项目
 

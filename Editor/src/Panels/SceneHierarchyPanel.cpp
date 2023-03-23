@@ -1,6 +1,7 @@
 #include "SceneHierarchyPanel.h"
 
-#include "Explorer/Scene/Components.h"
+#include "Explorer/Components/Components.h"
+#include "Explorer/Components/Transform.h"
 #include "Explorer/Components/Camera.h"
 #include "Explorer/Components/Light.h"
 
@@ -39,7 +40,7 @@ namespace Explorer
 
 		//创建物体
 		if (ImGui::BeginPopupContextWindow(0, 1, false)) {	//右键点击窗口白区域弹出菜单：- 右键 不在物体项上
-			if (ImGui::MenuItem("Create Empty")) {	//菜单项：创建空物体
+			if (ImGui::MenuItem("Create Empty")) {		//菜单项：创建空物体
 				m_Scene->CreateEmptyObject("Object");	//创建空物体
 			}
 			if (ImGui::MenuItem("Camera")) {		//菜单项：创建相机
@@ -283,8 +284,9 @@ namespace Explorer
 			char buffer[256];								//输入框内容buffer
 			memset(buffer, 0, sizeof(buffer));				//将buffer置零
 			strcpy_s(buffer, sizeof(buffer), name.c_str());	//buffer = name
+
 			if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {	//创建输入框，输入框内容改变时
-				name = std::string(buffer);	//物体name设为buffer
+				name = std::string(buffer);								//物体name设为buffer
 			}
 		}
 
@@ -302,7 +304,12 @@ namespace Explorer
 				m_SelectionObject.AddComponent<Camera>();
 				ImGui::CloseCurrentPopup();
 			}
-			//添加SpriteRenderer组件
+			//添加Light组件
+			if (ImGui::MenuItem("Light")) {
+				m_SelectionObject.AddComponent<Light>();
+				ImGui::CloseCurrentPopup();
+			}
+			//添加SpriteRenderer组件:TODO:后更改为MeshRenderer
 			if (ImGui::MenuItem("Sprite Renderer")) {
 				m_SelectionObject.AddComponent<SpriteRenderer>();
 				ImGui::CloseCurrentPopup();

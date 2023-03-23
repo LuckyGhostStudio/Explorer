@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef EXP_PLATFORM_WINDOWS
-
 /// <summary>
 /// 创建应用程序：在SandboxApp定义
 /// </summary>
@@ -19,5 +17,3 @@ int main(int argc, char** argv)
 	app->Run();		//运行
 	delete app;
 }
-
-#endif // EXP_PLATFORM_WINDOWS

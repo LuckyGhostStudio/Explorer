@@ -11,7 +11,7 @@ namespace Explorer
 	/// <summary>
 	/// ImGui层
 	/// </summary>
-	class EXPLORER_API ImGuiLayer :public Layer
+	class ImGuiLayer :public Layer
 	{
 	private:
 		float m_Time = 0.0f;		//当前帧时间

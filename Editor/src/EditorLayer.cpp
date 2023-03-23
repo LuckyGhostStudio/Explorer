@@ -251,60 +251,13 @@ namespace Explorer
 		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区0 ID
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
 
-		//Gizmo
-		ImGuizmo::SetOrthographic(false);						//透视投影
-		ImGuizmo::SetDrawlist();								//设置绘制列表
-		float windowWidth = (float)ImGui::GetWindowWidth();		//视口宽
-		float windowHeight = (float)ImGui::GetWindowHeight();	//视口高
-		//设置绘制区域
-		ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
-
 		//编辑器相机
 		const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();	//投影矩阵
-		glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();				//视图矩阵
+		const glm::mat4& cameraView = m_EditorCamera.GetViewMatrix();		//视图矩阵
 
-		//绘制坐标系
-		//ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), glm::value_ptr(glm::mat4(1.0f)), 10);
-
-		Object selectedObject = m_HierarchyPanel.GetSelectedObject();	//被选中物体
-		//选中物体存在 && Gizmo类型存在
-		if (selectedObject && m_GizmoType != -1) {
-			////Camera
-			//auto cameraObject = m_ActiveScene->GetPrimaryCameraObject();	//主相机实体
-			//const auto& camera = cameraObject.GetComponent<Camera>();		//相机
-			//const glm::mat4& cameraProjection = camera.GetProjection();		//投影矩阵
-			//glm::mat4 cameraView = glm::inverse(cameraObject.GetComponent<Transform>().GetTransform());	//视图矩阵
-
-			//被选中物体transform
-			auto& transformComponent = selectedObject.GetComponent<Transform>();	//Transform组件
-			glm::mat4 transform = transformComponent.GetTransform();
-
-			bool span = Input::IsKeyPressed(Key::LeftControl);	//Ctrl刻度捕捉：操作时固定delta刻度
-			float spanValue = 0.5f;	//平移缩放间隔：0.5m
-			//旋转间隔值：5度
-			if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) {
-				spanValue = 5.0f;
-			}
-
-			float spanValues[3] = { spanValue, spanValue, spanValue };	//xyz轴刻度捕捉值
-
-			//绘制操作Gizmo：相机视图矩阵 相机投影矩阵 Gizmo类型 本地坐标系 选中物体transform 增量矩阵 刻度捕捉值
-			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
-				(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
-				nullptr, span ? spanValues : nullptr);
-
-			//Gizmo被使用
-			if (ImGuizmo::IsUsing()) {
-				glm::vec3 position, rotation, scale;
-				Math::DecomposeTransform(transform, position, rotation, scale);	//分解transform矩阵
-
-				glm::vec3 deltaRotation = rotation - transformComponent.m_Rotation;	//旋转增量
-
-				transformComponent.m_Position = position;		//更新位置
-				transformComponent.m_Rotation += deltaRotation;	//更新旋转：累加增量，避免万向节锁
-				transformComponent.m_Scale = scale;				//更新缩放
-			}
-		}
+		
+		Gizmo::Init(m_ViewportBounds[0], m_ViewportBounds[1]);											//初始化Gizmo绘制参数	
+		Gizmo::DrawTransformation(m_HierarchyPanel.GetSelectedObject(), cameraView, cameraProjection);	//绘制Transform Gizmos
 		
 		ImGui::End();	//Scene
 		ImGui::PopStyleVar();
@@ -350,17 +303,17 @@ namespace Explorer
 			break;
 		}
 
-		//Gizmo
+		//设置Transform Gizmo类型
 		switch (e.GetKeyCode())
 		{
 			case Key::G:
-				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;	//平移
+				Gizmo::s_TransformType = (Gizmo::TransformationType)ImGuizmo::OPERATION::TRANSLATE;	//平移
 				break;
 			case Key::R:
-				m_GizmoType = ImGuizmo::OPERATION::ROTATE;		//旋转
+				Gizmo::s_TransformType = (Gizmo::TransformationType)ImGuizmo::OPERATION::ROTATE;	//旋转
 				break;
 			case Key::S:
-				m_GizmoType = ImGuizmo::OPERATION::SCALE;		//缩放
+				Gizmo::s_TransformType = (Gizmo::TransformationType)ImGuizmo::OPERATION::SCALE;		//缩放
 				break;
 		}
 	}
@@ -381,6 +334,12 @@ namespace Explorer
 	void EditorLayer::NewScene()
 	{
 		m_ActiveScene = std::make_shared<Scene>();	//创建新场景
+
+		m_Camera = m_ActiveScene->CreateCameraObject();					//创建默认Camera对象
+		m_Light = m_ActiveScene->CreateLightObject(Light::Type::Point);	//创建默认Light对象
+		m_Cube = m_ActiveScene->CreateEmptyObject("Cube");				//创建默认Cube对象
+		m_Cube.AddComponent<SpriteRenderer>();							//添加SpriteRenderer组件 TODO:后期更换为Mesh组件
+
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
 		m_HierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
 	}
@@ -402,6 +361,7 @@ namespace Explorer
 	void EditorLayer::SaveSceneAs()
 	{
 		std::string filepath = FileDialogs::SaveFile("Explorer Scene(*.explor)\0*.explor\0");	//保存文件对话框（文件类型名\0 文件类型.explor）
+
 		//路径不为空
 		if (!filepath.empty()) {
 			SceneSerializer serializer(m_ActiveScene);	//场景序列化器

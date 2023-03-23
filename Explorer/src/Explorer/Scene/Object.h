@@ -16,8 +16,8 @@ namespace Explorer
 		entt::entity m_ObjectID{ entt::null };	//实体ID
 		Scene* m_Scene = nullptr;				//实体所属场景
 		//TODO:添加父子物体
-		Object& m_Parent;					//父物体
-		std::vector<Object&> m_Children;	//子物体列表
+		//Object& m_Parent;					//父物体
+		//std::vector<Object&> m_Children;	//子物体列表
 	public:
 		Object() {}
 		Object(entt::entity objectID, Scene* scene);

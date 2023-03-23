@@ -91,8 +91,7 @@ project "Explorer"		--项目
 
 		defines			--宏
 		{
-			"EXP_PLATFORM_WINDOWS",
-			"EXP_BUILD_DLL",
+			--"EXP_PLATFORM_WINDOWS",
 			"GLFW_INCLUDE_NONE"
 		}
 
@@ -147,7 +146,7 @@ project "Sandbox"		--项目
 
 		defines			
 		{
-			"EXP_PLATFORM_WINDOWS"
+			--"EXP_PLATFORM_WINDOWS"
 		}
 
 	filter "configurations:Debug"	
@@ -202,7 +201,7 @@ project "Editor"		--项目
 
 		defines			
 		{
-			"EXP_PLATFORM_WINDOWS"
+			--"EXP_PLATFORM_WINDOWS"
 		}
 
 	filter "configurations:Debug"	

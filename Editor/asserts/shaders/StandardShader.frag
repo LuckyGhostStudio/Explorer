@@ -19,7 +19,7 @@ struct Light
 
 	vec3 Color;			//光照颜色
 	float Intensity;	//光照强度：TODO:光照强度对颜色的影响
-	int RenderShadow;	//是否渲染阴影 0不渲染 1渲染 ---
+	int RenderShadow;	//是否渲染阴影 0不渲染 1渲染 --- TODO:添加阴影渲染
 
 	int Type;				//光照类型
 	float Range;			//光照半径 Point | Spot：光照强度衰减为0时的距离

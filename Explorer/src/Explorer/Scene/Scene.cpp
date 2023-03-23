@@ -3,7 +3,7 @@
 
 #include "Explorer/Renderer/Renderer3D.h"
 
-#include "Components.h"
+#include "Explorer/Components/Components.h"
 
 #include "Object.h"
 
@@ -22,8 +22,8 @@ namespace Explorer
 	Object Scene::CreateEmptyObject(const std::string& name)
 	{
 		Object object = { m_Registry.create(), this };	//创建空物体
-		object.AddComponent<Transform>();				//添加Transform组件（默认组件）
 		object.AddComponent<Name>(name);				//添加Name组件（默认组件）
+		object.AddComponent<Transform>();				//添加Transform组件（默认组件）
 
 		return object;
 	}
@@ -35,8 +35,8 @@ namespace Explorer
 		glm::vec3 position = { 3.7f, 2.5f, 3.5f };			//初始位置
 		glm::vec3 rotation = { 30.5f, -53.0f, 175.5f };		//初始旋转
 
+		camera.AddComponent<Name>(name);					//添加Name组件
 		camera.AddComponent<Transform>(position, rotation);	//添加Transform组件
-		camera.AddComponent<Name>(name);				//添加Name组件
 		camera.AddComponent<Camera>();						//添加Camera组件
 
 		return camera;
@@ -45,26 +45,29 @@ namespace Explorer
 	Object Scene::CreateLightObject(Light::Type type, const std::string& name)
 	{
 		std::string tempName = name;
+		glm::vec3 position = { 0.0f, 1.5f, 0.0f };			//初始位置
+		glm::vec3 rotation = { 0.0f, 0.0f, 0.0f };			//初始旋转
+
 		switch (type)
 		{
-			case Light::Type::Directional:
+			case Light::Type::Directional:	//平行光
 				tempName = "Directional Light";
+				rotation = { 37.3f, 107.0f, 97.0f };	//设置初始旋转值
 				break;
-			case Light::Type::Point:
+			case Light::Type::Point:		//点光源
 				tempName = "Point Light";
+				position = { 2.0f, 2.95f, -0.85f };		//设置初始位置
 				break;
-			case Light::Type::Spot:
+			case Light::Type::Spot:			//聚光源
 				tempName = "Spot Light";
+				rotation = { -90.0f, 0.0f, 0.0f };		//设置初始旋转值
 				break;
 		}
 		 
 		Object lightObj = { m_Registry.create(), this };		//创建Light
 
-		glm::vec3 position = { 2.0f, 2.95f, -0.85f };			//初始位置
-		glm::vec3 rotation = { 37.3f, 107.0f, 97.0f };			//初始旋转
-
-		lightObj.AddComponent<Transform>(position, rotation);	//添加Transform组件
 		lightObj.AddComponent<Name>(tempName);					//添加Name组件
+		lightObj.AddComponent<Transform>(position, rotation);	//添加Transform组件
 		lightObj.AddComponent<Light>(type);						//添加Light组件：type类型光源
 
 		return lightObj;
@@ -185,9 +188,9 @@ namespace Explorer
 	}
 
 	template<>
-	void Scene::OnComponentAdded<Light>(Object object, Light& component)
+	void Scene::OnComponentAdded<Light>(Object object, Light& light)
 	{
-
+		
 	}
 
 	/// <summary>

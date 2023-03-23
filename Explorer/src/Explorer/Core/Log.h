@@ -9,7 +9,7 @@ namespace Explorer
 	/// <summary>
 	/// »’÷æ
 	/// </summary>
-	class EXPLORER_API Log
+	class Log
 	{
 	public:
 		/// <summary>

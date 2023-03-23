@@ -11,7 +11,7 @@ namespace Explorer
 	{
 	public:
 		bool m_Primary = true;	//是主相机
-
+//TODO:删除清屏标志和清屏颜色 转移到EditorCamera
 		/// <summary>
 		/// 清屏标志
 		/// </summary>

@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Explorer/Components/Transform.h"
 #include "Explorer/Components/Camera.h"
 #include "Texture.h"
-#include "Explorer/Scene/Components.h"
+#include "Explorer/Components/Components.h"
 
 namespace Explorer
 {

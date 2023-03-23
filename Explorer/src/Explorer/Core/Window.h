@@ -26,7 +26,7 @@ namespace Explorer
 	/// <summary>
 	/// 窗口类
 	/// </summary>
-	class EXPLORER_API Window
+	class Window
 	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;	//事件回调函数 void func(Event&)

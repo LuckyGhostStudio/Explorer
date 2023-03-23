@@ -1,0 +1,40 @@
+Scene: Untitled
+Objects:
+  - Object: 12837192831273
+    Name Component:
+      Name: Cube
+    Transform Component:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRenderer Component:
+      Color: [1, 1, 1, 1]
+  - Object: 12837192831273
+    Name Component:
+      Name: Point Light
+    Transform Component:
+      Position: [2, 2.95000005, -0.850000024]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light Component:
+      Type: 1
+      Range: 100
+      SpotOuterAngle: 20
+      SpotInnerAngle: 18.2999992
+      Color: [1, 1, 1]
+      Intensity: 1
+      RenderShadow: true
+  - Object: 12837192831273
+    Name Component:
+      Name: Camera
+    Transform Component:
+      Position: [3.70000005, 2.5, 3.5]
+      Rotation: [30.5, -53, 175.5]
+      Scale: [1, 1, 1]
+    Camera Component:
+      ProjectionType: 0
+      Size: 5
+      FOV: 45
+      Near: 0.00999999978
+      Far: 1000
+      Primary: true

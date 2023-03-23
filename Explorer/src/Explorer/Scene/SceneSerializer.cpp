@@ -2,12 +2,14 @@
 #include "SceneSerializer.h"
 
 #include "Object.h"
-#include "Components.h"
+#include "Explorer/Components/Components.h"
+#include "Explorer/Components/Transform.h"
 #include "Explorer/Components/Camera.h"
+#include "Explorer/Components/Light.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
-//TODO:添加Light组件序列化
+
 namespace YAML 
 {
 	/// <summary>
@@ -103,8 +105,8 @@ namespace Explorer
 	/// 序列化物体
 	/// </summary>
 	/// <param name="out">发射器</param>
-	/// <param name="entity">物体</param>
-	static void SerializeEntity(YAML::Emitter& out, Object object)
+	/// <param name="object">物体</param>
+	static void SerializeObject(YAML::Emitter& out, Object object)
 	{
 		out << YAML::BeginMap;	//开始物体Map
 		out << YAML::Key << "Object" << YAML::Value << "12837192831273"; // TODO: Object ID goes here
@@ -148,10 +150,28 @@ namespace Explorer
 			out << YAML::Key << "FOV" << YAML::Value << camera.GetFOV();
 			out << YAML::Key << "Near" << YAML::Value << camera.GetNearClip();
 			out << YAML::Key << "Far" << YAML::Value << camera.GetFarClip();
-
 			out << YAML::Key << "Primary" << YAML::Value << camera.m_Primary;
 
 			out << YAML::EndMap; //结束Camera组件Map
+		}
+
+		//Light组件
+		if (object.HasComponent<Light>())
+		{
+			out << YAML::Key << "Light Component";
+			out << YAML::BeginMap; //开始Light组件Map
+
+			auto& light = object.GetComponent<Light>();
+
+			out << YAML::Key << "Type" << YAML::Value << (int)light.GetType();
+			out << YAML::Key << "Range" << YAML::Value << light.GetRange();
+			out << YAML::Key << "SpotOuterAngle" << YAML::Value << light.GetSpotOuterAngle();
+			out << YAML::Key << "SpotInnerAngle" << YAML::Value << light.GetSpotInnerAngle();
+			out << YAML::Key << "Color" << YAML::Value << light.m_Color;
+			out << YAML::Key << "Intensity" << YAML::Value << light.GetIntensity();
+			out << YAML::Key << "RenderShadow" << YAML::Value << light.m_RenderShadow;
+
+			out << YAML::EndMap; //结束Light组件Map
 		}
 
 		//SpriteRenderer组件
@@ -181,7 +201,7 @@ namespace Explorer
 			if (!object)
 				return;
 
-			SerializeEntity(out, object);			//序列化物体
+			SerializeObject(out, object);			//序列化物体
 		});
 		out << YAML::EndSeq;	//结束物体序列
 		out << YAML::EndMap;	//结束场景Map
@@ -223,13 +243,13 @@ namespace Explorer
 
 				EXP_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-				Object deserializedObject = m_Scene->CreateEmptyObject(name);	//创建物体
+				Object deserializedObject = m_Scene->CreateEmptyObject(name);	//创建的空物体
 
-				auto transformNode = object["Transform Component"];	//Transform组件结点
-				//Transform组件结点存在
+				//Transform组件结点
+				auto transformNode = object["Transform Component"];
 				if (transformNode){
 					auto& transform = deserializedObject.GetComponent<Transform>();	//获取Transform组件
-					//设置组件数据
+					//设置变换组件数据
 					transform.m_Position = transformNode["Position"].as<glm::vec3>();
 					transform.m_Rotation = transformNode["Rotation"].as<glm::vec3>();
 					transform.m_Scale = transformNode["Scale"].as<glm::vec3>();
@@ -241,14 +261,29 @@ namespace Explorer
 				{
 					auto& camera = deserializedObject.AddComponent<Camera>();	//添加Camera组件
 
-					//设置相机数据
+					//设置相机组件数据
 					camera.SetProjectionType((Camera::ProjectionType)cameraNode["ProjectionType"].as<int>());
-					
 					camera.SetSize(cameraNode["Size"].as<float>());
 					camera.SetFOV(cameraNode["FOV"].as<float>());
 					camera.SetNearClip(cameraNode["Near"].as<float>());
 					camera.SetFarClip(cameraNode["Far"].as<float>());
 					camera.m_Primary = cameraNode["Primary"].as<bool>();
+				}
+
+				//Light组件结点
+				auto lightNode = object["Light Component"];
+				if (lightNode)
+				{
+					auto& light = deserializedObject.AddComponent<Light>();	//添加Light组件
+
+					//设置光源组件数据
+					light.SetType((Light::Type)lightNode["Type"].as<int>());
+					light.SetRange(lightNode["Range"].as<float>());
+					light.SetSpotOuterAngle(lightNode["SpotOuterAngle"].as<float>());
+					light.SetSpotInnerAngle(lightNode["SpotInnerAngle"].as<float>());
+					light.m_Color = lightNode["Color"].as<glm::vec3>();
+					light.SetIntensity(lightNode["Intensity"].as<float>());
+					light.m_RenderShadow = lightNode["RenderShadow"].as<bool>();
 				}
 
 				//SpriteRenderer组件结点

@@ -7,6 +7,9 @@
     <Filter Include="src\Explorer">
       <UniqueIdentifier>{6D155B7C-5978-EA20-02FE-22D7EE3FB6A3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Explorer\Components">
+      <UniqueIdentifier>{629CEF58-CED3-37F0-D7DD-9B1343945EE9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Explorer\Core">
       <UniqueIdentifier>{E5A54B6B-51BC-4901-9A33-D52206891A89}</UniqueIdentifier>
     </Filter>
@@ -15,6 +18,9 @@
     </Filter>
     <Filter Include="src\Explorer\ImGui">
       <UniqueIdentifier>{57282BD5-430C-EC2A-AC6C-E67D986FD6AC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Explorer\Math">
+      <UniqueIdentifier>{66E6506B-D2FC-4E01-1B74-DA2287C91F89}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Explorer\Renderer">
       <UniqueIdentifier>{B3C3AD9F-1F30-699A-E823-01F8544F8B02}</UniqueIdentifier>
@@ -56,6 +62,24 @@
   <ItemGroup>
     <ClInclude Include="src\Explorer.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Camera.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Components.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Light.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Material.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Mesh.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Transform.h">
+      <Filter>src\Explorer\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Core\Application.h">
       <Filter>src\Explorer\Core</Filter>
@@ -105,10 +129,13 @@
     <ClInclude Include="src\Explorer\ImGui\ImGuiLayer.h">
       <Filter>src\Explorer\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Math\Math.h">
+      <Filter>src\Explorer\Math</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Buffer.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Components\Camera.h">
+    <ClInclude Include="src\Explorer\Renderer\EditorCamera.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Framebuffer.h">
@@ -123,6 +150,9 @@
     <ClInclude Include="src\Explorer\Renderer\Renderer.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Renderer\Renderer2D.h">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Renderer3D.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
@@ -134,9 +164,6 @@
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\VertexArray.h">
       <Filter>src\Explorer\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Explorer\Scene\Components.h">
-      <Filter>src\Explorer\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Scene\Object.h">
       <Filter>src\Explorer\Scene</Filter>
@@ -1410,13 +1437,18 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Math\Math.h" />
-    <ClInclude Include="src\Explorer\Renderer\EditorCamera.h" />
-    <ClInclude Include="src\Explorer\Components\Mesh.h" />
-    <ClInclude Include="src\Explorer\Components\Material.h" />
-    <ClInclude Include="src\Explorer\Components\Light.h" />
+    <ClInclude Include="src\Explorer\ImGui\Gizmo.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Explorer\Components\Camera.cpp">
+      <Filter>src\Explorer\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Components\Material.cpp">
+      <Filter>src\Explorer\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Components\Mesh.cpp">
+      <Filter>src\Explorer\Components</Filter>
+    </ClCompile>
     <ClCompile Include="src\Explorer\Core\Application.cpp">
       <Filter>src\Explorer\Core</Filter>
     </ClCompile>
@@ -1441,10 +1473,13 @@
     <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp">
       <Filter>src\Explorer\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="src\Explorer\Math\Math.cpp">
+      <Filter>src\Explorer\Math</Filter>
+    </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Buffer.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Components\Camera.cpp">
+    <ClCompile Include="src\Explorer\Renderer\EditorCamera.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Framebuffer.cpp">
@@ -1457,6 +1492,9 @@
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Renderer.cpp">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Renderer\Renderer2D.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Renderer3D.cpp">
@@ -1492,10 +1530,6 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Math\Math.cpp" />
-    <ClCompile Include="src\Explorer\Renderer\EditorCamera.cpp" />
-    <ClCompile Include="src\Explorer\Components\Mesh.cpp" />
-    <ClCompile Include="src\Explorer\Components\Material.cpp" />
-    <ClCompile Include="src\Explorer\Components\Light.cpp" />
+    <ClCompile Include="src\Explorer\ImGui\Gizmo.cpp" />
   </ItemGroup>
 </Project>
