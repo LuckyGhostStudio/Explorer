@@ -146,6 +146,7 @@
     <ClInclude Include="src\Explorer\Components\Light.h" />
     <ClInclude Include="src\Explorer\Components\Material.h" />
     <ClInclude Include="src\Explorer\Components\Mesh.h" />
+    <ClInclude Include="src\Explorer\Components\SubMesh.h" />
     <ClInclude Include="src\Explorer\Components\Transform.h" />
     <ClInclude Include="src\Explorer\Core\Application.h" />
     <ClInclude Include="src\Explorer\Core\Core.h" />
@@ -605,6 +606,7 @@
     <ClCompile Include="src\Explorer\Components\Camera.cpp" />
     <ClCompile Include="src\Explorer\Components\Material.cpp" />
     <ClCompile Include="src\Explorer\Components\Mesh.cpp" />
+    <ClCompile Include="src\Explorer\Components\SubMesh.cpp" />
     <ClCompile Include="src\Explorer\Core\Application.cpp" />
     <ClCompile Include="src\Explorer\Core\Input.cpp" />
     <ClCompile Include="src\Explorer\Core\Layer.cpp" />

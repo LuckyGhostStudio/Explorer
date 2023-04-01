@@ -1,0 +1,26 @@
+Scene: Untitled
+Objects:
+  - Object: 12837192831273
+    Name Component:
+      Name: Cube
+    Transform Component:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [9.10223103, 0.0514581688, 2.73000002]
+    Mesh Component:
+      {}
+  - Object: 12837192831273
+    Name Component:
+      Name: Point Light
+    Transform Component:
+      Position: [2, 2.95000005, -0.850000024]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light Component:
+      Type: 1
+      Range: 100
+      SpotOuterAngle: 20
+      SpotInnerAngle: 18.2999992
+      Color: [1, 1, 1]
+      Intensity: 1
+      RenderShadow: true

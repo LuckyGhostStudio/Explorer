@@ -4,18 +4,33 @@ Objects:
     Name Component:
       Name: Cube
     Transform Component:
-      Position: [0.0831822157, 0, 0]
-      Rotation: [-180, 78.5285187, -180]
-      Scale: [0.889999986, 0.889999986, 0.889999986]
-    SpriteRenderer Component:
-      Color: [1, 0.787644804, 0, 1]
+      Position: [0.834429443, 0.215662718, 0.39987123]
+      Rotation: [0, 0, -4.67470455]
+      Scale: [2.91999984, 0.0937732384, 2.9199996]
+    MeshRenderer Component:
+      {}
   - Object: 12837192831273
     Name Component:
-      Name: Main Camera
+      Name: Point Light
     Transform Component:
-      Position: [0, 0, 0]
-      Rotation: [0, 0.5, 0]
+      Position: [2, 2.18112087, -0.850000024]
+      Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+    Light Component:
+      Type: 1
+      Range: 93.9800034
+      SpotOuterAngle: 20
+      SpotInnerAngle: 18.2999992
+      Color: [0.949806929, 0.0990146697, 0.0990146697]
+      Intensity: 1.08000004
+      RenderShadow: true
+  - Object: 12837192831273
+    Name Component:
+      Name: Camera
+    Transform Component:
+      Position: [4.92698097, 2.40343404, 1.86670506]
+      Rotation: [30.5000057, -52.9999886, 175.5]
+      Scale: [0.99999994, 0.999999821, 1]
     Camera Component:
       ProjectionType: 0
       Size: 5

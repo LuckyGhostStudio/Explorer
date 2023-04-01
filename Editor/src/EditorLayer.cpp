@@ -32,10 +32,9 @@ namespace Explorer
 		m_ActiveScene = std::make_shared<Scene>();								//创建场景
 		m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f);	//创建编辑器相机
 
-		m_Camera = m_ActiveScene->CreateCameraObject();					//创建默认Camera对象
-		m_Light = m_ActiveScene->CreateLightObject(Light::Type::Point);	//创建默认Light对象
-		m_Cube = m_ActiveScene->CreateEmptyObject("Cube");				//创建默认Cube对象
-		m_Cube.AddComponent<SpriteRenderer>();							//添加SpriteRenderer组件 TODO:后期更换为Mesh组件
+		m_Camera = m_ActiveScene->CreateCameraObject();		//创建默认Camera对象
+		m_Light = m_ActiveScene->CreateLightObject();		//创建默认Light对象（Point）
+		m_Cube = m_ActiveScene->CreateCubeObject();			//创建默认Cube对象
 
 #if 0
 
@@ -100,6 +99,7 @@ namespace Explorer
 
 		//Renderer
 		Renderer3D::ResetStats();	//重置统计数据
+
 		m_Framebuffer->Bind();										//绑定帧缓冲区
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });	//设置清屏颜色
 		RenderCommand::Clear();										//清除
@@ -232,7 +232,7 @@ namespace Explorer
 		//场景视口
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
 		ImGui::Begin("Scene");
-		
+
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();	//视口可用区域最小值（视口左上角相对于视口左上角位置）
 		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();	//视口可用区域最大值（视口右下角相对于视口左上角位置）
 		auto viewportOffset = ImGui::GetWindowPos();	//视口偏移量：视口面板左上角位置（相对于屏幕左上角）
@@ -261,6 +261,8 @@ namespace Explorer
 		
 		ImGui::End();	//Scene
 		ImGui::PopStyleVar();
+
+		//ImGui::ShowDemoWindow();
 		
 		ImGui::End();	//DockSpace
 	}
@@ -270,7 +272,7 @@ namespace Explorer
 		m_EditorCamera.OnEvent(event);	//编辑器相机事件
 
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<KeyPressedEvent>(EXP_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));	//调用按键按下事件
+		dispatcher.Dispatch<KeyPressedEvent>(EXP_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));					//调用按键按下事件
 		dispatcher.Dispatch<MouseButtonPressedEvent>(EXP_BIND_EVENT_FUNC(EditorLayer::OnMouseButtonPressed));	//调用鼠标按钮按下事件
 	}
 
@@ -333,12 +335,11 @@ namespace Explorer
 
 	void EditorLayer::NewScene()
 	{
-		m_ActiveScene = std::make_shared<Scene>();	//创建新场景
+		m_ActiveScene = std::make_shared<Scene>();			//创建新场景
 
-		m_Camera = m_ActiveScene->CreateCameraObject();					//创建默认Camera对象
-		m_Light = m_ActiveScene->CreateLightObject(Light::Type::Point);	//创建默认Light对象
-		m_Cube = m_ActiveScene->CreateEmptyObject("Cube");				//创建默认Cube对象
-		m_Cube.AddComponent<SpriteRenderer>();							//添加SpriteRenderer组件 TODO:后期更换为Mesh组件
+		m_Camera = m_ActiveScene->CreateCameraObject();		//创建默认Camera对象
+		m_Light = m_ActiveScene->CreateLightObject();		//创建默认Light对象
+		m_Cube = m_ActiveScene->CreateCubeObject();			//创建默认Cube对象
 
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
 		m_HierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景

@@ -30,8 +30,20 @@ namespace Explorer
 	
 	void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, uint32_t indexCount)
 	{
+		vertexArray->Bind();
+
+		indexCount = 0;
+
 		uint32_t count = indexCount ? vertexArray->GetIndexBuffer()->GetCount() : indexCount;
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);	//顶点数组索引绘制三角形
+		glBindTexture(GL_TEXTURE_2D, 0);	//清空纹理槽
+	}
+
+	void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
+	{
+		vertexArray->Bind();
+
+		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);	//顶点数组索引绘制三角形
 		glBindTexture(GL_TEXTURE_2D, 0);	//清空纹理槽
 	}
 }

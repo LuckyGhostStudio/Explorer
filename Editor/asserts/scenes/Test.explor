@@ -2,6 +2,15 @@ Scene: Untitled
 Objects:
   - Object: 12837192831273
     Name Component:
+      Name: Cube
+    Transform Component:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [0.00100000005, 1, 1]
+    Mesh Component:
+      Type: 2
+  - Object: 12837192831273
+    Name Component:
       Name: Camera
     Transform Component:
       Position: [3.70000005, 2.5, 3.5]
@@ -18,7 +27,7 @@ Objects:
     Name Component:
       Name: Point Light
     Transform Component:
-      Position: [0.605849385, 1.58725452, 0.342640758]
+      Position: [2, 2.95000005, -0.850000024]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     Light Component:
@@ -26,39 +35,24 @@ Objects:
       Range: 100
       SpotOuterAngle: 20
       SpotInnerAngle: 18.2999992
-      Color: [0.603985906, 0.362934351, 1]
+      Color: [1, 1, 1]
       Intensity: 1
       RenderShadow: true
   - Object: 12837192831273
     Name Component:
-      Name: Plane
+      Name: Cube 1
     Transform Component:
-      Position: [0, 0, 1.39408493]
+      Position: [-0.731058836, 0.0263701677, 1.07533383]
       Rotation: [0, 0, 0]
-      Scale: [13.4945002, 0.170420587, 16.6641064]
+      Scale: [1, 0.32538262, 1]
     Mesh Component:
-      {}
-  - Object: 12837192831273
-    Name Component:
-      Name: Wall
-    Transform Component:
-      Position: [-3.5331521, 1.81623137, 1.77695155]
-      Rotation: [0, 0, 0]
-      Scale: [0.221062049, 6.81275463, 17.4547272]
-    Mesh Component:
-      {}
-  - Object: 12837192831273
-    Name Component:
-      Name: Spot Light
-    Transform Component:
-      Position: [3.34270954, 1.24981296, 0.877387702]
-      Rotation: [-107.145813, 46.704174, -44.2690392]
-      Scale: [0.999999881, 0.999948084, 0.999972463]
-    Light Component:
       Type: 2
-      Range: 101.800003
-      SpotOuterAngle: 51.6020012
-      SpotInnerAngle: 47.3018341
-      Color: [0.00772190094, 0, 1]
-      Intensity: 1.5
-      RenderShadow: true
+  - Object: 12837192831273
+    Name Component:
+      Name: Cube 2
+    Transform Component:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 0.0156978033]
+    Mesh Component:
+      Type: 2

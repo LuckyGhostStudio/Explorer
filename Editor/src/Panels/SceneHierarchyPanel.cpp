@@ -4,6 +4,7 @@
 #include "Explorer/Components/Transform.h"
 #include "Explorer/Components/Camera.h"
 #include "Explorer/Components/Light.h"
+#include "Explorer/Components/Mesh.h"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
@@ -43,9 +44,17 @@ namespace Explorer
 			if (ImGui::MenuItem("Create Empty")) {		//菜单项：创建空物体
 				m_Scene->CreateEmptyObject("Object");	//创建空物体
 			}
-			if (ImGui::MenuItem("Camera")) {		//菜单项：创建相机
-				m_Scene->CreateCameraObject();
+
+			//父菜单项：3D物体
+			if (ImGui::BeginMenu("3D Object"))
+			{
+				if (ImGui::MenuItem("Cube")) {		//子菜单项：创建Cube
+					m_Scene->CreateCubeObject();
+				}
+				
+				ImGui::EndMenu();
 			}
+
 
 			//父菜单项：光源
 			if (ImGui::BeginMenu("Light"))
@@ -63,7 +72,11 @@ namespace Explorer
 				ImGui::EndMenu();
 			}
 
-			ImGui::EndPopup();
+			if (ImGui::MenuItem("Camera")) {		//菜单项：创建相机
+				m_Scene->CreateCameraObject();
+			}
+
+			ImGui::EndPopup();	//结束弹出菜单
 		}
 
 		ImGui::End();
@@ -309,7 +322,12 @@ namespace Explorer
 				m_SelectionObject.AddComponent<Light>();
 				ImGui::CloseCurrentPopup();
 			}
-			//添加SpriteRenderer组件:TODO:后更改为MeshRenderer
+			//添加Mesh组件
+			if (ImGui::MenuItem("Mesh")) {
+				m_SelectionObject.AddComponent<Mesh>();
+				ImGui::CloseCurrentPopup();
+			}
+			//添加SpriteRenderer组件
 			if (ImGui::MenuItem("Sprite Renderer")) {
 				m_SelectionObject.AddComponent<SpriteRenderer>();
 				ImGui::CloseCurrentPopup();
@@ -455,6 +473,33 @@ namespace Explorer
 				camera.SetFarClip(farClip);
 			}
 		});
+
+		//绘制Mesh组件
+		DrawComponent<Mesh>("Mesh", object, [](Mesh& mesh)
+		{
+			const char* meshTypes[] = { "None (Mesh)", "Other", "Cube", "Sphere", "Capsule", "Cylinder", "Plane"};
+			const char* currentMeshType = meshTypes[(int)mesh.GetType()];	//当前网格类型
+
+			//下拉框 选择网格类型
+			if (ImGui::BeginCombo("Mesh", currentMeshType)) {
+				for (int i = 0; i < 7; i++) {
+					bool isSelected = currentMeshType == meshTypes[i];	//被选中：当前网格类型==第i个网格类型
+					//可选择项，该项改变时：网格类型 已选中
+					if (ImGui::Selectable(meshTypes[i], isSelected)) {
+						currentMeshType = meshTypes[i];		//设置当前网格类型
+						mesh.SetType((Mesh::Type)i);		//设置网格类型
+					}
+
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();	//设置默认选中项
+					}
+				}
+				ImGui::EndCombo();
+			}
+			//TODO：if Type == Other then 添加按钮 从文件加载Mesh
+		});
+
+		//TODO:添加Material组件
 
 		//绘制SpriteRenderer组件
 		DrawComponent<SpriteRenderer>("Sprite Renderer", object, [](SpriteRenderer& spriteRenderer)

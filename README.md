@@ -222,6 +222,11 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - Gizmo.h/.cpp
 
+### 65. 添加Mesh组件
+
+- Mesh.h/.cpp
+- SubMesh.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -401,6 +406,14 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Transform.h
 
   变换组件。
+  
+- Mesh.h/.cpp
+
+  网格组件，可添加若干子网格。
+
+- SubMesh.h/.cpp
+
+  子网格，设置顶点缓冲区数据和布局。
 
 ### Editor 项目
 

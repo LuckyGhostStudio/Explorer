@@ -3,6 +3,7 @@
 #include "Explorer/Components/Transform.h"
 #include "Explorer/Components/Camera.h"
 #include "Explorer/Components/Light.h"
+#include "Explorer/Components/Mesh.h"
 #include "Explorer/Components/Components.h"
 #include "Explorer/Renderer/EditorCamera.h"
 
@@ -51,21 +52,12 @@ namespace Explorer
 		static void EndScene();
 
 		/// <summary>
-		/// 开始网格处理：设置网格渲染初始参数
+		/// 子网格处理
 		/// </summary>
-		static void StartMeshProcessing();
+		/// <param name="subMesh">子网格</param>
+		static void SubMeshProcessing(const SubMesh& subMesh);
 
-		/// <summary>
-		/// 开始下一个网格处理：结束上一个网格渲染 开始下一个
-		/// </summary>
-		static void NextMeshProcessing();
-
-		/// <summary>
-		/// 网格渲染处理过程
-		/// </summary>
-		static void MeshProcessing();
-
-		static void DrawMesh(const Transform& transform, int objectID = -1);
+		static void DrawMesh(const Transform& transform, Mesh& mesh, int objectID = -1);
 
 		/// <summary>
 		/// 统计数据

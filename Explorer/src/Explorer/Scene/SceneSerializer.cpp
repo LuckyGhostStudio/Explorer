@@ -6,10 +6,11 @@
 #include "Explorer/Components/Transform.h"
 #include "Explorer/Components/Camera.h"
 #include "Explorer/Components/Light.h"
+#include "Explorer/Components/Mesh.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
-
+//TODO:添加Mesh序列化和反序列化
 namespace YAML 
 {
 	/// <summary>
@@ -173,6 +174,19 @@ namespace Explorer
 
 			out << YAML::EndMap; //结束Light组件Map
 		}
+		
+		//Mesh组件
+		if (object.HasComponent<Mesh>())
+		{
+			out << YAML::Key << "Mesh Component";
+			out << YAML::BeginMap;	//开始Mesh组件Map
+
+			auto& mesh = object.GetComponent<Mesh>();
+			out << YAML::Key << "Type" << YAML::Value << (int)mesh.GetType();
+			//TODO:添加其他属性
+
+			out << YAML::EndMap;	//结束Mesh组件Map
+		}
 
 		//SpriteRenderer组件
 		if (object.HasComponent<SpriteRenderer>())
@@ -284,6 +298,93 @@ namespace Explorer
 					light.m_Color = lightNode["Color"].as<glm::vec3>();
 					light.SetIntensity(lightNode["Intensity"].as<float>());
 					light.m_RenderShadow = lightNode["RenderShadow"].as<bool>();
+				}
+
+				//Mesh组件结点
+				auto meshNode = object["Mesh Component"];
+				if (meshNode)
+				{
+					auto& mesh = deserializedObject.AddComponent<Mesh>();	//添加Mesh组件
+
+					//设置网格组件数据
+					mesh.SetType((Mesh::Type)meshNode["Type"].as<int>());
+
+					std::vector<Vertex> vertices;	//Mesh顶点
+					std::vector<uint32_t> indices;	//Mesh顶点索引
+
+					switch (mesh.GetType())
+					{
+						case Mesh::Type::None:
+							break;
+						case Mesh::Type::Other:
+							break;
+						case Mesh::Type::Cube:
+							//正方体顶点
+							vertices =
+							{
+								// ---------位置---------	----------颜色----------		---------法线--------	---纹理坐标---  ID objID
+								{ {  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f }, { 0.0f, 0.0f }, 0, 0 },	// A 0 x+
+								{ {  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f }, { 0.0f, 0.0f }, 0, 0 },	// A 1 y-
+								{ {  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f }, { 0.0f, 0.0f }, 0, 0 },	// A 2 z+
+
+								{ {  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f },	{ 0.0f, 1.0f }, 1, 0 },	// B 3
+								{ {  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f },	{ 0.0f, 1.0f }, 1, 0 },	// B 4
+								{ {  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 0.0f, 1.0f }, 1, 0 },	// B 5
+
+								{ {  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f },	{ 1.0f, 1.0f }, 2, 0 },	// C 6
+								{ {  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f },	{ 1.0f, 1.0f }, 2, 0 },	// C 7
+								{ {  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 1.0f, 1.0f }, 2, 0 },	// C 8
+
+								{ {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f }, { 1.0f, 0.0f }, 3, 0 },	// D 9
+								{ {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f }, { 1.0f, 0.0f }, 3, 0 },	// D 10
+								{ {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f }, { 1.0f, 0.0f }, 3, 0 },	// D 11
+
+								{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 0.0f, 0.0f }, 4, 0 },	// E 12
+								{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f },	{ 0.0f, 0.0f }, 4, 0 },	// E 13
+								{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f },	{ 0.0f, 0.0f }, 4, 0 },	// E 14
+
+								{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 0.0f, 1.0f }, 5, 0 },	// F 15
+								{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f },	{ 0.0f, 1.0f }, 5, 0 },	// F 16
+								{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 0.0f, 1.0f }, 5, 0 },	// F 17
+
+								{ { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 1.0f, 1.0f }, 6, 0 },	// G 18
+								{ { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f },	{ 1.0f, 1.0f }, 6, 0 },	// G 19
+								{ { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 1.0f, 1.0f }, 6, 0 },	// G 20
+
+								{ { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 1.0f, 0.0f }, 7, 0 },	// H 21
+								{ { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f },	{ 1.0f, 0.0f }, 7, 0 },	// H 22
+								{ { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f },	{ 1.0f, 0.0f }, 7, 0 },	// H 23
+							};
+
+							//顶点索引
+							indices =
+							{
+								0, 3, 6,	// A B C x+
+								6, 9, 0,	// C D A x+
+								18, 15, 12,	// G F E x-
+								18, 21, 12,	// G H E x-
+								22, 7, 19,	// H C G y+
+								7, 10, 22,	// C D H y+
+								13, 16, 4,	// E F B y-
+								4, 1, 13,	// B A E y-
+								23, 14, 2,	// H E A z+
+								2, 11, 23,	// A D H z+
+								20, 5, 17,	// G B F z-
+								5, 20, 8,	// B G C z-
+							};
+
+							mesh.AddSubMesh(SubMesh(vertices, indices));	//添加Cube子网格
+							break;
+						case Mesh::Type::Sphere:
+							break;
+						case Mesh::Type::Capsule:
+							break;
+						case Mesh::Type::Cylinder:
+							break;
+						case Mesh::Type::Plane:
+							break;
+					}
+					//TODO:补充属性
 				}
 
 				//SpriteRenderer组件结点

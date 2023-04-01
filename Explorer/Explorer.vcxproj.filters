@@ -1438,6 +1438,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\ImGui\Gizmo.h" />
+    <ClInclude Include="src\Explorer\Components\SubMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Components\Camera.cpp">
@@ -1531,5 +1532,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\ImGui\Gizmo.cpp" />
+    <ClCompile Include="src\Explorer\Components\SubMesh.cpp" />
   </ItemGroup>
 </Project>

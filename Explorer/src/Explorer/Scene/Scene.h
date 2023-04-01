@@ -49,6 +49,13 @@ namespace Explorer
 		Object CreateEmptyObject(const std::string& name = "Object");
 		
 		/// <summary>
+		/// 创建Cube物体
+		/// </summary>
+		/// <param name="name">Cube名</param>
+		/// <returns>Cube</returns>
+		Object CreateCubeObject(const std::string& name = "Cube");
+
+		/// <summary>
 		/// 创建Camera
 		/// </summary>
 		/// <param name="name">相机名</param>
