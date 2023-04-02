@@ -227,6 +227,11 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Mesh.h/.cpp
 - SubMesh.h/.cpp
 
+### 66. 添加Material组件
+
+- Material.h/.cpp
+- RendererData.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -414,6 +419,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - SubMesh.h/.cpp
 
   子网格，设置顶点缓冲区数据和布局。
+  
+- Material.h/.cpp
+
+  材质组件，设置着色器和材质贴图。
 
 ### Editor 项目
 

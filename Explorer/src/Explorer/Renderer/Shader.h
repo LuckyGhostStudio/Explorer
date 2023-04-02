@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include "RendererData.h"
+
 namespace Explorer
 {
 	struct LightData;
@@ -49,7 +51,14 @@ namespace Explorer
 		/// 设置Light数据：上传Light数据到着色器
 		/// </summary>
 		/// <param name="lightData">光源数据</param>
-		void SetLightData(const LightData& lightData);
+		/// <param name="i">光源编号</param>
+		void SetLightData(const LightData& lightData, uint32_t i);
+
+		/// <summary>
+		/// 设置Material数据
+		/// </summary>
+		/// <param name="materialData">材质数据</param>
+		void SetMaterialData(const MaterialData& materialData);
 
 		/// <summary>
 		/// 设置uniform Int变量
@@ -102,6 +111,7 @@ namespace Explorer
 		void SetMat4(const std::string& name, const glm::mat4& value);
 
 		const std::string GetName() const { return m_Name; }
+		void SetName(const std::string& name) { m_Name = name; }
 
 		void UploadUniformInt(const std::string& name, int value);
 		void UploadUniformIntArray(const std::string& name, int* values, uint32_t count);

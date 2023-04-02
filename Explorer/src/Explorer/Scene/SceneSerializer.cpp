@@ -11,8 +11,45 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 //TODO:添加Mesh序列化和反序列化
+//TODO:添加Material序列化和反序列化
 namespace YAML 
 {
+	/// <summary>
+	/// vec2转换
+	/// </summary>
+	template<>
+	struct convert<glm::vec2>
+	{
+		/// <summary>
+		/// 将vec2转换为YAML的节点
+		/// </summary>
+		/// <param name="rhs">vec2类型</param>
+		/// <returns>结点</returns>
+		static Node encode(const glm::vec2& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			return node;
+		}
+
+		/// <summary>
+		/// 将YAML结点类型转换为vec2
+		/// </summary>
+		/// <param name="node">结点</param>
+		/// <param name="rhs">vec2</param>
+		/// <returns>是否转换成功</returns>
+		static bool decode(const Node& node, glm::vec2& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 2)
+				return false;
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			return true;
+		}
+	};
+
 	/// <summary>
 	/// vec3转换
 	/// </summary>
@@ -83,6 +120,13 @@ namespace YAML
 
 namespace Explorer
 {
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v)
+	{
+		out << YAML::Flow;	//流 [x,y]
+		out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
+		return out;
+	}
+
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v)
 	{
 		out << YAML::Flow;	//流 [x,y,z]
@@ -92,7 +136,7 @@ namespace Explorer
 
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& v)
 	{
-		out << YAML::Flow;
+		out << YAML::Flow;	//流 [x,y,z,w]
 		out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
 		return out;
 	}
@@ -186,6 +230,31 @@ namespace Explorer
 			//TODO:添加其他属性
 
 			out << YAML::EndMap;	//结束Mesh组件Map
+		}
+
+		//Material组件
+		if (object.HasComponent<Material>())
+		{
+			out << YAML::Key << "Material Component";
+			out << YAML::BeginMap;	//开始Material组件Map
+
+			auto& material = object.GetComponent<Material>();
+			
+			//TODO:添加Shader类型
+			out << YAML::Key << "Color" << YAML::Value << material.m_Color;									//颜色
+			out << YAML::Key << "AlbedoTextureExist" << YAML::Value << material.m_AlbedoTextureExist;		//Albedo是否存在
+			out << YAML::Key << "SpecularTextureExist" << YAML::Value << material.m_SpecularTextureExist;	//Specular是否存在								//颜色
+			if (material.m_AlbedoTextureExist) {
+				out << YAML::Key << "AlbedoTexturePath" << YAML::Value << material.GetAlbedoTexture()->GetPath();		//Albedo贴图路径
+			}
+			if (material.m_SpecularTextureExist) {
+				out << YAML::Key << "SpecularTexturePath" << YAML::Value << material.GetSpecularTexture()->GetPath();	//Specular贴图路径
+			}
+			out << YAML::Key << "Shininess" << YAML::Value << material.GetShininess();						//反光度
+			out << YAML::Key << "Tiling" << YAML::Value << material.m_Tiling;								//纹理平铺因子
+			out << YAML::Key << "Offset" << YAML::Value << material.m_Offset;								//纹理平铺因子
+
+			out << YAML::EndMap;	//结束Material组件Map
 		}
 
 		//SpriteRenderer组件
@@ -385,6 +454,28 @@ namespace Explorer
 							break;
 					}
 					//TODO:补充属性
+				}
+
+				//Material组件结点
+				auto materialNode = object["Material Component"];
+				if (materialNode)
+				{
+					auto& material = deserializedObject.AddComponent<Material>();	//添加Material组件
+
+					//设置光源组件数据
+					//TODO:添加Shader类型
+					material.m_Color = materialNode["Color"].as<glm::vec4>();
+					material.m_AlbedoTextureExist = materialNode["AlbedoTextureExist"].as<bool>();
+					material.m_SpecularTextureExist = materialNode["SpecularTextureExist"].as<bool>();
+					if (material.m_AlbedoTextureExist) {	//Albedo存在
+						material.SetAlbedoTexture(materialNode["AlbedoTexturePath"].as<std::string>());	//加载Albedo贴图
+					}
+					if (material.m_SpecularTextureExist) {	//Specular存在
+						material.SetSpecularTexture(materialNode["SpecularTexturePath"].as<std::string>());	//加载Specular贴图
+					}
+					material.SetShininess(materialNode["Shininess"].as<float>());
+					material.m_Tiling = materialNode["Tiling"].as<glm::vec2>();
+					material.m_Offset = materialNode["Offset"].as<glm::vec2>();
 				}
 
 				//SpriteRenderer组件结点

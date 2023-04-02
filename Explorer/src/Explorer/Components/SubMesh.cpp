@@ -34,6 +34,11 @@ namespace Explorer
 	
 	SubMesh::~SubMesh()
 	{
-		
+		m_VertexCount = 0;
+		m_VertexIndexCount = 0;
+
+		m_Vertices.clear();
+		m_VertexIndices.clear();
+		m_VertexBufferData.clear();
 	}
 }

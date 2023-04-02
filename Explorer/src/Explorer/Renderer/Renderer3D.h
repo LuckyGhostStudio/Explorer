@@ -4,7 +4,9 @@
 #include "Explorer/Components/Camera.h"
 #include "Explorer/Components/Light.h"
 #include "Explorer/Components/Mesh.h"
+#include "Explorer/Components/Material.h"
 #include "Explorer/Components/Components.h"
+
 #include "Explorer/Renderer/EditorCamera.h"
 
 namespace Explorer
@@ -24,7 +26,7 @@ namespace Explorer
 			Raytracing = 1		//光线追踪
 		};
 
-		static RendererType m_Type;	//渲染器类型（0 光栅化渲染器 1 光线追踪渲染器）
+		static RendererType s_Type;	//渲染器类型（0 光栅化渲染器 1 光线追踪渲染器）
 	public:
 		/// <summary>
 		/// 初始化渲染器
@@ -55,9 +57,9 @@ namespace Explorer
 		/// 子网格处理
 		/// </summary>
 		/// <param name="subMesh">子网格</param>
-		static void SubMeshProcessing(const SubMesh& subMesh);
+		static void SubMeshProcessing(SubMesh& subMesh);
 
-		static void DrawMesh(const Transform& transform, Mesh& mesh, int objectID = -1);
+		static void DrawMesh(const Transform& transform, Mesh& mesh, Material& material, int objectID = -1);
 
 		/// <summary>
 		/// 统计数据

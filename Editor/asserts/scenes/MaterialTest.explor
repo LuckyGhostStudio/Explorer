@@ -1,0 +1,67 @@
+Scene: Untitled
+Objects:
+  - Object: 12837192831273
+    Name Component:
+      Name: Cube 2111
+    Transform Component:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Mesh Component:
+      Type: 2
+    Material Component:
+      Color: [0.49906525, 0.760617733, 0.469879717, 1]
+      AlbedoTextureExist: true
+      SpecularTextureExist: true
+      AlbedoTexturePath: D:\UnityËØ²Ä\planeColor.png
+      SpecularTexturePath: D:\UnityËØ²Ä\¿¨Í¨·É»ú.png
+      Shininess: 127.039001
+      Tiling: [0.600000024, 2.29999995]
+      Offset: [0.5, -0.300000012]
+  - Object: 12837192831273
+    Name Component:
+      Name: Point Light
+    Transform Component:
+      Position: [2, 2.95000005, -0.850000024]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light Component:
+      Type: 1
+      Range: 100
+      SpotOuterAngle: 20
+      SpotInnerAngle: 18.2999992
+      Color: [1, 1, 1]
+      Intensity: 1
+      RenderShadow: true
+  - Object: 12837192831273
+    Name Component:
+      Name: Camera
+    Transform Component:
+      Position: [3.70000005, 2.5, 3.5]
+      Rotation: [30.5, -53, 175.5]
+      Scale: [1, 1, 1]
+    Camera Component:
+      ProjectionType: 0
+      Size: 5
+      FOV: 45
+      Near: 0.00999999978
+      Far: 1000
+      Primary: true
+  - Object: 12837192831273
+    Name Component:
+      Name: Cube 2
+    Transform Component:
+      Position: [1.40118599, 0, -1.13058472]
+      Rotation: [-14.079649, -23.6070156, 4.64320692e-07]
+      Scale: [1, 0.459925711, 1]
+    Mesh Component:
+      Type: 2
+    Material Component:
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
+      AlbedoTextureExist: true
+      SpecularTextureExist: true
+      AlbedoTexturePath: E:\C++\Explorer\Editor\asserts\textures\ChernoLogo.png
+      SpecularTexturePath: E:\C++\Explorer\Editor\asserts\textures\Checkerboard.png
+      Shininess: 87.8270035
+      Tiling: [3.5999999, 0.600000024]
+      Offset: [-1, 0.899999976]

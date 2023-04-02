@@ -132,10 +132,30 @@ namespace Explorer
 		glUseProgram(0);
 	}
 	
-	void Shader::SetLightData(const LightData& lightData)
+	void Shader::SetLightData(const LightData& lightData, uint32_t i)
 	{
-		//TODO:设置Light数据
-		//SetFloat3("u_Light.Position", lightData.Position);
+		SetFloat3("u_Lights[" + std::to_string(i) + "].Position", lightData.Position);							//光源位置
+		SetFloat3("u_Lights[" + std::to_string(i) + "].Direction", lightData.Direction);						//光照方向
+		SetFloat3("u_Lights[" + std::to_string(i) + "].Color", lightData.Color);								//灯光颜色
+		SetFloat("u_Lights[" + std::to_string(i) + "].Intensity", lightData.Intensity);							//光照强度
+		SetInt("u_Lights[" + std::to_string(i) + "].RenderShadow", (int)lightData.RenderShadow);				//是否渲染阴影
+		SetInt("u_Lights[" + std::to_string(i) + "].Type", (int)lightData.Type);								//光照类型
+		SetFloat("u_Lights[" + std::to_string(i) + "].Range", lightData.Range);									//光照半径
+		SetFloat("u_Lights[" + std::to_string(i) + "].SpotOuterAngle", glm::radians(lightData.SpotOuterAngle));	//Spot外张角
+		SetFloat("u_Lights[" + std::to_string(i) + "].SpotInnerAngle", glm::radians(lightData.SpotInnerAngle));	//Spot内张角
+	}
+
+	void Shader::SetMaterialData(const MaterialData& materialData)
+	{
+		SetInt("u_MaterialExist", materialData.Exist);									//材质是否存在
+		SetFloat4("u_Material.Color", materialData.Color);								//颜色
+		SetInt("u_Material.AlbedoTextureExist", materialData.AlbedoTextureExist);		//反照率贴图是否存在
+		SetInt("u_Material.SpecularTextureExist", materialData.SpecularTextureExist);	//高光贴图是否存在
+		SetInt("u_Material.AlbedoTexture", materialData.AlbedoTextureSlot);				//反照率贴图
+		SetInt("u_Material.SpecularTexture", materialData.SpecularTextureSlot);			//高光贴图
+		SetFloat("u_Material.Shininess", materialData.Shininess);						//反光度
+		SetFloat2("u_Material.Tiling", materialData.Tiling);							//纹理平铺因子
+		SetFloat2("u_Material.Offset", materialData.Offset);							//纹理偏移量
 	}
 
 	void Shader::SetInt(const std::string& name, int value)
@@ -243,7 +263,7 @@ namespace Explorer
 	std::shared_ptr<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepath)
 	{
 		auto shader = std::make_shared<Shader>(filepath);
-		// TODO: m_Name = name
+		shader->SetName(name);
 		Add(name, shader);
 		return shader;
 	}

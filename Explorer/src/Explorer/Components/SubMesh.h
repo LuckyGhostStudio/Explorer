@@ -33,7 +33,7 @@ namespace Explorer
 
 		std::vector<Vertex> m_Vertices;			//顶点列表
 		std::vector<uint32_t> m_VertexIndices;	//顶点索引列表 
-	public:
+
 		std::vector<Vertex> m_VertexBufferData;	//顶点缓冲区数据：最终要渲染的顶点数据
 
 		std::shared_ptr<VertexArray> m_VertexArray;		//顶点数组 VAO
@@ -50,11 +50,10 @@ namespace Explorer
 		std::vector<Vertex>& GetVertices() { return m_Vertices; }
 		std::vector<uint32_t>& GetVertexIndices() { return m_VertexIndices; }
 
-		/// <summary>
-		/// 返回VAO
-		/// </summary>
-		/// <returns>顶点数组</returns>
+		std::vector<Vertex>& GetVertexBufferData() { return m_VertexBufferData; }
+
 		const std::shared_ptr<VertexArray>& GetVertexArray() const { return m_VertexArray; }
+		const std::shared_ptr<VertexBuffer>& GetVertexBuffer() const { return m_VertexBuffer; }
 
 		std::vector<Vertex>::iterator begin() { return m_Vertices.begin(); }
 		std::vector<Vertex>::iterator end() { return m_Vertices.end(); }

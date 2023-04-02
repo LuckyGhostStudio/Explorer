@@ -62,11 +62,12 @@ namespace Explorer
 		uint32_t m_VertexIndexCount = 0;	//顶点索引个数
 	public:
 		Mesh() = default;
+		Mesh(Type type);
 		Mesh(const Mesh&) = default;
 		Mesh(const std::vector<SubMesh>& subMeshes, Type type = Type::None);
 
 		Type GetType() const { return m_Type; }
-		void SetType(Type type) { m_Type = type; } //TODO:重新添加子网格
+		void SetType(Type type);
 
 		std::vector<SubMesh>& GetSubMeshes() { return m_SubMeshes; }
 
@@ -79,6 +80,8 @@ namespace Explorer
 		/// </summary>
 		/// <param name="subMesh">子网格</param>
 		void AddSubMesh(SubMesh subMesh);
+
+		void ClearSubMeshes();
 
 		std::vector<SubMesh>::iterator begin() { return m_SubMeshes.begin(); }
 		std::vector<SubMesh>::iterator end() { return m_SubMeshes.end(); }

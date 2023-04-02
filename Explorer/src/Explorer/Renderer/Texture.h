@@ -68,6 +68,7 @@ namespace Explorer
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const  override { return m_Height; }
 		virtual uint32_t GetRendererID() const  override { return m_RendererID; }
+		std::string& GetPath() { return m_Path; }
 
 		/// <summary>
 		/// 设置纹理数据

@@ -1,14 +1,17 @@
 #include "SceneHierarchyPanel.h"
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Explorer/Components/Components.h"
 #include "Explorer/Components/Transform.h"
 #include "Explorer/Components/Camera.h"
 #include "Explorer/Components/Light.h"
 #include "Explorer/Components/Mesh.h"
+#include "Explorer/Components/Material.h"
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
-#include <glm/gtc/type_ptr.hpp>
+#include "Explorer/Utils/PlatformUtils.h"
 
 namespace Explorer
 {
@@ -41,15 +44,17 @@ namespace Explorer
 
 		//创建物体
 		if (ImGui::BeginPopupContextWindow(0, 1, false)) {	//右键点击窗口白区域弹出菜单：- 右键 不在物体项上
+			Object object;
+			
 			if (ImGui::MenuItem("Create Empty")) {		//菜单项：创建空物体
-				m_Scene->CreateEmptyObject("Object");	//创建空物体
+				object = m_Scene->CreateEmptyObject("Object");	//创建空物体
 			}
 
 			//父菜单项：3D物体
 			if (ImGui::BeginMenu("3D Object"))
 			{
 				if (ImGui::MenuItem("Cube")) {		//子菜单项：创建Cube
-					m_Scene->CreateCubeObject();
+					object = m_Scene->CreateMeshObject("Cube", Mesh::Type::Cube);
 				}
 				
 				ImGui::EndMenu();
@@ -60,21 +65,23 @@ namespace Explorer
 			if (ImGui::BeginMenu("Light"))
 			{
 				if (ImGui::MenuItem("Directional Light")) {		//子菜单项：创建平行光源
-					m_Scene->CreateLightObject(Light::Type::Directional);
+					object = m_Scene->CreateLightObject(Light::Type::Directional);
 				}
 				if (ImGui::MenuItem("Point Light")) {			//子菜单项：创建点光源
-					m_Scene->CreateLightObject(Light::Type::Point);
+					object = m_Scene->CreateLightObject(Light::Type::Point);
 				}
 				if (ImGui::MenuItem("Spot Light")) {			//子菜单项：创建聚光源
-					m_Scene->CreateLightObject(Light::Type::Spot);
+					object = m_Scene->CreateLightObject(Light::Type::Spot);
 				}
 
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::MenuItem("Camera")) {		//菜单项：创建相机
-				m_Scene->CreateCameraObject();
+				object = m_Scene->CreateCameraObject();
 			}
+
+			m_SelectionObject = object;	//选中物体设为新创建物体
 
 			ImGui::EndPopup();	//结束弹出菜单
 		}
@@ -327,6 +334,11 @@ namespace Explorer
 				m_SelectionObject.AddComponent<Mesh>();
 				ImGui::CloseCurrentPopup();
 			}
+			//添加Material组件
+			if (ImGui::MenuItem("Material")) {
+				m_SelectionObject.AddComponent<Material>();
+				ImGui::CloseCurrentPopup();
+			}
 			//添加SpriteRenderer组件
 			if (ImGui::MenuItem("Sprite Renderer")) {
 				m_SelectionObject.AddComponent<SpriteRenderer>();
@@ -499,7 +511,69 @@ namespace Explorer
 			//TODO：if Type == Other then 添加按钮 从文件加载Mesh
 		});
 
-		//TODO:添加Material组件
+		//绘制Material组件
+		DrawComponent<Material>("Material", object, [](Material& material)
+		{
+			//TODO:添加Shader选择器 选择着色器库的所有着色器
+			const char* shaders[] = { "Standard" };
+			const char* currentShader = shaders[0];	//当前着色器类型
+
+			//下拉框 选择着色器类型
+			if (ImGui::BeginCombo("Shader", currentShader)) {
+				for (int i = 0; i < 1; i++) {
+					bool isSelected = currentShader == shaders[i];	//被选中：当前着色器类型==第i个着色器类型
+					//可选择项，该项改变时：着色器类型 已选中
+					if (ImGui::Selectable(shaders[i], isSelected)) {
+						currentShader = shaders[i];			//设置当前着色器类型
+						//TODO:设置Shader
+					}
+
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();	//设置默认选中项
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			uint32_t albedoTextureID = material.GetAlbedoTextureID();	//Albedo贴图ID
+
+			//Albedo纹理选择&预览按钮
+			if (ImGui::ImageButton((void*)albedoTextureID, ImVec2(22, 22), ImVec2(0, 1), ImVec2(1, 0), 2)) {
+				std::string filepath = FileDialogs::OpenFile("Albedo Texture(*.png)\0*.png\0");	//打开文件对话框（文件类型名\0 文件类型.png）
+				if (!filepath.empty()) {
+					material.SetAlbedoTexture(filepath);	//设置Albedo贴图
+				}
+			}
+
+			ImGui::SameLine();
+			ImGui::Text("Albedo");
+			ImGui::SameLine();
+			ImGui::ColorEdit4("##Color", glm::value_ptr(material.m_Color), ImGuiColorEditFlags_NoInputs);
+			ImGui::SameLine();
+			ImGui::Button("Picker");	//取色按钮：TODO:添加拾色功能
+
+			uint32_t specularTextureID = material.GetSpecularTextureID();	//Specular贴图ID
+
+			//Specular纹理选择&预览按钮
+			if (ImGui::ImageButton((void*)specularTextureID, ImVec2(22, 22), ImVec2(0, 1), ImVec2(1, 0), 2)) {
+				std::string filepath = FileDialogs::OpenFile("Specular Texture(*.png)\0*.png\0");	//打开文件对话框（文件类型名\0 文件类型.png）
+				if (!filepath.empty()) {
+					material.SetSpecularTexture(filepath);	//设置Specular贴图
+				}
+			}
+
+			ImGui::SameLine();
+			ImGui::Text("Specular");
+			ImGui::SameLine();
+
+			float shininess = material.GetShininess();		//反光度
+			if (ImGui::SliderFloat("Shininess", &shininess, 1.0f, 648.0f)) {
+				material.SetShininess(shininess);
+			}
+
+			ImGui::DragFloat2("Tiling", glm::value_ptr(material.m_Tiling), 0.1f);	//纹理平铺因子
+			ImGui::DragFloat2("Offset", glm::value_ptr(material.m_Offset), 0.1f);	//纹理偏移量
+		});
 
 		//绘制SpriteRenderer组件
 		DrawComponent<SpriteRenderer>("Sprite Renderer", object, [](SpriteRenderer& spriteRenderer)

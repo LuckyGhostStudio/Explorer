@@ -5,6 +5,9 @@
 #include "Explorer/Core/DeltaTime.h"
 #include "Explorer/Renderer/EditorCamera.h"
 #include "Explorer/Components/Light.h"
+#include "Explorer/Components/Mesh.h"
+#include "Explorer/Components/Material.h"
+#include "Explorer/Renderer/Shader.h"
 
 namespace Explorer
 {
@@ -49,11 +52,12 @@ namespace Explorer
 		Object CreateEmptyObject(const std::string& name = "Object");
 		
 		/// <summary>
-		/// 创建Cube物体
+		/// 创建网格物体
 		/// </summary>
-		/// <param name="name">Cube名</param>
-		/// <returns>Cube</returns>
-		Object CreateCubeObject(const std::string& name = "Cube");
+		/// <param name="name">物体名</param>
+		/// <param name="type">物体网格类型</param>
+		/// <returns>网格物体</returns>
+		Object CreateMeshObject(const std::string& name = "Object", const Mesh::Type type = Mesh::Type::None);
 
 		/// <summary>
 		/// 创建Camera

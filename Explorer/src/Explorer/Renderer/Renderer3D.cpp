@@ -4,6 +4,7 @@
 #include "VertexArray.h"
 #include "Shader.h"
 #include "RenderCommand.h"
+#include "RendererData.h"
 
 #include "Texture.h"
 #include "Explorer/Components/Mesh.h"
@@ -12,25 +13,7 @@
 
 namespace Explorer
 {
-	Renderer3D::RendererType Renderer3D::m_Type = RendererType::Rasterization;
-
-	/// <summary>
-	/// 光源数据
-	/// </summary>
-	struct LightData
-	{
-		glm::vec3 Position;
-		glm::vec3 Direction;	//光照方向 z-
-
-		Light::Type Type;		//光照类型    
-		float Range;			//光照半径 Point | Spot
-		float SpotOuterAngle;	//外张角 Spot
-		float SpotInnerAngle;	//内张角 Spot
-
-		glm::vec3 Color;		//光照颜色
-		float Intensity;		//光照强度
-		bool RenderShadow;		//是否渲染阴影
-	};
+	Renderer3D::RendererType Renderer3D::s_Type = RendererType::Rasterization;
 
 	/// <summary>
 	/// 渲染器数据
@@ -39,6 +22,7 @@ namespace Explorer
 	{
 		static const uint32_t MaxTextureSlotCount = 32;	//最大纹理槽数
 
+		std::shared_ptr<ShaderLibrary> ShaderLibrary;	//着色器库
 		std::shared_ptr<Shader>	MeshShader;				//着色器
 		std::shared_ptr<Texture2D>	WhiteTexture;		//白色纹理 0号纹理
 
@@ -51,6 +35,7 @@ namespace Explorer
 		uint32_t CurrentLightCount = 1;	//当前光源数量
 
 		LightData LightData;			//光照数据
+		MaterialData MaterialData;		//材质数据
 		Renderer3D::Statistics Stats;	//统计数据
 	};
 
@@ -72,6 +57,9 @@ namespace Explorer
 		//s_Data.MeshShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlotCount);	//设置textures变量 所有纹理槽
 
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;	//0号纹理槽为白色纹理
+
+		//----------------------------------------------
+		//s_Data.ShaderLibrary->Load("asserts/shaders/StandardShader");	//加载着色器
 	}
 
 	void Renderer3D::Shutdown()
@@ -93,6 +81,7 @@ namespace Explorer
 
 	void Renderer3D::BeginScene(const EditorCamera& camera, std::vector<Object>& lightObjects)
 	{
+		//TODO:对着色器库所有着色器进行设置
 		s_Data.MeshShader->Bind();			//绑定着色器
 
 		s_Data.MeshShader->SetMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());	//设置vp矩阵
@@ -113,21 +102,13 @@ namespace Explorer
 			s_Data.LightData.Color = light.m_Color;								//光源颜色
 			s_Data.LightData.Intensity = light.GetIntensity();					//光照强度
 			s_Data.LightData.RenderShadow = light.m_RenderShadow;				//是否渲染阴影
-			s_Data.LightData.Type = light.GetType();								//光照类型
+			s_Data.LightData.Type = light.GetType();							//光照类型
 			s_Data.LightData.Range = light.GetRange();							//光照半径
-			s_Data.LightData.SpotOuterAngle = light.GetSpotOuterAngle();			//Spot外张角
-			s_Data.LightData.SpotInnerAngle = light.GetSpotInnerAngle();			//Spot内张角
+			s_Data.LightData.SpotOuterAngle = light.GetSpotOuterAngle();		//Spot外张角
+			s_Data.LightData.SpotInnerAngle = light.GetSpotInnerAngle();		//Spot内张角
 
 			//设置Light uniform变量
-			s_Data.MeshShader->SetFloat3("u_Lights[" + std::to_string(i) + "].Position", s_Data.LightData.Position);			//光源位置
-			s_Data.MeshShader->SetFloat3("u_Lights[" + std::to_string(i) + "].Direction", s_Data.LightData.Direction);			//光照方向
-			s_Data.MeshShader->SetFloat3("u_Lights[" + std::to_string(i) + "].Color", s_Data.LightData.Color);					//灯光颜色
-			s_Data.MeshShader->SetFloat("u_Lights[" + std::to_string(i) + "].Intensity", s_Data.LightData.Intensity);			//光照强度
-			s_Data.MeshShader->SetInt("u_Lights[" + std::to_string(i) + "].RenderShadow", (int)s_Data.LightData.RenderShadow);	//是否渲染阴影
-			s_Data.MeshShader->SetInt("u_Lights[" + std::to_string(i) + "].Type", (int)s_Data.LightData.Type);					//光照类型
-			s_Data.MeshShader->SetFloat("u_Lights[" + std::to_string(i) + "].Range", s_Data.LightData.Range);					//光照半径
-			s_Data.MeshShader->SetFloat("u_Lights[" + std::to_string(i) + "].SpotOuterAngle", glm::radians(s_Data.LightData.SpotOuterAngle));	//Spot外张角
-			s_Data.MeshShader->SetFloat("u_Lights[" + std::to_string(i) + "].SpotInnerAngle", glm::radians(s_Data.LightData.SpotInnerAngle));	//Spot内张角
+			s_Data.MeshShader->SetLightData(s_Data.LightData, i);
 		}
 		s_Data.MeshShader->SetFloat3("u_AmbientColor", { 0.2f, 0.2f, 0.2f });	//设置环境光颜色
 	}
@@ -137,31 +118,47 @@ namespace Explorer
 		
 	}
 
-	void Renderer3D::SubMeshProcessing(const SubMesh& subMesh)
+	void Renderer3D::SubMeshProcessing(SubMesh& subMesh)
 	{
-		uint32_t dataSize = (uint32_t)sizeof(Vertex) * subMesh.m_VertexBufferData.size();	//计算顶点缓冲区数据大小（字节）
+		uint32_t dataSize = (uint32_t)sizeof(Vertex) * subMesh.GetVertexBufferData().size();	//计算顶点缓冲区数据大小（字节）
 
-		subMesh.m_VertexBuffer->SetData(subMesh.m_VertexBufferData.data(), dataSize);	//设置顶点缓冲区数据
+		subMesh.GetVertexBuffer()->SetData(subMesh.GetVertexBufferData().data(), dataSize);	//设置顶点缓冲区数据
 
-		RenderCommand::DrawIndexed(subMesh.m_VertexArray);	//绘制调用
+		RenderCommand::DrawIndexed(subMesh.GetVertexArray());	//绘制调用
 
 		s_Data.Stats.DrawCalls++;	//绘制调用次数++
 	}
 
-	void Renderer3D::DrawMesh(const Transform& transform, Mesh& mesh, int objectID)
+	void Renderer3D::DrawMesh(const Transform& transform, Mesh& mesh, Material& material, int objectID)
 	{
+		std::shared_ptr<Shader>& shader = material.GetShader();
+		
+		material.BindTexture();	//绑定纹理
+
+		s_Data.MaterialData.Exist = true;												//材质是否存在:TODO:改变此属性改变材质组件存在性
+		s_Data.MaterialData.Color = material.m_Color;									//颜色
+		s_Data.MaterialData.AlbedoTextureExist = material.m_AlbedoTextureExist;			//反照率贴图是否存在
+		s_Data.MaterialData.SpecularTextureExist = material.m_SpecularTextureExist;		//高光贴图是否存在
+		s_Data.MaterialData.AlbedoTextureSlot = (int)Material::TextureType::Albedo;		//反照率贴图槽
+		s_Data.MaterialData.SpecularTextureSlot = (int)Material::TextureType::Specular;	//高光贴图槽
+		s_Data.MaterialData.Shininess = material.GetShininess();						//反光度
+		s_Data.MaterialData.Tiling = material.m_Tiling;									//纹理平铺因子
+		s_Data.MaterialData.Offset = material.m_Offset;									//纹理偏移量
+
+		shader->SetMaterialData(s_Data.MaterialData);	//设置Material数据
+		
 		glm::mat4& transformMatrix = transform.GetTransform();
 
 		//遍历所有子网格
 		for (SubMesh& subMesh : mesh) {
-			subMesh.m_VertexBufferData.clear();	//清空上一次SubMesh顶点缓冲区数据
+			subMesh.GetVertexBufferData().clear();	//清空上一次SubMesh顶点缓冲区数据
 			//遍历子网格所有顶点
 			for (Vertex vertex : subMesh) {
 				vertex.Position = transformMatrix * glm::vec4(vertex.Position, 1.0f);						//位置 做transform变换
 				vertex.Normal = glm::mat3(glm::transpose(glm::inverse(transformMatrix))) * vertex.Normal;	//法向量做 M 变换 M取逆矩阵的转置 防止normal在缩放时被拉伸
 				vertex.ObjectID = objectID;
 
-				subMesh.m_VertexBufferData.push_back(vertex);	//添加顶点缓冲区数据
+				subMesh.GetVertexBufferData().push_back(vertex);	//添加顶点缓冲区数据
 			}
 			SubMeshProcessing(subMesh);		//渲染子网格
 		}

@@ -14,7 +14,7 @@ out vec3 v_FragPos;		//片元位置
 out vec4 v_Color;		//颜色
 out vec3 v_Normal;		//法线
 out vec2 v_TexCoord;	//纹理坐标
-out float v_TexIndex;	//纹理索引
+//out float v_TexIndex;	//纹理索引
 out flat int v_ID;		//顶点ID
 out flat int v_ObjectID;//物体ID
 

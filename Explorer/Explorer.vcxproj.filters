@@ -1439,6 +1439,8 @@
     </ClInclude>
     <ClInclude Include="src\Explorer\ImGui\Gizmo.h" />
     <ClInclude Include="src\Explorer\Components\SubMesh.h" />
+    <ClInclude Include="src\Explorer\Renderer\RendererData.h" />
+    <ClInclude Include="src\Explorer\Utils\GeneralUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Components\Camera.cpp">

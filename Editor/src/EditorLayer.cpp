@@ -32,9 +32,9 @@ namespace Explorer
 		m_ActiveScene = std::make_shared<Scene>();								//创建场景
 		m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f);	//创建编辑器相机
 
-		m_Camera = m_ActiveScene->CreateCameraObject();		//创建默认Camera对象
-		m_Light = m_ActiveScene->CreateLightObject();		//创建默认Light对象（Point）
-		m_Cube = m_ActiveScene->CreateCubeObject();			//创建默认Cube对象
+		m_Camera = m_ActiveScene->CreateCameraObject();						//创建默认Camera对象
+		m_Light = m_ActiveScene->CreateLightObject();						//创建默认Light对象（Point）
+		m_Cube = m_ActiveScene->CreateMeshObject("Cube", Mesh::Type::Cube);	//创建默认Cube对象
 
 #if 0
 
@@ -337,9 +337,9 @@ namespace Explorer
 	{
 		m_ActiveScene = std::make_shared<Scene>();			//创建新场景
 
-		m_Camera = m_ActiveScene->CreateCameraObject();		//创建默认Camera对象
-		m_Light = m_ActiveScene->CreateLightObject();		//创建默认Light对象
-		m_Cube = m_ActiveScene->CreateCubeObject();			//创建默认Cube对象
+		m_Camera = m_ActiveScene->CreateCameraObject();						//创建默认Camera对象
+		m_Light = m_ActiveScene->CreateLightObject();						//创建默认Light对象
+		m_Cube = m_ActiveScene->CreateMeshObject("Cube", Mesh::Type::Cube);	//创建默认Cube对象
 
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
 		m_HierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
