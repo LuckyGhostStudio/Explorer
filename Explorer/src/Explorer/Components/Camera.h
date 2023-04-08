@@ -10,8 +10,6 @@ namespace Explorer
 	class Camera
 	{
 	public:
-		bool m_Primary = true;	//是主相机
-//TODO:删除清屏标志和清屏颜色 转移到EditorCamera
 		/// <summary>
 		/// 清屏标志
 		/// </summary>
@@ -21,20 +19,22 @@ namespace Explorer
 		/// 投影类型
 		/// </summary>
 		enum class ProjectionType { Perspective = 0, Orthographic = 1 };
-		glm::vec4 m_BackgroundColor = { 0.1f, 0.1f, 0.1f, 1.0f };		//背景颜色：清屏颜色
 	private:
+		bool m_Primary = true;	//是主相机
+
 		ClearFlag m_ClearFlag = ClearFlag::Color;						//清屏类型
+		glm::vec4 m_BackgroundColor = { 0.2f, 0.3f, 0.5f, 1.0f };		//背景颜色：清屏颜色
 		ProjectionType m_ProjectionType = ProjectionType::Perspective;	//投影类型
 
-		float m_Fov = 45.0f;			//透视相机张角：垂直方向（度）
-		float m_Size = 5.0f;			//正交相机尺寸：垂直方向一半长度
+		float m_Fov = glm::radians(45.0f);	//透视相机张角：垂直方向（弧度）
+		float m_Size = 5.0f;				//正交相机尺寸：垂直方向一半长度
 		
-		float m_Near = 0.01f;			//近裁剪平面
-		float m_Far = 1000.0f;			//远裁剪平面
+		float m_Near = 0.01f;				//近裁剪平面
+		float m_Far = 1000.0f;				//远裁剪平面
 
-		float m_AspectRatio = 0.0f;		//屏幕宽高比（X/Y）
+		float m_AspectRatio = 0.0f;			//屏幕宽高比（X/Y）
 
-		glm::mat4 m_Projection;			//投影矩阵
+		glm::mat4 m_Projection;				//投影矩阵
 	private:
 		/// <summary>
 		/// 重新计算投影矩阵
@@ -68,22 +68,33 @@ namespace Explorer
 
 		const glm::mat4& GetProjection() const { return m_Projection; }
 		
+		bool IsPrimary() const { return m_Primary; }
+		bool& IsPrimary_Ref() { return m_Primary; }
+		void SetPrimary(bool primary) { m_Primary = primary; }
+
 		ClearFlag GetClearFlag() const { return m_ClearFlag; }
 		void SetClearFlag(const ClearFlag flag) { m_ClearFlag = flag; }
+
+		glm::vec4& GetBackgroundColor() { return m_BackgroundColor; }
+		void SetBackgroundColor(const glm::vec4& color) { m_BackgroundColor = color; }
 
 		ProjectionType GetProjectionType() const { return m_ProjectionType; }
 		void SetProjectionType(ProjectionType type) { m_ProjectionType = type; RecalculateProjection(); }
 
 		float GetNearClip() const { return m_Near; }
+		float& GetNearClip_Ref() { return m_Near; }
 		void SetNearClip(float nearClip) { m_Near = nearClip; RecalculateProjection(); }
 
 		float GetFarClip() const { return m_Far; }
+		float& GetFarClip_Ref() { return m_Far; }
 		void SetFarClip(float farClip) { m_Far = farClip; RecalculateProjection(); }
 
 		float GetSize() const { return m_Size; }
+		float& GetSize_Ref() { return m_Size; }
 		void SetSize(float size) { m_Size = size; RecalculateProjection(); }
 
 		float GetFOV() const { return m_Fov; }
+		float& GetFOV_Ref() { return m_Fov; }
 		void SetFOV(float fov) { m_Fov = fov; RecalculateProjection(); }
 	};
 }

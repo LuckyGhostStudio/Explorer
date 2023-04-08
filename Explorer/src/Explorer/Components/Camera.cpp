@@ -25,7 +25,7 @@ namespace Explorer
 	{
 		m_ProjectionType = ProjectionType::Perspective;		//透视投影
 
-		m_Fov = fov;
+		m_Fov = glm::radians(fov);
 		m_Near = nearClip;
 		m_Far = farClip;
 
@@ -41,7 +41,7 @@ namespace Explorer
 	void Camera::RecalculateProjection()
 	{
 		if (m_ProjectionType == ProjectionType::Perspective) {	//透视投影
-			m_Projection = glm::perspective(glm::radians(m_Fov), m_AspectRatio, m_Near, m_Far);	//设置透视投影矩阵
+			m_Projection = glm::perspective(m_Fov, m_AspectRatio, m_Near, m_Far);	//设置透视投影矩阵
 		}
 		else {
 			float orthLeft = -m_Size * m_AspectRatio;	//左边界

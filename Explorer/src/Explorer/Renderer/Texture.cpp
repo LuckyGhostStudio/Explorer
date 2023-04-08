@@ -80,4 +80,102 @@ namespace Explorer
 	{
 		glBindTextureUnit(slot, m_RendererID);	//绑定纹理到 slot 槽位
 	}
+	
+	Cubemap::Cubemap()
+	{
+		glGenTextures(1, &m_RendererID);					//创建贴图
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);	//绑定Cubemap
+		
+		int width, height, channels;			//宽 高 通道数
+
+		unsigned char* data = stbi_load("asserts/textures/defaults/Explorer_NoneSkybox.jpg", &width, &height, &channels, 0);	//加载默认NoneSkybox图片
+
+		EXP_CORE_ASSERT(data, "Failed to load image!");		//加载失败
+		
+		m_Width = width;
+		m_Height = height;
+		
+		for (uint32_t i = 0; i < 6; i++) {
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);	//生成纹理到GPU
+		}
+		stbi_image_free(data);	//释放data
+		
+		//设置纹理参数
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		//缩小过滤器 线性插值		
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);		//放大过滤器 线性插值
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	//x超过0-1 延伸
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);	//y超过0-1 延伸
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);	//z超过0-1 延伸
+	}
+
+	Cubemap::Cubemap(const std::vector<std::string>& paths) :m_Paths(paths)
+	{
+		glGenTextures(1, &m_RendererID);					//创建贴图
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);	//绑定Cubemap
+
+		int width, height, channels;			//宽 高 通道数
+
+		for (uint32_t i = 0; i < m_Paths.size(); i++) {
+
+			unsigned char* data = stbi_load(m_Paths[i].c_str(), &width, &height, &channels, 0);	//加载图片
+
+			EXP_CORE_ASSERT(data, "Failed to load image!");		//加载失败
+
+			m_Width = width;
+			m_Height = height;
+
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);	//生成纹理到GPU
+
+			stbi_image_free(data);	//释放data
+		}
+
+		//设置纹理参数
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		//缩小过滤器 线性插值		
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);		//放大过滤器 线性插值
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	//x超过0-1 延伸
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);	//y超过0-1 延伸
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);	//z超过0-1 延伸
+	}
+	Cubemap::~Cubemap()
+	{
+		glDeleteTextures(1, &m_RendererID);	//删除纹理
+	}
+
+	void Cubemap::SetSide(const std::string& path, TextureDirection directiont)
+	{
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);	//绑定Cubemap
+		int width, height, channels;			//宽 高 通道数
+
+		unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);	//加载图片
+
+		m_Width = width;
+		m_Height = height;
+
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (int)directiont, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);	//生成纹理到GPU
+
+		stbi_image_free(data);	//释放data
+
+		SetParameteri();
+	}
+
+	void Cubemap::SetParameteri()
+	{
+		//设置纹理参数
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);		//缩小过滤器 线性插值		
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);		//放大过滤器 线性插值
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	//x超过0-1 延伸
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);	//y超过0-1 延伸
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);	//z超过0-1 延伸
+	}
+
+	void Cubemap::SetData(void* data, uint32_t size)
+	{
+		
+	}
+
+	void Cubemap::Bind(uint32_t slot) const
+	{
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);	//绑定Cubemap
+	}
 }

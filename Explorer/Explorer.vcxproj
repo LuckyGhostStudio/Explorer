@@ -146,6 +146,7 @@
     <ClInclude Include="src\Explorer\Components\Light.h" />
     <ClInclude Include="src\Explorer\Components\Material.h" />
     <ClInclude Include="src\Explorer\Components\Mesh.h" />
+    <ClInclude Include="src\Explorer\Components\Skybox.h" />
     <ClInclude Include="src\Explorer\Components\SubMesh.h" />
     <ClInclude Include="src\Explorer\Components\Transform.h" />
     <ClInclude Include="src\Explorer\Core\Application.h" />
@@ -165,9 +166,11 @@
     <ClInclude Include="src\Explorer\Events\MouseEvent.h" />
     <ClInclude Include="src\Explorer\ImGui\Gizmo.h" />
     <ClInclude Include="src\Explorer\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Explorer\ImGui\UI.h" />
     <ClInclude Include="src\Explorer\Math\Math.h" />
     <ClInclude Include="src\Explorer\Renderer\Buffer.h" />
     <ClInclude Include="src\Explorer\Renderer\EditorCamera.h" />
+    <ClInclude Include="src\Explorer\Renderer\Environment.h" />
     <ClInclude Include="src\Explorer\Renderer\Framebuffer.h" />
     <ClInclude Include="src\Explorer\Renderer\OpenGLContext.h" />
     <ClInclude Include="src\Explorer\Renderer\RenderCommand.h" />
@@ -608,6 +611,7 @@
     <ClCompile Include="src\Explorer\Components\Camera.cpp" />
     <ClCompile Include="src\Explorer\Components\Material.cpp" />
     <ClCompile Include="src\Explorer\Components\Mesh.cpp" />
+    <ClCompile Include="src\Explorer\Components\Skybox.cpp" />
     <ClCompile Include="src\Explorer\Components\SubMesh.cpp" />
     <ClCompile Include="src\Explorer\Core\Application.cpp" />
     <ClCompile Include="src\Explorer\Core\Input.cpp" />
@@ -618,9 +622,11 @@
     <ClCompile Include="src\Explorer\ImGui\Gizmo.cpp" />
     <ClCompile Include="src\Explorer\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Explorer\ImGui\UI.cpp" />
     <ClCompile Include="src\Explorer\Math\Math.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Explorer\Renderer\EditorCamera.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\Environment.cpp" />
     <ClCompile Include="src\Explorer\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\Explorer\Renderer\OpenGLContext.cpp" />
     <ClCompile Include="src\Explorer\Renderer\RenderCommand.cpp" />

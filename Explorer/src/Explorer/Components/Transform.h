@@ -13,15 +13,24 @@ namespace Explorer
 	/// </summary>
 	class Transform
 	{
-	public:
+	private:
 		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_Rotation = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_Scale = { 1.0f, 1.0f, 1.0f };
-
+	public:
 		Transform() = default;
 		Transform(const Transform&) = default;
 		Transform(const glm::vec3& position) :m_Position(position) {}
 		Transform(const glm::vec3& position, const glm::vec3& rotation) :m_Position(position), m_Rotation(rotation) {}
+
+		glm::vec3& GetPosition() { return m_Position; }
+		void SetPosition(const glm::vec3& position) { m_Position = position; }
+		
+		glm::vec3& GetRotation() { return m_Rotation; }
+		void SetRotation(const glm::vec3& rotation) { m_Rotation = rotation; }
+
+		glm::vec3& GetScale() { return m_Scale; }
+		void SetScale(const glm::vec3& scale) { m_Scale = scale; }
 
 		/// <summary>
 		/// ·µ»ØTransform¾ØÕó

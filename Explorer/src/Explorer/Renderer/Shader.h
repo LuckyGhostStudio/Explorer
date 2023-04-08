@@ -6,8 +6,6 @@
 
 namespace Explorer
 {
-	struct LightData;
-
 	/// <summary>
 	/// 着色器
 	/// </summary>
@@ -135,27 +133,30 @@ namespace Explorer
 	class ShaderLibrary
 	{
 	private:
-		std::unordered_map<std::string, std::shared_ptr<Shader>> m_Shaders;		//着色器map：着色器名-着色器
+		static std::unordered_map<std::string, std::shared_ptr<Shader>> m_Shaders;		//着色器map：着色器名-着色器
 	public:
+		static std::unordered_map<std::string, std::shared_ptr<Shader>>& GetShaders() { return m_Shaders; }
+		static uint32_t GetSize() { return m_Shaders.size(); }
+
 		/// <summary>
 		/// 添加着色器
 		/// </summary>
 		/// <param name="name">着色器名</param>
 		/// <param name="shader">着色器</param>
-		void Add(const std::string& name, const std::shared_ptr<Shader>& shader);
+		static void Add(const std::string& name, const std::shared_ptr<Shader>& shader);
 
 		/// <summary>
 		/// 添加着色器
 		/// </summary>
 		/// <param name="shader">着色器</param>
-		void Add(const std::shared_ptr<Shader>& shader);
+		static void Add(const std::shared_ptr<Shader>& shader);
 
 		/// <summary>
 		/// 加载着色器
 		/// </summary>
 		/// <param name="filepath">文件路径</param>
 		/// <returns>着色器</returns>
-		std::shared_ptr<Shader> Load(const std::string& filepath);
+		static std::shared_ptr<Shader> Load(const std::string& filepath);
 
 		/// <summary>
 		/// 加载着色器
@@ -163,20 +164,20 @@ namespace Explorer
 		/// <param name="name">着色器名称</param>
 		/// <param name="filepath">文件路径</param>
 		/// <returns>着色器</returns>
-		std::shared_ptr<Shader> Load(const std::string& name, const std::string& filepath);
+		static std::shared_ptr<Shader> Load(const std::string& name, const std::string& filepath);
 
 		/// <summary>
 		/// 返回着色器
 		/// </summary>
 		/// <param name="name">着色器名称</param>
 		/// <returns>着色器</returns>
-		std::shared_ptr<Shader> Get(const std::string& name);
+		static std::shared_ptr<Shader> Get(const std::string& name);
 
 		/// <summary>
 		/// 着色器是否存在
 		/// </summary>
 		/// <param name="name">着色器名</param>
 		/// <returns>是否存在</returns>
-		bool Exists(const std::string& name) const;
+		static bool Exists(const std::string& name);
 	};
 }

@@ -232,6 +232,15 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Material.h/.cpp
 - RendererData.h/.cpp
 
+### 67. 优化UI布局
+
+- UI.h/.cpp
+
+### 68. 添加环境光照和天空盒
+
+- Environment.h/.cpp
+- Skybox.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -271,6 +280,20 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 * MouseEvent.h
 
   定义所有鼠标事件。
+
+##### ImGui
+
+- ImGuiLayer.h/.cpp
+
+  ImGui层，初始化ImGui，进行ImGui基本设置和ImGui事件处理。
+
+- Gizmo.h/.cpp
+
+  渲染Gizmo。
+
+- UI.h/.cpp
+
+  封装ImGui基本控件，优化UI布局。
 
 ##### Core
 
@@ -371,6 +394,14 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - EditorCamera.h/.cpp
 
   编辑器相机，编辑器内场景渲染相机，可自由移动，用来查看场景，不同于相机组件。
+  
+- Environment.h/.cpp
+
+  环境设置，包括环境光照和天空盒属性。
+
+- Skybox.h/.cpp
+
+  天空盒，封装天空盒的属性，进行Cubemap的创建和设置。
 
 ##### Scene
 

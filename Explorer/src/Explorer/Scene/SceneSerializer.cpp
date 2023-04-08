@@ -12,6 +12,7 @@
 #include <yaml-cpp/yaml.h>
 //TODO:添加Mesh序列化和反序列化
 //TODO:添加Material序列化和反序列化
+//TODO:添加Environment序列化和反序列化
 namespace YAML 
 {
 	/// <summary>
@@ -175,9 +176,9 @@ namespace Explorer
 			//Transform组件数据
 			auto& transform = object.GetComponent<Transform>();
 
-			out << YAML::Key << "Position" << YAML::Value << transform.m_Position;
-			out << YAML::Key << "Rotation" << YAML::Value << transform.m_Rotation;
-			out << YAML::Key << "Scale" << YAML::Value << transform.m_Scale;
+			out << YAML::Key << "Position" << YAML::Value << transform.GetPosition();
+			out << YAML::Key << "Rotation" << YAML::Value << transform.GetRotation();
+			out << YAML::Key << "Scale" << YAML::Value << transform.GetScale();
 
 			out << YAML::EndMap;	//结束Transform组件Map
 		}
@@ -195,7 +196,7 @@ namespace Explorer
 			out << YAML::Key << "FOV" << YAML::Value << camera.GetFOV();
 			out << YAML::Key << "Near" << YAML::Value << camera.GetNearClip();
 			out << YAML::Key << "Far" << YAML::Value << camera.GetFarClip();
-			out << YAML::Key << "Primary" << YAML::Value << camera.m_Primary;
+			out << YAML::Key << "Primary" << YAML::Value << camera.IsPrimary();
 
 			out << YAML::EndMap; //结束Camera组件Map
 		}
@@ -212,9 +213,9 @@ namespace Explorer
 			out << YAML::Key << "Range" << YAML::Value << light.GetRange();
 			out << YAML::Key << "SpotOuterAngle" << YAML::Value << light.GetSpotOuterAngle();
 			out << YAML::Key << "SpotInnerAngle" << YAML::Value << light.GetSpotInnerAngle();
-			out << YAML::Key << "Color" << YAML::Value << light.m_Color;
+			out << YAML::Key << "Color" << YAML::Value << light.GetColor();
 			out << YAML::Key << "Intensity" << YAML::Value << light.GetIntensity();
-			out << YAML::Key << "RenderShadow" << YAML::Value << light.m_RenderShadow;
+			out << YAML::Key << "RenderShadow" << YAML::Value << light.GetCastShadow();
 
 			out << YAML::EndMap; //结束Light组件Map
 		}
@@ -241,18 +242,18 @@ namespace Explorer
 			auto& material = object.GetComponent<Material>();
 			
 			//TODO:添加Shader类型
-			out << YAML::Key << "Color" << YAML::Value << material.m_Color;									//颜色
-			out << YAML::Key << "AlbedoTextureExist" << YAML::Value << material.m_AlbedoTextureExist;		//Albedo是否存在
-			out << YAML::Key << "SpecularTextureExist" << YAML::Value << material.m_SpecularTextureExist;	//Specular是否存在								//颜色
-			if (material.m_AlbedoTextureExist) {
+			out << YAML::Key << "Color" << YAML::Value << material.GetColor();								//颜色
+			out << YAML::Key << "AlbedoTextureExist" << YAML::Value << material.GetAlbedoTextureExist();	//Albedo是否存在
+			out << YAML::Key << "SpecularTextureExist" << YAML::Value << material.GetSpecularTextureExist();//Specular是否存在								//颜色
+			if (material.GetAlbedoTextureExist()) {
 				out << YAML::Key << "AlbedoTexturePath" << YAML::Value << material.GetAlbedoTexture()->GetPath();		//Albedo贴图路径
 			}
-			if (material.m_SpecularTextureExist) {
+			if (material.GetSpecularTextureExist()) {
 				out << YAML::Key << "SpecularTexturePath" << YAML::Value << material.GetSpecularTexture()->GetPath();	//Specular贴图路径
 			}
 			out << YAML::Key << "Shininess" << YAML::Value << material.GetShininess();						//反光度
-			out << YAML::Key << "Tiling" << YAML::Value << material.m_Tiling;								//纹理平铺因子
-			out << YAML::Key << "Offset" << YAML::Value << material.m_Offset;								//纹理平铺因子
+			out << YAML::Key << "Tiling" << YAML::Value << material.GetTiling();							//纹理平铺因子
+			out << YAML::Key << "Offset" << YAML::Value << material.GetOffset();							//纹理平铺因子
 
 			out << YAML::EndMap;	//结束Material组件Map
 		}
@@ -277,6 +278,7 @@ namespace Explorer
 		YAML::Emitter out;		//发射器
 		out << YAML::BeginMap;	//开始场景Map
 		out << YAML::Key << "Scene" << YAML::Value << "Untitled";			//场景：场景名
+
 		out << YAML::Key << "Objects" << YAML::Value << YAML::BeginSeq;		//物体：开始物体序列
 		m_Scene->m_Registry.each([&](auto objectID)		//遍历场景注册表所有物体
 		{
@@ -287,6 +289,7 @@ namespace Explorer
 			SerializeObject(out, object);			//序列化物体
 		});
 		out << YAML::EndSeq;	//结束物体序列
+
 		out << YAML::EndMap;	//结束场景Map
 
 		std::ofstream fout(filepath);	//输出流
@@ -333,9 +336,9 @@ namespace Explorer
 				if (transformNode){
 					auto& transform = deserializedObject.GetComponent<Transform>();	//获取Transform组件
 					//设置变换组件数据
-					transform.m_Position = transformNode["Position"].as<glm::vec3>();
-					transform.m_Rotation = transformNode["Rotation"].as<glm::vec3>();
-					transform.m_Scale = transformNode["Scale"].as<glm::vec3>();
+					transform.SetPosition(transformNode["Position"].as<glm::vec3>());
+					transform.SetRotation(transformNode["Rotation"].as<glm::vec3>());
+					transform.SetScale(transformNode["Scale"].as<glm::vec3>());
 				}
 
 				//Camera组件结点
@@ -350,7 +353,7 @@ namespace Explorer
 					camera.SetFOV(cameraNode["FOV"].as<float>());
 					camera.SetNearClip(cameraNode["Near"].as<float>());
 					camera.SetFarClip(cameraNode["Far"].as<float>());
-					camera.m_Primary = cameraNode["Primary"].as<bool>();
+					camera.SetPrimary(cameraNode["Primary"].as<bool>());
 				}
 
 				//Light组件结点
@@ -364,9 +367,9 @@ namespace Explorer
 					light.SetRange(lightNode["Range"].as<float>());
 					light.SetSpotOuterAngle(lightNode["SpotOuterAngle"].as<float>());
 					light.SetSpotInnerAngle(lightNode["SpotInnerAngle"].as<float>());
-					light.m_Color = lightNode["Color"].as<glm::vec3>();
+					light.SetColor(lightNode["Color"].as<glm::vec3>());
 					light.SetIntensity(lightNode["Intensity"].as<float>());
-					light.m_RenderShadow = lightNode["RenderShadow"].as<bool>();
+					light.SetCastShadow(lightNode["RenderShadow"].as<bool>());
 				}
 
 				//Mesh组件结点
@@ -464,18 +467,18 @@ namespace Explorer
 
 					//设置光源组件数据
 					//TODO:添加Shader类型
-					material.m_Color = materialNode["Color"].as<glm::vec4>();
-					material.m_AlbedoTextureExist = materialNode["AlbedoTextureExist"].as<bool>();
-					material.m_SpecularTextureExist = materialNode["SpecularTextureExist"].as<bool>();
-					if (material.m_AlbedoTextureExist) {	//Albedo存在
+					material.SetColor(materialNode["Color"].as<glm::vec4>());
+					material.SetAlbedoTextureExist(materialNode["AlbedoTextureExist"].as<bool>());
+					material.SetSpecularTextureExist(materialNode["SpecularTextureExist"].as<bool>());
+					if (material.GetAlbedoTextureExist()) {		//Albedo存在
 						material.SetAlbedoTexture(materialNode["AlbedoTexturePath"].as<std::string>());	//加载Albedo贴图
 					}
-					if (material.m_SpecularTextureExist) {	//Specular存在
+					if (material.GetSpecularTextureExist()) {	//Specular存在
 						material.SetSpecularTexture(materialNode["SpecularTexturePath"].as<std::string>());	//加载Specular贴图
 					}
 					material.SetShininess(materialNode["Shininess"].as<float>());
-					material.m_Tiling = materialNode["Tiling"].as<glm::vec2>();
-					material.m_Offset = materialNode["Offset"].as<glm::vec2>();
+					material.SetTiling(materialNode["Tiling"].as<glm::vec2>());
+					material.SetOffset(materialNode["Offset"].as<glm::vec2>());
 				}
 
 				//SpriteRenderer组件结点

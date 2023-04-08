@@ -7,7 +7,9 @@
 #include "Explorer/Components/Light.h"
 #include "Explorer/Components/Mesh.h"
 #include "Explorer/Components/Material.h"
+
 #include "Explorer/Renderer/Shader.h"
+#include "Explorer/Renderer/Environment.h"
 
 namespace Explorer
 {
@@ -28,6 +30,8 @@ namespace Explorer
 
 		uint32_t m_ViewportWidth = 1280;	//场景视口宽
 		uint32_t m_ViewportHeight = 720;	//场景视口高
+
+		Environment m_Environment;	//环境设置
 	private:
 		/// <summary>
 		/// object添加T组件时调用
@@ -43,6 +47,8 @@ namespace Explorer
 
 		inline const std::string& GetName() const { return m_Name; }
 		inline void SetName(const std::string& name) { m_Name = name; }
+
+		Environment& GetEnvironment() { return m_Environment; }
 
 		/// <summary>
 		/// 创建空物体

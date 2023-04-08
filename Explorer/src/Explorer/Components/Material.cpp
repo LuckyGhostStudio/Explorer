@@ -5,7 +5,7 @@ namespace Explorer
 {
     Material::Material()
     {
-        m_Shader = std::make_shared<Shader>("asserts/shaders/StandardShader");  //创建着色器：TODO:更改为从着色器库加载
+        m_Shader = ShaderLibrary::Get("Standard");  //标准着色器
         m_Shader->Bind();
 
         m_AlbedoTexture = std::make_shared<Texture2D>(1, 1);	//创建宽高为1的纹理：纹理缺失时的预览纹理

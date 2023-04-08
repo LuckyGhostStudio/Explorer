@@ -27,6 +27,11 @@ namespace Explorer
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	//清除 颜色缓冲区|深度缓冲区
 	}
+
+	void RenderCommand::SetDepthMask(bool enable)
+	{
+		glDepthMask(enable);
+	}
 	
 	void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, uint32_t indexCount)
 	{

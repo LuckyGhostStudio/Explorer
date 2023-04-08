@@ -8,6 +8,7 @@
 #include "Explorer/Components/Components.h"
 
 #include "Explorer/Renderer/EditorCamera.h"
+#include "Explorer/Renderer/Environment.h"
 
 namespace Explorer
 {
@@ -39,18 +40,21 @@ namespace Explorer
 		/// 开始渲染场景：设置场景参数
 		/// </summary>
 		/// <param name="camera">场景相机</param>
-		static void BeginScene(const Camera& camera, const Transform& transform);
+		static void BeginScene(const Camera& camera, Transform& transform);
 
 		/// <summary>
 		/// 开始渲染场景
 		/// </summary>
+		/// <param name="environment">环境设置</param>
 		/// <param name="camera">编辑器相机</param>
 		/// <param name="lightObjects">场景所有光源对象</param>
-		static void BeginScene(const EditorCamera& camera, std::vector<Object>& lightObjects);
+		static void BeginScene(Environment& environment, const EditorCamera& camera, std::vector<Object>& lightObjects);
 
 		/// <summary>
 		/// 结束渲染场景
 		/// </summary>
+		static void EndScene(Environment& environment, const EditorCamera& camera);
+
 		static void EndScene();
 
 		/// <summary>

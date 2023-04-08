@@ -141,8 +141,8 @@ namespace Explorer
 		SetInt("u_Lights[" + std::to_string(i) + "].RenderShadow", (int)lightData.RenderShadow);				//是否渲染阴影
 		SetInt("u_Lights[" + std::to_string(i) + "].Type", (int)lightData.Type);								//光照类型
 		SetFloat("u_Lights[" + std::to_string(i) + "].Range", lightData.Range);									//光照半径
-		SetFloat("u_Lights[" + std::to_string(i) + "].SpotOuterAngle", glm::radians(lightData.SpotOuterAngle));	//Spot外张角
-		SetFloat("u_Lights[" + std::to_string(i) + "].SpotInnerAngle", glm::radians(lightData.SpotInnerAngle));	//Spot内张角
+		SetFloat("u_Lights[" + std::to_string(i) + "].SpotOuterAngle", lightData.SpotOuterAngle);				//Spot外张角
+		SetFloat("u_Lights[" + std::to_string(i) + "].SpotInnerAngle", lightData.SpotInnerAngle);				//Spot内张角
 	}
 
 	void Shader::SetMaterialData(const MaterialData& materialData)
@@ -241,6 +241,8 @@ namespace Explorer
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));	//设置Uniform变量（位置，变量个数，是否转置，变量地址）
 	}
 
+	std::unordered_map<std::string, std::shared_ptr<Shader>> ShaderLibrary::m_Shaders = {};
+
 	void ShaderLibrary::Add(const std::string& name, const std::shared_ptr<Shader>& shader)
 	{
 		EXP_CORE_ASSERT(!Exists(name), "Shader already exist!");	//着色器已存在
@@ -274,7 +276,7 @@ namespace Explorer
 		return m_Shaders[name];
 	}
 
-	bool ShaderLibrary::Exists(const std::string& name) const
+	bool ShaderLibrary::Exists(const std::string& name)
 	{
 		return m_Shaders.find(name) != m_Shaders.end();
 	}

@@ -58,11 +58,11 @@ namespace Explorer
 				glm::vec3 position, rotation, scale;
 				Math::DecomposeTransform(transform, position, rotation, scale);	//分解transform矩阵
 
-				glm::vec3 deltaRotation = rotation - transformComponent.m_Rotation;	//旋转增量
+				glm::vec3 deltaRotation = rotation - transformComponent.GetRotation();	//旋转增量
 
-				transformComponent.m_Position = position;		//更新位置
-				transformComponent.m_Rotation += deltaRotation;	//更新旋转：累加增量，避免万向节锁
-				transformComponent.m_Scale = scale;				//更新缩放
+				transformComponent.GetPosition() = position;		//更新位置
+				transformComponent.GetRotation() += deltaRotation;	//更新旋转：累加增量，避免万向节锁
+				transformComponent.GetScale() = scale;				//更新缩放
 			}
 		}
 	}

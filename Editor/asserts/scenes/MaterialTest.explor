@@ -4,9 +4,9 @@ Objects:
     Name Component:
       Name: Cube 2111
     Transform Component:
-      Position: [0, 0, 0]
+      Position: [-1.08000004, 0, 0]
       Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Scale: [1.00000012, 1, 1]
     Mesh Component:
       Type: 2
     Material Component:
@@ -32,7 +32,7 @@ Objects:
       SpotInnerAngle: 18.2999992
       Color: [1, 1, 1]
       Intensity: 1
-      RenderShadow: true
+      RenderShadow: false
   - Object: 12837192831273
     Name Component:
       Name: Camera
@@ -46,7 +46,7 @@ Objects:
       FOV: 45
       Near: 0.00999999978
       Far: 1000
-      Primary: true
+      Primary: false
   - Object: 12837192831273
     Name Component:
       Name: Cube 2

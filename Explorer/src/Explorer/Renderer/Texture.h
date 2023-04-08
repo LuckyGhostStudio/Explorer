@@ -63,6 +63,7 @@ namespace Explorer
 		/// </summary>
 		/// <param name="path">纹理路径</param>
 		Texture2D(const std::string& path);
+
 		virtual ~Texture2D();
 
 		virtual uint32_t GetWidth() const override { return m_Width; }
@@ -91,6 +92,77 @@ namespace Explorer
 		virtual bool operator==(const Texture& other) const override
 		{
 			return m_RendererID == ((Texture2D&)other).m_RendererID;	//纹理ID相等
+		}
+	};
+
+	/// <summary>
+	/// 立方体贴图
+	/// </summary>
+	class Cubemap :public Texture
+	{
+	public:
+		/// <summary>
+		/// 贴图方向
+		/// </summary>
+		enum class TextureDirection
+		{
+			Right = 0,	//+x
+			Left = 1,	//-x
+			Up = 2,		//y+
+			Down = 3,	//y-
+			Front = 4,	//z+
+			Back = 5,	//z-
+		};
+	private:
+		uint32_t m_RendererID;	//纹理id
+		uint32_t m_Width;		//每个面宽
+		uint32_t m_Height;		//每个面高
+
+		std::vector<std::string> m_Paths;	//6个面纹理路径 +x -x +y -y +z -z
+	public:
+		/// <summary>
+		/// 默认Cubemap纹理:None Cubemap
+		/// </summary>
+		Cubemap();
+		Cubemap(const std::vector<std::string>& paths);
+
+		virtual ~Cubemap();
+
+		virtual uint32_t GetWidth() const override { return m_Width; }
+		virtual uint32_t GetHeight() const  override { return m_Height; }
+		virtual uint32_t GetRendererID() const  override { return m_RendererID; }
+		std::vector<std::string>& GetPaths() { return m_Paths; }
+
+		/// <summary>
+		/// 设置Cubemap的一面纹理
+		/// </summary>
+		/// <param name="path">纹理路径</param>
+		/// <param name="direction">纹理方向</param>
+		void SetSide(const std::string& path, TextureDirection direction = TextureDirection::Right);
+
+		void SetParameteri();
+		
+		/// <summary>
+		/// 设置纹理数据
+		/// </summary>
+		/// <param name="data">数据（纹理颜色值）</param>
+		/// <param name="size">纹理大小（字节）</param>
+		virtual void SetData(void* data, uint32_t size) override;
+
+		/// <summary>
+		/// 绑定纹理
+		/// </summary>
+		/// <param name="slot">绑定槽位</param>
+		virtual void Bind(uint32_t slot = 0) const override;
+
+		/// <summary>
+		/// 比较两个纹理是否相等
+		/// </summary>
+		/// <param name="other">另一个纹理</param>
+		/// <returns>比较结果</returns>
+		virtual bool operator==(const Texture& other) const override
+		{
+			return m_RendererID == ((Cubemap&)other).m_RendererID;	//纹理ID相等
 		}
 	};
 }

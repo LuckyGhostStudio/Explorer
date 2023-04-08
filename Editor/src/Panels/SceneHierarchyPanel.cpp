@@ -12,6 +12,7 @@
 #include "Explorer/Components/Material.h"
 
 #include "Explorer/Utils/PlatformUtils.h"
+#include "Explorer/ImGui/UI.h"
 
 namespace Explorer
 {
@@ -86,14 +87,167 @@ namespace Explorer
 			ImGui::EndPopup();	//结束弹出菜单
 		}
 
-		ImGui::End();
+		ImGui::End();	//Hierarchy
 
 		//属性面板
 		ImGui::Begin("Properties");
 		if (m_SelectionObject) {				//被选中的物体存在
 			DrawComponents(m_SelectionObject);	//绘制组件
 		}
-		ImGui::End();
+		ImGui::End();	//Properties
+
+		//环境参数设置面板
+		ImGui::Begin("Environment");
+		//TODO:序列化反序列化环境参数
+
+		Environment& environment = m_Scene->GetEnvironment();	//场景环境
+		Skybox& skybox = environment.GetSkybox();	//天空盒
+
+		UI::DrawCheckBox("Enable Skybox", &environment.GetSkyboxEnable_Ref());	//Enable Skybox是否启用天空盒 勾选框
+
+		//Skybox天空盒设置 树节点
+		UI::DrawTreeNode<Environment>(skybox.GetShader()->GetName() + "(Skybox)", true, [&](float lineHeight)
+		{
+			UI::DrawColorEditor3("Tint Color", glm::value_ptr(skybox.GetTintColor()));					//Tint Color色调 颜色编辑器
+			UI::DrawSlider("Expose", &skybox.GetExpose_Ref(), 0.0f, 8.0f);								//Expose曝光度 滑动条
+			UI::DrawSlider("Rotation", &skybox.GetRotation_Ref(), 0.0f, 360.0f, UI::ValueType::Angle);	//Rotation旋转值z 滑动条
+
+			uint32_t rightTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Right]->GetRendererID();	//Right预览贴图ID
+			uint32_t leftTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Left]->GetRendererID();	//Left预览贴图ID
+			uint32_t upTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Up]->GetRendererID();		//Up预览贴图ID
+			uint32_t downTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Down]->GetRendererID();	//Down预览贴图ID
+			uint32_t frontTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Front]->GetRendererID();	//Front预览贴图ID
+			uint32_t backTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Back]->GetRendererID();	//Back预览贴图ID
+
+			//Cubemap贴图设置 树节点
+			UI::DrawTreeNode<Cubemap>("Cubemap Settings", false, [&](float lineHeight)
+			{
+				glm::vec2 textureButtonSize = { 50, 50 };
+
+				//Right(+x)天空盒贴图 选择&预览按钮
+				UI::DrawImageButton("Right [+X]", rightTextureID, textureButtonSize, [&]()
+				{
+					std::string filepath = FileDialogs::OpenFile("Right[+X] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+					if (!filepath.empty()) {
+						skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Right);	//设置Right预览贴图
+					}
+				});
+
+				//Left(-x)天空盒贴图 选择&预览按钮
+				UI::DrawImageButton("Left [-X]", leftTextureID, textureButtonSize, [&]()
+				{
+					std::string filepath = FileDialogs::OpenFile("Left[-X] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+					if (!filepath.empty()) {
+						skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Left);	//设置Left预览贴图
+					}
+				});
+
+				//Up(+y)天空盒贴图 选择&预览按钮
+				UI::DrawImageButton("Up [+Y]", upTextureID, textureButtonSize, [&]()
+				{
+					std::string filepath = FileDialogs::OpenFile("Up[+Y] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+					if (!filepath.empty()) {
+						skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Up);	//设置Up预览贴图
+					}
+				});
+
+				//Down(-y)天空盒贴图 选择&预览按钮
+				UI::DrawImageButton("Down [-Y]", downTextureID, textureButtonSize, [&]()
+				{
+					std::string filepath = FileDialogs::OpenFile("Down[-Y] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+					if (!filepath.empty()) {
+						skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Down);	//设置Down预览贴图
+					}
+				});
+
+				//Front(+z)天空盒贴图 选择&预览按钮
+				UI::DrawImageButton("Front [+Z]", frontTextureID, textureButtonSize, [&]()
+				{
+					std::string filepath = FileDialogs::OpenFile("Front[+Z] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+					if (!filepath.empty()) {
+						skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Front);	//设置Front预览贴图
+					}
+				});
+
+				//Back(-z)天空盒贴图 选择&预览按钮
+				UI::DrawImageButton("Back [-Z]", backTextureID, textureButtonSize, [&]()
+				{
+					std::string filepath = FileDialogs::OpenFile("Back[-Z] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+					if (!filepath.empty()) {
+						skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Back);	//设置Back预览贴图
+					}
+				});
+			});
+
+			//Cubemap预览图 树节点
+			UI::DrawTreeNode<Cubemap>("Cubemap Preview", false, [&](float lineHeight)
+			{
+				ImVec2 size = ImVec2(90, 90);	//Cubemap单张大小
+				int positionX = 35;				//Cubemap X位置
+
+				//Cubemap预览图
+				ImGui::SetCursorPosX(positionX);
+				ImGui::BeginChild("Cubemap Preview", ImVec2(size.x * 4 + 40, size.y * 3 + 40), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+				//Up [+Y]
+				ImGui::SetCursorPosX(size.x);	//设置游标X位置
+				ImGui::Image((void*)upTextureID, size);
+				//Left [-X]
+				ImGui::SetCursorPosX(0);
+				ImGui::Image((void*)leftTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+				ImGui::SameLine();
+				//Back [-Z]
+				ImGui::SetCursorPosX(size.x);
+				ImGui::Image((void*)backTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+				ImGui::SameLine();
+				//Right [+X]
+				ImGui::SetCursorPosX(size.x * 2);
+				ImGui::Image((void*)rightTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+				ImGui::SameLine();
+				//Front [+Z]
+				ImGui::SetCursorPosX(size.x * 3);
+				ImGui::Image((void*)frontTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+				//Down [-Y]
+				ImGui::SetCursorPosX(size.x);
+				ImGui::Image((void*)downTextureID, size);
+
+				ImGui::PopStyleVar();
+
+				ImGui::EndChild();
+			});
+		});
+
+		//Environment Lighting环境光照设置 树节点
+		UI::DrawTreeNode<Environment>("Environment Lighting", true, [&](float lineHeight)
+		{
+			const char* sourceTypes[] = { "Skybox","Color" };							//环境光源类型
+			const char* currentSource = sourceTypes[(int)environment.GetSourceType()];	//当前环境光源类型
+
+			//Source环境光源类型 选择下拉列表
+			UI::DrawDropdownList("Source", currentSource, sourceTypes, 2, [&](int index, const char* value)
+			{
+				environment.SetSourceType((Environment::SourceType)index);	//设置环境光源类型
+			});
+
+			//天空盒未启用
+			if (!environment.GetSkyboxEnable()) {
+				UI::DrawColorEditor3("Ambient Color", glm::value_ptr(environment.GetAmbientColor()));	//AmbientColor环境光颜色 颜色编辑器
+			}
+			else {
+				//环境光源 天空盒（不叠加光源为颜色的环境光）
+				if (environment.GetSourceType() == Environment::SourceType::Skybox) {
+					UI::DrawSlider("Intensity Multiplier", &environment.GetIntensityMultiplier_Ref(), 0.0f, 8.0f, UI::ValueType::Float);	//光强度倍数 滑动条
+				}
+				//环境光源为 颜色
+				if (environment.GetSourceType() == Environment::SourceType::Color) {
+					UI::DrawColorEditor3("Ambient Color", glm::value_ptr(environment.GetAmbientColor()));	//AmbientColor环境光颜色 颜色编辑器
+				}
+			}
+
+		});
+
+		ImGui::End();	//Environment
 	}
 
 	void SceneHierarchyPanel::SetSelectedObject(Object object)
@@ -124,6 +278,7 @@ namespace Explorer
 		}
 
 		if (opened) {			//树结点已打开
+			//TODO:结点展开内容
 			ImGui::TreePop();	//展开结点
 		}
 
@@ -147,21 +302,24 @@ namespace Explorer
 		ImGuiIO& io = ImGui::GetIO();
 		auto boldFont = io.Fonts->Fonts[0];	//粗体：0号字体
 
-		ImGui::PushID(label.c_str());	//设置控件标签
+		ImGui::PushID(label.c_str());	//设置控件ID
+
+		float panelWidth = ImGui::GetWindowContentRegionWidth();	//面板宽度
 
 		//标签列
-		ImGui::Columns(2);
+		ImGui::Columns(2, 0, false);	//设置为 两列 id 边界0
 		ImGui::SetColumnWidth(0, columnWidth);	//设置0号列宽
 		ImGui::Text(label.c_str());
 		ImGui::NextColumn();
 
-		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());			//设置3个列宽
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });	//Var样式
+		ImGui::PushMultiItemsWidths(3, panelWidth - columnWidth - 105);	//设置3个列宽
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 5, 5 });	//Var Item空格
 
 		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;	//行高 = 字体大小 + 边框.y * 2
-		ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };	//重置值按钮大小
+		ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };	//按钮大小
 
 		//X分量UI
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 5 });	//Var Item空格
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.1f, 0.15f, 1.0f));		//按钮颜色
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.3f, 0.35f, 1.0f));	//鼠标悬停在按钮时的颜色
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9f, 0.1f, 0.15f, 1.0f));	//按钮按下颜色
@@ -170,14 +328,17 @@ namespace Explorer
 			values.x = resetValue;					//重置x分量
 		}
 		ImGui::PopFont();
-		ImGui::PopStyleColor(3);
-
+		ImGui::PopStyleColor(3);	//按钮颜色
 		ImGui::SameLine();							//在同一行
+		ImGui::PopStyleVar();											//Var Item空格
+
 		ImGui::DragFloat("##X", &values.x, 0.01f);	//X分量列 ##不显示标签 拖动精度0.01
 		ImGui::PopItemWidth();						//推出第一个列宽
 		ImGui::SameLine();
+		
 
 		//Y分量UI
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 5 });	//Var Item空格
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));			//按钮颜色
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.9f, 0.4f, 1.0f));	//鼠标悬停在按钮时的颜色
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));	//按钮按下颜色
@@ -186,14 +347,16 @@ namespace Explorer
 			values.y = resetValue;					//重置Y分量
 		}
 		ImGui::PopFont();
-		ImGui::PopStyleColor(3);
-
+		ImGui::PopStyleColor(3);	//按钮颜色
 		ImGui::SameLine();							//在同一行
+		ImGui::PopStyleVar();											//Var Item空格
+
 		ImGui::DragFloat("##Y", &values.y, 0.01f);	//Y分量列 ##不显示标签 拖动精度0.01
 		ImGui::PopItemWidth();						//推出第一个列宽
 		ImGui::SameLine();
 
 		//Z分量UI
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 5 });	//Var Item空格
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.25f, 0.8f, 1.0f));		//按钮颜色
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.4f, 0.8f, 1.0f));	//鼠标悬停在按钮时的颜色
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.35f, 0.25f, 0.9f, 1.0f));	//按钮按下颜色
@@ -202,15 +365,16 @@ namespace Explorer
 			values.z = resetValue;					//重置Z分量
 		}
 		ImGui::PopFont();
-		ImGui::PopStyleColor(3);
-
+		ImGui::PopStyleColor(3);	//按钮颜色
 		ImGui::SameLine();							//在同一行
+		ImGui::PopStyleVar();											//Var Item空格
+
 		ImGui::DragFloat("##Z", &values.z, 0.01f);	//Z分量列 ##不显示标签 拖动精度0.01
 		ImGui::PopItemWidth();						//推出第一个列宽
 
 		ImGui::PopStyleVar();
 
-		ImGui::Columns(1);
+		ImGui::Columns(1);	//设置为1列
 
 		ImGui::PopID();	//弹出控件标签
 	}
@@ -222,26 +386,43 @@ namespace Explorer
 	/// <typeparam name="UIFunction">组件功能函数类型</typeparam>
 	/// <param name="name">组件名</param>
 	/// <param name="entity">实体</param>
+	/// <param name="enable">是否启用</param>
 	/// <param name="uiFunction">组件功能函数</param>
 	template<typename T, typename UIFunction>
-	static void DrawComponent(const std::string& name, Object object, UIFunction uiFunction)
+	static void DrawComponent(const std::string& name, Object object, bool enable, UIFunction uiFunction)
 	{
-		//树节点标志：打开|框架|延伸到右边|允许重叠|框架边框
-		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
-
 		//T组件存在
 		if (object.HasComponent<T>()) {
+			ImGuiIO& io = ImGui::GetIO();
+			auto boldFont = io.Fonts->Fonts[0];	//粗体：0号字体
+
+			//树节点标志：打开|框架|延伸到右边|允许重叠|框架边框
+			const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+
 			auto& component = object.GetComponent<T>();	//获得组件
 			ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();	//可用区域大小
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));	//设置边框样式
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));	//设置边框尺寸
 			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;	//行高 = 字体大小 + 边框y * 2
-			
+
+			ImVec2 nodePos = ImGui::GetCursorPos();	//组件结点位置坐标
 			//组件结点：组件类的哈希值作为结点id
-			bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
+			bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, "##Component");
+			ImGui::PopStyleVar();
+			
+			ImGui::SameLine(lineHeight * 1.3f);
+			ImGui::SetCursorPos(ImVec2(nodePos.x + 28, nodePos.y + 4));	//设置Checkbox位置
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.1, 0.1));	
+			ImGui::Checkbox("##Checkbox", &enable);	//组件启用勾选框
+			ImGui::SameLine();
 			ImGui::PopStyleVar();
 
-			ImGui::SameLine(contentRegionAvail.x - lineHeight * 0.5f);	//同一行：可用区域左移
+			ImGui::SetCursorPos(ImVec2(nodePos.x + 54, nodePos.y));	//设置Text位置
+			ImGui::PushFont(boldFont);	//设置结点文本字体为粗体
+			ImGui::Text(name.c_str());	//组件名
+			ImGui::PopFont();
+
+			ImGui::SameLine(contentRegionAvail.x - lineHeight * 0.5f);	//同一行：左移行高的一半
 			if (ImGui::Button("+", ImVec2(lineHeight, lineHeight))) {	//组件设置按钮
 				ImGui::OpenPopup("ComponentSettings");	//打开弹出框
 			}
@@ -269,34 +450,14 @@ namespace Explorer
 		}
 	}
 
-/*	template<typename T, typename UIFunction>
-	static void DrawDropdownList(const std::string& name, const std::vector<std::string>& itemStringValues, const uint32_t itemCount, int currentItemIndex, UIFunction uiFunction)
-	{
-		const char* itemStringCharValues[itemCount] = itemStringValues[currentItemIndex].c_str(); //当前项值
-		const char* currentItemStringValue = itemStringCharValues[itemCount];
-
-		//下拉框 选择
-		if (ImGui::BeginCombo(name.c_str(), currentItemStringValue)) {
-			//查找被选中项
-			for (int i = 0; i < itemCount; i++) {
-				bool isSelected = currentItemStringValue == itemStringCharValues[i];	//被选中：当前项==第i项
-				//可选择项，该项改变时：i项已选中
-				if (ImGui::Selectable(itemStringCharValues[i], isSelected)) {
-					currentItemStringValue = itemStringCharValues[i];	//设置当前项为选中项i
-
-					uiFunction((T)i);	//调用下拉框选项选中功能函数
-				}
-
-				if (isSelected) {
-					ImGui::SetItemDefaultFocus();	//设置默认选中项
-				}
-			}
-			ImGui::EndCombo();
-		}
-	}*/
-
 	void SceneHierarchyPanel::DrawComponents(Object object)
 	{
+		bool enable = true;
+		ImGui::Checkbox("##Enable Object", &enable);	//是否启用该Object：TODO:未实现
+		ImGui::SameLine();
+
+		float panelWidth = ImGui::GetWindowContentRegionWidth();	//面板宽度
+		ImGui::PushItemWidth(panelWidth - 150);
 		//Name组件
 		if (object.HasComponent<Name>()) {
 			auto& name = object.GetComponent<Name>().m_Name;	//物体名
@@ -309,10 +470,9 @@ namespace Explorer
 				name = std::string(buffer);								//物体name设为buffer
 			}
 		}
+		ImGui::PopItemWidth();
 
 		ImGui::SameLine();
-		ImGui::PushItemWidth(-1);	//沿着右边框宽-1
-
 		//添加组件按钮
 		if (ImGui::Button("Add Component")) {
 			ImGui::OpenPopup("AddComponent");	//打开弹出框
@@ -348,235 +508,151 @@ namespace Explorer
 			ImGui::EndPopup();
 		}
 
-		ImGui::PopItemWidth();
-
 		ImGui::Separator();	//分隔符
 
 		//绘制Transform组件
-		DrawComponent<Transform>("Transform", object, [](Transform& transform)
+		DrawComponent<Transform>("Transform", object, true, [](Transform& transform)
 		{
-			DrawVec3Control("Position", transform.m_Position);	//位置
-			DrawVec3Control("Rotation", transform.m_Rotation);	//旋转
-			DrawVec3Control("Scale", transform.m_Scale, 1.0f);	//缩放：默认值1.0f
+			DrawVec3Control("Position", transform.GetPosition());	//位置
+			DrawVec3Control("Rotation", transform.GetRotation());	//旋转
+			DrawVec3Control("Scale", transform.GetScale(), 1.0f);	//缩放：默认值1.0f
 		});
 
 		//绘制Light组件
-		DrawComponent<Light>("Light", object, [](Light& light)
+		DrawComponent<Light>("Light", object, true, [](Light& light)
 		{
 			const char* types[] = { "Directional", "Point", "Spot"};	//光源类型：透视 正交 
 			const char* currentType = types[(int)light.GetType()];		//当前光源类型
 
-			//下拉框 选择光源类型
-			if (ImGui::BeginCombo("Type", currentType)) {
-				//查找选中项
-				for (int i = 0; i < 3; i++) {
-					bool isSelected = currentType == types[i];	//被选中：当前光源类型==第i个光源类型
-					//可选择项，该项改变时：光源类型 已选中
-					if (ImGui::Selectable(types[i], isSelected)) {
-						currentType = types[i];			//设置当前光源类型
-						light.SetType((Light::Type)i);	//设置光源类型
-					}
-
-					if (isSelected) {
-						ImGui::SetItemDefaultFocus();	//设置默认选中项
-					}
-				}
-				ImGui::EndCombo();
-			}
+			//Type光源类型选择下拉列表
+			UI::DrawDropdownList("Type", currentType, types, 3, [&](int index, const char* value)
+			{
+				light.SetType((Light::Type)index);	//设置光源类型
+			});
 
 			//点光源 | 聚光源
 			if (light.GetType() == Light::Type::Point || light.GetType() == Light::Type::Spot) {
-				float range = light.GetRange();		//光照半径
-				if (ImGui::DragFloat("Range", &range, 0.01f, 0.0f, 1000.0f)) {	//拖动精度0.01
-					light.SetRange(range);
-				}
+				UI::DrawDrag("Range", &light.GetRange_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1000.0f);	//Range光照半径 拖动条
 			}
 
 			//聚光源
 			if (light.GetType() == Light::Type::Spot) {
-				float spotOuterAngle = light.GetSpotOuterAngle();	//Spot外张角（阴影外边缘）
-
-				if (ImGui::SliderFloat("Spot Angle", &spotOuterAngle, 1.0f, 179.0f)) {	//Outer = [1, 179]
-					light.SetSpotOuterAngle(spotOuterAngle);
-				}
-
-				light.SetSpotInnerAngle(spotOuterAngle - spotOuterAngle / 12.0f);	//设置内张角 = Outer - Outer / 12
+				UI::DrawSlider("Spot Angle", &light.GetSpotOuterAngle_Ref(), 1.0f, 179.0f, UI::ValueType::Angle);	//SpotAngle外张角 滑动条
+				light.SetSpotInnerAngle();	//设置内张角 = Outer - Outer / 12
 			}
 
-			ImGui::ColorEdit3("Color", glm::value_ptr(light.m_Color));	//灯光颜色选择器
-
-			float intensity = light.GetIntensity();		//光照强度
-			if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 1000.0f)) {	//拖动精度0.01
-				light.SetIntensity(intensity);
-			}
-
-			ImGui::Checkbox("Render Shadow", &light.m_RenderShadow);	//是否渲染阴影设置框
+			UI::DrawColorEditor3("Color", glm::value_ptr(light.GetColor()));									//Color灯光颜色 颜色编辑器
+			UI::DrawDrag("Intensity", &light.GetIntensity_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1000.0f);	//Intensity光照强度 拖动条
+			UI::DrawCheckBox("Cast Shadow", &light.GetCastShadow_Ref());										//CastShadow是否投射阴影 勾选框
 		});
 
 		//绘制Camera组件
-		DrawComponent<Camera>("Camera", object, [](Camera& camera)
+		DrawComponent<Camera>("Camera", object, true, [](Camera& camera)
 		{
-			ImGui::Checkbox("Main Camera", &camera.m_Primary);	//主相机设置框
+			UI::DrawCheckBox("Main Camera", &camera.IsPrimary_Ref());	//MainCamera是否是主相机 勾选框
 
 			const char* clearFlags[] = { "Color", "Skybox" };						//清屏标志：颜色 天空盒 
 			const char* currentClearFlag = clearFlags[(int)camera.GetClearFlag()];	//当前清屏标志
 
-			//下拉框 选择清屏标志
-			if (ImGui::BeginCombo("Clear Flags", currentClearFlag)) {
-				for (int i = 0; i < 2; i++) {
-					bool isSelected = currentClearFlag == clearFlags[i];	//被选中：当前清屏标志==第i个清屏标志
-					//可选择项，该项改变时：清屏标志 已选中
-					if (ImGui::Selectable(clearFlags[i], isSelected)) {
-						currentClearFlag = clearFlags[i];			//设置当前清屏标志
-						camera.SetClearFlag((Camera::ClearFlag)i);	//设置相机清屏标志
-					}
+			//Clear Flags清屏标志选择下拉列表
+			UI::DrawDropdownList("Clear Flags", currentClearFlag, clearFlags, 2, [&](int index, const char* value)
+			{
+				camera.SetClearFlag((Camera::ClearFlag)index);	//设置相机清屏标志
+			});
 
-					if (isSelected) {
-						ImGui::SetItemDefaultFocus();	//设置默认选中项
-					}
-				}
-				ImGui::EndCombo();
-			}
-
-			ImGui::ColorEdit4("Background", glm::value_ptr(camera.m_BackgroundColor));	//背景颜色选择器
+			UI::DrawColorEditor4("Background", glm::value_ptr(camera.GetBackgroundColor()));	//Background背景颜色 颜色编辑器
 
 			const char* projectionTypes[] = { "Perspective", "Orthographic" };						//投影类型：透视 正交 
 			const char* currentProjectionType = projectionTypes[(int)camera.GetProjectionType()];	//当前投影类型
 
-			//下拉框 选择投影类型
-			if (ImGui::BeginCombo("Projection", currentProjectionType)) {
-				for (int i = 0; i < 2; i++) {
-					bool isSelected = currentProjectionType == projectionTypes[i];	//被选中：当前投影类型==第i个投影类型
-					//可选择项，该项改变时：投影类型 已选中
-					if (ImGui::Selectable(projectionTypes[i], isSelected)) {
-						currentProjectionType = projectionTypes[i];				//设置当前投影类型
-						camera.SetProjectionType((Camera::ProjectionType)i);	//设置相机投影类型
-					}
+			//Projection投影类型选择下拉列表
+			UI::DrawDropdownList("Projection", currentProjectionType, projectionTypes, 2, [&](int index, const char* value)
+			{
+				camera.SetProjectionType((Camera::ProjectionType)index);	//设置相机投影类型
+			});
 
-					if (isSelected) {
-						ImGui::SetItemDefaultFocus();	//设置默认选中项
-					}
-				}
-				ImGui::EndCombo();
+			//透视投影
+			if (camera.GetProjectionType() == Camera::ProjectionType::Perspective) {	
+				UI::DrawSlider("Vertical FOV", &camera.GetFOV_Ref(), 1.0f, 179.0f, UI::ValueType::Angle);	//FOV垂直张角 滑动条
 			}
 
-			if (camera.GetProjectionType() == Camera::ProjectionType::Perspective) {	//透视投影
-				float verticalFov = camera.GetFOV();	//垂直张角
-				if (ImGui::SliderFloat("Vertical Fov", &verticalFov, 1.0f, 179.0f)) {
-					camera.SetFOV(verticalFov);
-				}
+			//正交投影
+			if (camera.GetProjectionType() == Camera::ProjectionType::Orthographic) {	
+				UI::DrawDrag("Size", &camera.GetSize_Ref());	//Size尺寸 拖动条
 			}
 
-			if (camera.GetProjectionType() == Camera::ProjectionType::Orthographic) {	//正交投影
-				float size = camera.GetSize();		//尺寸
-				if (ImGui::DragFloat("Size", &size)) {
-					camera.SetSize(size);
-				}
-			}
-
-			float nearClip = camera.GetNearClip();	//近裁剪平面	[0.01, far]
-			float farClip = camera.GetFarClip();	//远裁剪平面	[near, +∞]
-			
-			if (ImGui::DragFloat("Near", &nearClip, 0.1f, 0.01f, farClip)) {
-				camera.SetNearClip(nearClip);
-			}
-
-			if (ImGui::DragFloat("Far", &farClip, 0.1f, nearClip, 10000.0f)) {
-				camera.SetFarClip(farClip);
-			}
+			UI::DrawDrag("Near", &camera.GetNearClip_Ref(), 0.01f, UI::ValueType::Float, 0.01f, camera.GetFarClip() - 0.01f);	//Near近裁剪平面 拖动条
+			UI::DrawDrag("Far", &camera.GetFarClip_Ref(), 0.01f, UI::ValueType::Float, camera.GetNearClip() + 0.01f, 1000.0f);	//Far远裁剪平面 拖动条
 		});
 
 		//绘制Mesh组件
-		DrawComponent<Mesh>("Mesh", object, [](Mesh& mesh)
+		DrawComponent<Mesh>("Mesh", object, true, [](Mesh& mesh)
 		{
 			const char* meshTypes[] = { "None (Mesh)", "Other", "Cube", "Sphere", "Capsule", "Cylinder", "Plane"};
 			const char* currentMeshType = meshTypes[(int)mesh.GetType()];	//当前网格类型
 
-			//下拉框 选择网格类型
-			if (ImGui::BeginCombo("Mesh", currentMeshType)) {
-				for (int i = 0; i < 7; i++) {
-					bool isSelected = currentMeshType == meshTypes[i];	//被选中：当前网格类型==第i个网格类型
-					//可选择项，该项改变时：网格类型 已选中
-					if (ImGui::Selectable(meshTypes[i], isSelected)) {
-						currentMeshType = meshTypes[i];		//设置当前网格类型
-						mesh.SetType((Mesh::Type)i);		//设置网格类型
-					}
-
-					if (isSelected) {
-						ImGui::SetItemDefaultFocus();	//设置默认选中项
-					}
-				}
-				ImGui::EndCombo();
-			}
+			//Mesh网格选择下拉列表
+			UI::DrawDropdownList("Mesh", currentMeshType, meshTypes, 7, [&](int index, const char* value)
+			{
+				mesh.SetType((Mesh::Type)index);	//设置网格类型
+			});
 			//TODO：if Type == Other then 添加按钮 从文件加载Mesh
 		});
 
 		//绘制Material组件
-		DrawComponent<Material>("Material", object, [](Material& material)
+		DrawComponent<Material>("Material", object, true, [](Material& material)
 		{
-			//TODO:添加Shader选择器 选择着色器库的所有着色器
-			const char* shaders[] = { "Standard" };
-			const char* currentShader = shaders[0];	//当前着色器类型
+			uint32_t count = ShaderLibrary::GetSize();
 
-			//下拉框 选择着色器类型
-			if (ImGui::BeginCombo("Shader", currentShader)) {
-				for (int i = 0; i < 1; i++) {
-					bool isSelected = currentShader == shaders[i];	//被选中：当前着色器类型==第i个着色器类型
-					//可选择项，该项改变时：着色器类型 已选中
-					if (ImGui::Selectable(shaders[i], isSelected)) {
-						currentShader = shaders[i];			//设置当前着色器类型
-						//TODO:设置Shader
+			const char* shaderNames[2];
+			const char* currentShaderName = "";
+			int i = 0;
+			//遍历着色器库
+			for (auto& [name, shader] : ShaderLibrary::GetShaders()) {
+				if (name == material.GetShader()->GetName()) {
+					currentShaderName = name.c_str();	//当前着色器名
+				}
+				shaderNames[i++] = name.c_str();
+			}
+
+			//Shader着色器选择下拉列表
+			UI::DrawDropdownList("Shader", currentShaderName, shaderNames, count, [&](int index, const char* value)
+			{
+				material.SetShader(ShaderLibrary::GetShaders()[value]);	//设置着色器
+			});
+
+			if (material.GetShader()->GetName() == "Standard") {	//标准着色器
+				
+				UI::DrawColorEditor4("Color", glm::value_ptr(material.GetColor()));			//Color材质颜色 颜色编辑器
+
+				//Albedo Map 反照率贴图 选择&预览按钮
+				uint32_t albedoTextureID = material.GetAlbedoTextureID();	//Albedo贴图ID
+				UI::DrawImageButton("Albedo Map", albedoTextureID, { 100,100 }, [&]()
+				{
+					std::string filepath = FileDialogs::OpenFile("Albedo Texture(*.png;*.jpg)\0*.png;*.jpg\0");		//打开文件对话框.png|.jpg
+					if (!filepath.empty()) {
+						material.SetAlbedoTexture(filepath);	//设置Albedo贴图
 					}
+				});
 
-					if (isSelected) {
-						ImGui::SetItemDefaultFocus();	//设置默认选中项
+				//Specular Map 反照率贴图 选择&预览按钮
+				uint32_t specularTextureID = material.GetSpecularTextureID();	//Specular贴图ID
+				UI::DrawImageButton("Specular Map", specularTextureID, { 100,100 }, [&]()
+				{
+					std::string filepath = FileDialogs::OpenFile("Specular Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+					if (!filepath.empty()) {
+						material.SetSpecularTexture(filepath);	//设置Specular贴图
 					}
-				}
-				ImGui::EndCombo();
+				});
+
+				UI::DrawSlider("Shininess", &material.GetShininess_Ref(), 1.0f, 648.0f);					//Shininess反光度 滑动条
+				UI::DrawDrag("Tiling", glm::value_ptr(material.GetTiling()), 0.01f, UI::ValueType::Float2);	//Tiling纹理平铺因子 拖动条
+				UI::DrawDrag("Offset", glm::value_ptr(material.GetOffset()), 0.01f, UI::ValueType::Float2);	//Offset纹理偏移量 拖动条
 			}
-
-			uint32_t albedoTextureID = material.GetAlbedoTextureID();	//Albedo贴图ID
-
-			//Albedo纹理选择&预览按钮
-			if (ImGui::ImageButton((void*)albedoTextureID, ImVec2(22, 22), ImVec2(0, 1), ImVec2(1, 0), 2)) {
-				std::string filepath = FileDialogs::OpenFile("Albedo Texture(*.png)\0*.png\0");	//打开文件对话框（文件类型名\0 文件类型.png）
-				if (!filepath.empty()) {
-					material.SetAlbedoTexture(filepath);	//设置Albedo贴图
-				}
-			}
-
-			ImGui::SameLine();
-			ImGui::Text("Albedo");
-			ImGui::SameLine();
-			ImGui::ColorEdit4("##Color", glm::value_ptr(material.m_Color), ImGuiColorEditFlags_NoInputs);
-			ImGui::SameLine();
-			ImGui::Button("Picker");	//取色按钮：TODO:添加拾色功能
-
-			uint32_t specularTextureID = material.GetSpecularTextureID();	//Specular贴图ID
-
-			//Specular纹理选择&预览按钮
-			if (ImGui::ImageButton((void*)specularTextureID, ImVec2(22, 22), ImVec2(0, 1), ImVec2(1, 0), 2)) {
-				std::string filepath = FileDialogs::OpenFile("Specular Texture(*.png)\0*.png\0");	//打开文件对话框（文件类型名\0 文件类型.png）
-				if (!filepath.empty()) {
-					material.SetSpecularTexture(filepath);	//设置Specular贴图
-				}
-			}
-
-			ImGui::SameLine();
-			ImGui::Text("Specular");
-			ImGui::SameLine();
-
-			float shininess = material.GetShininess();		//反光度
-			if (ImGui::SliderFloat("Shininess", &shininess, 1.0f, 648.0f)) {
-				material.SetShininess(shininess);
-			}
-
-			ImGui::DragFloat2("Tiling", glm::value_ptr(material.m_Tiling), 0.1f);	//纹理平铺因子
-			ImGui::DragFloat2("Offset", glm::value_ptr(material.m_Offset), 0.1f);	//纹理偏移量
 		});
 
 		//绘制SpriteRenderer组件
-		DrawComponent<SpriteRenderer>("Sprite Renderer", object, [](SpriteRenderer& spriteRenderer)
+		DrawComponent<SpriteRenderer>("Sprite Renderer", object, true, [](SpriteRenderer& spriteRenderer)
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(spriteRenderer.m_Color));
 		});

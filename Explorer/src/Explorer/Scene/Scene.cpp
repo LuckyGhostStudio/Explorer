@@ -69,7 +69,7 @@ namespace Explorer
 				break;
 			case Light::Type::Point:		//点光源
 				tempName = "Point Light";
-				position = { 2.0f, 2.95f, -0.85f };		//设置初始位置
+				position = { 2.0f, 2.95f, -1.5f };		//设置初始位置
 				break;
 			case Light::Type::Spot:			//聚光源
 				tempName = "Spot Light";
@@ -103,7 +103,7 @@ namespace Explorer
 			lightObjects.push_back(Object{ object, this });	//添加到Light列表
 		}
 
-		Renderer3D::BeginScene(camera, lightObjects);	//开始渲染场景
+		Renderer3D::BeginScene(m_Environment, camera, lightObjects);	//开始渲染场景
 #if 0
 		auto meshes = m_Registry.view<Mesh>();	//场景中所有Mesh物体
 		std::vector<Object> meshObjects;		//场景所有Mesh对象
@@ -121,6 +121,7 @@ namespace Explorer
 			Renderer3D::DrawMesh(transform, mesh, material, (int)object.operator entt::entity());	//绘制网格
 		}
 #endif
+
 		auto meshes = m_Registry.view<Transform, Mesh, Material>();	//返回有Transform Mesh Material的所有物体
 		//auto meshes = m_Registry.group<Transform>(entt::get<Mesh>);	//返回有Transform和Mesh的所有物体
 
@@ -130,7 +131,7 @@ namespace Explorer
 			Renderer3D::DrawMesh(transform, mesh, material,(int)object);	//绘制网格
 		}
 
-		Renderer3D::EndScene();			//结束渲染场景
+		Renderer3D::EndScene(m_Environment, camera);	//结束渲染场景
 	}
 
 	void Scene::OnUpdate(DeltaTime dt)
@@ -157,7 +158,7 @@ namespace Explorer
 			auto [transform, camera] = view.get<Transform, Camera>(object);
 
 			//找到主相机
-			if (camera.m_Primary) {
+			if (camera.IsPrimary()) {
 				mainCamera = &camera;
 				cameraTransform = &transform;
 				break;
@@ -196,9 +197,9 @@ namespace Explorer
 	{
 		auto view = m_Registry.view<Camera>();	//返回有Camera组件的物体
 		for (auto object : view) {
-			const auto& camera = view.get<Camera>(object);	//Camera组件
+			auto& camera = view.get<Camera>(object);	//Camera组件
 			//主相机
-			if (camera.m_Primary) {
+			if (camera.IsPrimary()) {
 				return Object{ object, this };	//相机实体
 			}
 		}

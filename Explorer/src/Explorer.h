@@ -13,6 +13,7 @@
 
 #include "Explorer/ImGui/ImGuiLayer.h"
 #include "Explorer/ImGui/Gizmo.h"
+#include "Explorer/ImGui/UI.h"
 
 #include "Explorer/Scene/Scene.h"
 #include "Explorer/Scene/Object.h"

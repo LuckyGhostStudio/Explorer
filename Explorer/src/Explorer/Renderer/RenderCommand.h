@@ -37,6 +37,12 @@ namespace Explorer
 		static void Clear();
 
 		/// <summary>
+		/// 设置深度缓冲区遮罩
+		/// </summary>
+		/// <param name="enable">是否启用写入</param>
+		static void SetDepthMask(bool enable);
+
+		/// <summary>
 		/// 绘制索引缓冲区
 		/// </summary>
 		/// <param name="vertexArray">待绘制的顶点数组</param>

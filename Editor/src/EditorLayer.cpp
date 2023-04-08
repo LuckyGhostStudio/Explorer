@@ -101,7 +101,7 @@ namespace Explorer
 		Renderer3D::ResetStats();	//重置统计数据
 
 		m_Framebuffer->Bind();										//绑定帧缓冲区
-		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });	//设置清屏颜色
+		RenderCommand::SetClearColor(m_ActiveScene->GetEnvironment().GetNoneSkyboxColor());	//设置清屏颜色
 		RenderCommand::Clear();										//清除
 
 		m_Framebuffer->ClearAttachment(1, -1);	//清除颜色缓冲区1（物体id缓冲区）为 -1
@@ -136,8 +136,6 @@ namespace Explorer
 		bool opt_fullscreen = opt_fullscreen_persistant;
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
-		// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-		// because it would be confusing to have two docking targets within each others.
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 		if (opt_fullscreen)
 		{
@@ -151,15 +149,9 @@ namespace Explorer
 			window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 		}
 
-		// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
 		if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
 			window_flags |= ImGuiWindowFlags_NoBackground;
 
-		// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
-		// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive, 
-		// all active windows docked into it will lose their parent and become undocked.
-		// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise 
-		// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("DockSpace", &dockspaceOpen, window_flags);
 		ImGui::PopStyleVar();
@@ -167,19 +159,21 @@ namespace Explorer
 		if (opt_fullscreen)
 			ImGui::PopStyleVar(2);
 
-		// 停靠空间
+		// 停靠空间设置
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();	//样式
 		float minWinSizeX = style.WindowMinSize.x;	//最小窗口大小
-		style.WindowMinSize.x = 370.0f;
+		style.WindowMinSize.x = 420.0f;
 
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
 			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 		}
-
 		style.WindowMinSize.x = minWinSizeX;
+		style.FrameRounding = 4.0f;				//边框圆度
+		style.FrameBorderSize = 1.0f;			//边框尺寸
+		style.WindowMenuButtonPosition = -1;	//窗口tabbar按钮取消显示
 
 		//菜单条
 		if (ImGui::BeginMenuBar())
@@ -243,7 +237,7 @@ namespace Explorer
 		m_ViewportFocused = ImGui::IsWindowFocused();	//当前窗口被聚焦
 		m_ViewportHovered = ImGui::IsWindowHovered();	//鼠标悬停在当前窗口
 
-		Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);	//阻止ImGui事件
+		Application::GetInstance().GetImGuiLayer()->BlockEvents(/*!m_ViewportFocused && */!m_ViewportHovered);	//阻止ImGui事件
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Scene面板可用区域大小
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
@@ -252,9 +246,8 @@ namespace Explorer
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
 
 		//编辑器相机
-		const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();	//投影矩阵
-		const glm::mat4& cameraView = m_EditorCamera.GetViewMatrix();		//视图矩阵
-
+		const glm::mat4& cameraProjection = m_EditorCamera.GetProjectionMatrix();	//投影矩阵
+		const glm::mat4& cameraView = m_EditorCamera.GetViewMatrix();				//视图矩阵
 		
 		Gizmo::Init(m_ViewportBounds[0], m_ViewportBounds[1]);											//初始化Gizmo绘制参数	
 		Gizmo::DrawTransformation(m_HierarchyPanel.GetSelectedObject(), cameraView, cameraProjection);	//绘制Transform Gizmos
@@ -262,7 +255,7 @@ namespace Explorer
 		ImGui::End();	//Scene
 		ImGui::PopStyleVar();
 
-		//ImGui::ShowDemoWindow();
+		//ImGui::ShowDemoWindow();	//样例窗口
 		
 		ImGui::End();	//DockSpace
 	}

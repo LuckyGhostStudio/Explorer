@@ -37,9 +37,9 @@ namespace Explorer
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
-		io.Fonts->AddFontFromFileTTF("asserts/fonts/opensans/OpenSans-Bold.ttf", 18.0f);	//添加粗体
+		io.Fonts->AddFontFromFileTTF("asserts/fonts/opensans/OpenSans-Bold.ttf", 18.0f);	//添加粗体（0号）
 		//默认字体 添加TTF字体 大小18
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("asserts/fonts/opensans/OpenSans-Regular.ttf", 18.0f);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("asserts/fonts/opensans/OpenSans-Regular.ttf", 18.0f);	//1号
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
@@ -112,6 +112,7 @@ namespace Explorer
 	void ImGuiLayer::SetDarkThemeColors()
 	{
 		auto& colors = ImGui::GetStyle().Colors;	//颜色样式
+		//窗口背景
 		colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
 
 		//Header
@@ -124,10 +125,11 @@ namespace Explorer
 		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
 		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 
-		//框架背景
+		//边框背景
 		colors[ImGuiCol_FrameBg] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
 		colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
-		colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		//colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_FrameBgActive & ImGuiCol_Border] = ImVec4{ 0.498f, 0.8392f, 0.9921f, 1.0f };
 
 		//标签
 		colors[ImGuiCol_Tab] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
@@ -140,5 +142,17 @@ namespace Explorer
 		colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		//边界颜色
+		colors[ImGuiCol_Border] = ImVec4{ 0.1f, 0.1f, 0.1f, 1.0f };
+
+		//文本颜色
+		colors[ImGuiCol_Text] = ImVec4{ 0.95f, 0.95f, 0.95f, 1.0f };
+
+		//colors[ImGuiCol_FrameBgHovered & ImGuiCol_Border] = ImVec4{ 0.8f, 0.8f, 0.8f, 0.8f };
+		//colors[ImGuiCol_FrameBgActive & ImGuiCol_Border] = ImVec4{ 0.498f, 0.8392f, 0.9921f, 1.0f };
+
+		//colors[ImGuiCol_WindowBg] = ImVec4{ 0.12f, 0.12f, 0.12f, 1.0f };
+		//colors[ImGuiCol_FrameBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
 	}
 }

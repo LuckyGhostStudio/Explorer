@@ -4,6 +4,8 @@
 
 namespace Explorer
 {
+	//TODO:给所有组件添加名字属性 用于后期小图标设置
+
 	/// <summary>
 	/// 名字组件
 	/// </summary>
