@@ -1439,11 +1439,11 @@
     </ClInclude>
     <ClInclude Include="src\Explorer\ImGui\Gizmo.h" />
     <ClInclude Include="src\Explorer\Components\SubMesh.h" />
-    <ClInclude Include="src\Explorer\Renderer\RendererData.h" />
     <ClInclude Include="src\Explorer\Utils\GeneralUtils.h" />
     <ClInclude Include="src\Explorer\Renderer\Environment.h" />
     <ClInclude Include="src\Explorer\Components\Skybox.h" />
     <ClInclude Include="src\Explorer\ImGui\UI.h" />
+    <ClInclude Include="src\Explorer\Components\Component.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Components\Camera.cpp">
@@ -1541,5 +1541,6 @@
     <ClCompile Include="src\Explorer\Renderer\Environment.cpp" />
     <ClCompile Include="src\Explorer\Components\Skybox.cpp" />
     <ClCompile Include="src\Explorer\ImGui\UI.cpp" />
+    <ClCompile Include="src\Explorer\Components\Light.cpp" />
   </ItemGroup>
 </Project>

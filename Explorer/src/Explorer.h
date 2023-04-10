@@ -33,6 +33,7 @@
 
 //Components
 #include "Explorer/Components/Components.h"
+#include "Explorer/Components/Component.h"
 #include "Explorer/Components/Transform.h"
 #include "Explorer/Components/Camera.h"
 #include "Explorer/Components/Light.h"

@@ -6,22 +6,40 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+#include "Explorer/Components/Component.h"
+
 namespace Explorer
 {
 	/// <summary>
 	/// 转换组件
 	/// </summary>
-	class Transform
+	class Transform :public Component
 	{
 	private:
 		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_Rotation = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_Scale = { 1.0f, 1.0f, 1.0f };
+	private:
+		virtual void SetName() override { m_Name = "Transform"; }
+
+		/// <summary>
+		/// 设置Transform组件图标
+		/// </summary>
+		virtual void SetIcon() override { m_Icon = std::make_shared<Texture2D>("asserts/textures/defaults/Icons/Components/Transform_Icon.png"); }
 	public:
 		Transform() = default;
 		Transform(const Transform&) = default;
 		Transform(const glm::vec3& position) :m_Position(position) {}
 		Transform(const glm::vec3& position, const glm::vec3& rotation) :m_Position(position), m_Rotation(rotation) {}
+
+		virtual const std::string& GetName() override { SetName(); return m_Name; }
+		virtual std::shared_ptr<Texture2D>& GetIcon() override { SetIcon(); return m_Icon; }
+
+		virtual bool GetSelectableEnable() override 
+		{
+			m_SelectableEnable = false;		//禁用勾选框
+			return m_SelectableEnable; 
+		}
 
 		glm::vec3& GetPosition() { return m_Position; }
 		void SetPosition(const glm::vec3& position) { m_Position = position; }

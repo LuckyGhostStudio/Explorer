@@ -10,9 +10,7 @@
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
-//TODO:添加Mesh序列化和反序列化
-//TODO:添加Material序列化和反序列化
-//TODO:添加Environment序列化和反序列化
+
 namespace YAML 
 {
 	/// <summary>
@@ -157,15 +155,16 @@ namespace Explorer
 		out << YAML::BeginMap;	//开始物体Map
 		out << YAML::Key << "Object" << YAML::Value << "12837192831273"; // TODO: Object ID goes here
 
-		//Name组件
-		if (object.HasComponent<Name>()){
-			out << YAML::Key << "Name Component";
-			out << YAML::BeginMap;	//开始Name组件Map
+		//Self组件
+		if (object.HasComponent<Self>()){
+			out << YAML::Key << "Self Component";
+			out << YAML::BeginMap;	//开始Self组件Map
 			
-			auto& name = object.GetComponent<Name>().m_Name;	//Name组件数据
-			out << YAML::Key << "Name" << YAML::Value << name;
+			auto& self = object.GetComponent<Self>();	//Self组件数据
+			out << YAML::Key << "ObjectName" << YAML::Value << self.GetObjectName();		//物体名
+			out << YAML::Key << "ObjectEnable" << YAML::Value << self.GetObjectEnable();	//物体启用状态
 
-			out << YAML::EndMap;	//结束Name组件Map
+			out << YAML::EndMap;	//结束Self组件Map
 		}
 
 		//Transform组件
@@ -191,6 +190,8 @@ namespace Explorer
 
 			auto& camera = object.GetComponent<Camera>();
 
+			out << YAML::Key << "Enable" << YAML::Value << camera.GetEnable();
+
 			out << YAML::Key << "ProjectionType" << YAML::Value << (int)camera.GetProjectionType();
 			out << YAML::Key << "Size" << YAML::Value << camera.GetSize();
 			out << YAML::Key << "FOV" << YAML::Value << camera.GetFOV();
@@ -208,6 +209,8 @@ namespace Explorer
 			out << YAML::BeginMap; //开始Light组件Map
 
 			auto& light = object.GetComponent<Light>();
+
+			out << YAML::Key << "Enable" << YAML::Value << light.GetEnable();
 
 			out << YAML::Key << "Type" << YAML::Value << (int)light.GetType();
 			out << YAML::Key << "Range" << YAML::Value << light.GetRange();
@@ -227,6 +230,9 @@ namespace Explorer
 			out << YAML::BeginMap;	//开始Mesh组件Map
 
 			auto& mesh = object.GetComponent<Mesh>();
+
+			out << YAML::Key << "Enable" << YAML::Value << mesh.GetEnable();
+
 			out << YAML::Key << "Type" << YAML::Value << (int)mesh.GetType();
 			//TODO:添加其他属性
 
@@ -241,7 +247,10 @@ namespace Explorer
 
 			auto& material = object.GetComponent<Material>();
 			
-			//TODO:添加Shader类型
+			out << YAML::Key << "Enable" << YAML::Value << material.GetEnable();
+
+			out << YAML::Key << "Shader" << YAML::Value << material.GetShader()->GetName();	//Shader名
+
 			out << YAML::Key << "Color" << YAML::Value << material.GetColor();								//颜色
 			out << YAML::Key << "AlbedoTextureExist" << YAML::Value << material.GetAlbedoTextureExist();	//Albedo是否存在
 			out << YAML::Key << "SpecularTextureExist" << YAML::Value << material.GetSpecularTextureExist();//Specular是否存在								//颜色
@@ -258,7 +267,7 @@ namespace Explorer
 			out << YAML::EndMap;	//结束Material组件Map
 		}
 
-		//SpriteRenderer组件
+		//SpriteRenderer组件 TODO:待删除
 		if (object.HasComponent<SpriteRenderer>())
 		{
 			out << YAML::Key << "SpriteRenderer Component";
@@ -290,6 +299,36 @@ namespace Explorer
 		});
 		out << YAML::EndSeq;	//结束物体序列
 
+		out << YAML::Key << "Environment";	//环境设置结点
+		out << YAML::BeginMap;		//开始环境Map
+
+		Environment& environment = m_Scene->GetEnvironment();	//环境对象
+		//环境设置数据
+		out << YAML::Key << "SkyboxEnable" << YAML::Value << environment.GetSkyboxEnable();		//天空盒启用状态
+		out << YAML::Key << "SourceType" << YAML::Value << (int)environment.GetSourceType();	
+		out << YAML::Key << "IntensityMultiplier" << YAML::Value << environment.GetIntensityMultiplier();
+		out << YAML::Key << "AmbientColor" << YAML::Value << environment.GetAmbientColor();
+		
+		out << YAML::Key << "Skybox";	//Skybox结点
+		out << YAML::BeginMap;			//开始SkyboxMap
+		Skybox& skybox = environment.GetSkybox();
+		//天空盒参数
+		out << YAML::Key << "Shader" << YAML::Value << skybox.GetShader()->GetName();	//着色器名
+		out << YAML::Key << "TintColor" << YAML::Value << skybox.GetTintColor();
+		out << YAML::Key << "Expose" << YAML::Value << skybox.GetExpose();
+		out << YAML::Key << "Rotation" << YAML::Value << skybox.GetRotation();
+		//Cubemap 纹理路径
+		out << YAML::Key << "CubemapRightPath" << YAML::Value << skybox.GetPreviewTextures()[0]->GetPath();
+		out << YAML::Key << "CubemapLeftPath" << YAML::Value << skybox.GetPreviewTextures()[1]->GetPath();
+		out << YAML::Key << "CubemapUpPath" << YAML::Value << skybox.GetPreviewTextures()[2]->GetPath();
+		out << YAML::Key << "CubemapDownPath" << YAML::Value << skybox.GetPreviewTextures()[3]->GetPath();
+		out << YAML::Key << "CubemapFrontPath" << YAML::Value << skybox.GetPreviewTextures()[4]->GetPath();
+		out << YAML::Key << "CubemapBackPath" << YAML::Value << skybox.GetPreviewTextures()[5]->GetPath();
+
+		out << YAML::EndMap;			//结束Skybox Map
+
+		out << YAML::EndMap;		//结束环境Map
+
 		out << YAML::EndMap;	//结束场景Map
 
 		std::ofstream fout(filepath);	//输出流
@@ -315,26 +354,30 @@ namespace Explorer
 		std::string sceneName = data["Scene"].as<std::string>();	//场景名
 		EXP_CORE_TRACE("Deserializing scene '{0}'", sceneName);
 
-		YAML::Node objects = data["Objects"];	//物体序列结点
+		YAML::Node objects = data["Objects"];			//物体序列结点
+		YAML::Node environment = data["Environment"];	//环境设置结点
 
 		if (objects) {	//物体结点存在
 			for (auto object : objects) {	//遍历结点下所有物体
 				uint64_t uuid = object["Object"].as<uint64_t>(); //物体uid TODO
 
-				std::string name;
-				auto nameNode = object["Name Component"];	//Name组件结点
-				if (nameNode) {
-					name = nameNode["Name"].as<std::string>();	//物体名
+				std::string objectName;
+				bool objectEnable;
+				auto selfNode = object["Self Component"];	//Self组件结点
+				if (selfNode) {
+					objectName = selfNode["ObjectName"].as<std::string>();	//物体名
+					objectEnable = selfNode["ObjectEnable"].as<bool>();		//物体启用状态
 				}
 
-				EXP_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
+				EXP_CORE_TRACE("Deserialized object with ID = {0}, name = {1}", uuid, objectName);
 
-				Object deserializedObject = m_Scene->CreateEmptyObject(name);	//创建的空物体
+				Object deserializedObject = m_Scene->CreateEmptyObject(objectName, objectEnable);	//创建的空物体
 
 				//Transform组件结点
 				auto transformNode = object["Transform Component"];
 				if (transformNode){
 					auto& transform = deserializedObject.GetComponent<Transform>();	//获取Transform组件
+					
 					//设置变换组件数据
 					transform.SetPosition(transformNode["Position"].as<glm::vec3>());
 					transform.SetRotation(transformNode["Rotation"].as<glm::vec3>());
@@ -348,6 +391,8 @@ namespace Explorer
 					auto& camera = deserializedObject.AddComponent<Camera>();	//添加Camera组件
 
 					//设置相机组件数据
+					camera.SetEnable(cameraNode["Enable"].as<bool>());	//组件启用状态
+
 					camera.SetProjectionType((Camera::ProjectionType)cameraNode["ProjectionType"].as<int>());
 					camera.SetSize(cameraNode["Size"].as<float>());
 					camera.SetFOV(cameraNode["FOV"].as<float>());
@@ -363,6 +408,8 @@ namespace Explorer
 					auto& light = deserializedObject.AddComponent<Light>();	//添加Light组件
 
 					//设置光源组件数据
+					light.SetEnable(lightNode["Enable"].as<bool>());	//组件启用状态
+
 					light.SetType((Light::Type)lightNode["Type"].as<int>());
 					light.SetRange(lightNode["Range"].as<float>());
 					light.SetSpotOuterAngle(lightNode["SpotOuterAngle"].as<float>());
@@ -379,6 +426,8 @@ namespace Explorer
 					auto& mesh = deserializedObject.AddComponent<Mesh>();	//添加Mesh组件
 
 					//设置网格组件数据
+					mesh.SetEnable(meshNode["Enable"].as<bool>());	//组件启用状态
+
 					mesh.SetType((Mesh::Type)meshNode["Type"].as<int>());
 
 					std::vector<Vertex> vertices;	//Mesh顶点
@@ -467,6 +516,9 @@ namespace Explorer
 
 					//设置光源组件数据
 					//TODO:添加Shader类型
+					material.SetEnable(materialNode["Enable"].as<bool>());	//组件启用状态
+
+					material.SetShader(ShaderLibrary::Get(materialNode["Shader"].as<std::string>()));	//加载Shader
 					material.SetColor(materialNode["Color"].as<glm::vec4>());
 					material.SetAlbedoTextureExist(materialNode["AlbedoTextureExist"].as<bool>());
 					material.SetSpecularTextureExist(materialNode["SpecularTextureExist"].as<bool>());
@@ -481,7 +533,7 @@ namespace Explorer
 					material.SetOffset(materialNode["Offset"].as<glm::vec2>());
 				}
 
-				//SpriteRenderer组件结点
+				//SpriteRenderer组件结点 TODO:待删除
 				auto spriteRendererNode = object["SpriteRenderer Component"];
 				if (spriteRendererNode)
 				{
@@ -489,6 +541,46 @@ namespace Explorer
 					spriteRenderer.m_Color = spriteRendererNode["Color"].as<glm::vec4>();
 				}
 			}
+		}
+
+		//环境结点存在
+		if (environment) {
+			EXP_CORE_TRACE("Deserialized environment");
+
+			Environment environm;	//环境对象
+			//环境设置数据
+			environm.SetSkyboxEnable(environment["SkyboxEnable"].as<bool>());	//天空盒启用状态
+			environm.SetSourceType((Environment::SourceType)environment["SourceType"].as<int>());
+			environm.SetIntensityMultiplier(environment["IntensityMultiplier"].as<float>());
+			environm.SetAmbientColor(environment["AmbientColor"].as<glm::vec3>());
+
+			//Skybox结点
+			auto skyboxNode = environment["Skybox"];
+			if (skyboxNode) {
+				Skybox skybox;	//Skybox
+				//设置天空盒数据
+				skybox.SetShader(ShaderLibrary::Get(skyboxNode["Shader"].as<std::string>()));	//天空盒着色器
+				skybox.SetTintColor(skyboxNode["TintColor"].as<glm::vec3>());
+				skybox.SetExpose(skyboxNode["Expose"].as<float>());
+				skybox.SetRotation(skyboxNode["Rotation"].as<float>());
+				//Cubemap纹理路径
+				std::string rightPath = skyboxNode["CubemapRightPath"].as<std::string>();
+				std::string leftPath = skyboxNode["CubemapLeftPath"].as<std::string>();
+				std::string upPath = skyboxNode["CubemapUpPath"].as<std::string>();
+				std::string downPath = skyboxNode["CubemapDownPath"].as<std::string>();
+				std::string frontPath = skyboxNode["CubemapFrontPath"].as<std::string>();
+				std::string backPath = skyboxNode["CubemapBackPath"].as<std::string>();
+				//设置Cubemap纹理
+				if(rightPath.length() > 0) skybox.SetCubemapOneSideTexture(rightPath, Cubemap::TextureDirection::Right);
+				if(leftPath.length() > 0) skybox.SetCubemapOneSideTexture(leftPath, Cubemap::TextureDirection::Left);
+				if(upPath.length() > 0) skybox.SetCubemapOneSideTexture(upPath, Cubemap::TextureDirection::Up);
+				if(downPath.length() > 0) skybox.SetCubemapOneSideTexture(downPath, Cubemap::TextureDirection::Down);
+				if(frontPath.length() > 0) skybox.SetCubemapOneSideTexture(frontPath, Cubemap::TextureDirection::Front);
+				if(backPath.length() > 0) skybox.SetCubemapOneSideTexture(backPath, Cubemap::TextureDirection::Back);
+
+				environm.SetSkybox(skybox);	//设置环境的Skybox
+			}
+			m_Scene->SetEnvironment(environm);	//设置场景环境
 		}
 
 		return true;

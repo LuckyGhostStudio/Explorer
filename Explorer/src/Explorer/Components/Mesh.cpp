@@ -19,6 +19,34 @@ namespace Explorer
 		}
 	}
 
+	void Mesh::SetName()
+	{
+		switch (m_Type)
+		{
+		case Type::None:
+			m_Name = "[None](Mesh)";
+			break;
+		case Type::Other:
+			m_Name = "[Other](Mesh)";
+			break;
+		case Type::Cube:
+			m_Name = "Cube(Mesh)";
+			break;
+		case Type::Sphere:
+			m_Name = "Sphere(Mesh)";
+			break;
+		case Type::Capsule:
+			m_Name = "Capsule(Mesh)";
+			break;
+		case Type::Cylinder:
+			m_Name = "Cylinder(Mesh)";
+			break;
+		case Type::Plane:
+			m_Name = "Plane(Mesh)";
+			break;
+		}
+	}
+
 	void Mesh::SetType(Type type)
 	{
 		m_Type = type;	//设置网格类型

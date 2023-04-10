@@ -2,12 +2,15 @@
 
 #include <glm/glm.hpp>
 
+#include "Explorer/Components/Component.h"
+#include "Explorer/Renderer/Shader.h"
+
 namespace Explorer
 {
 	/// <summary>
 	/// 光源组件
 	/// </summary>
-	class Light
+	class Light	:public Component
 	{
 	public:
 		/// <summary>
@@ -30,12 +33,24 @@ namespace Explorer
 		float m_SpotInnerAngle = glm::radians(18.3f);	//Spot内张角 弧度（阴影内边缘）= Outer - Outer / 12
 
 		float m_Intensity = 1.0f;					//光照强度
-		
 		bool m_CastShadow = true;					//是否投射阴影
+	private:
+		virtual void SetName() override { m_Name = "Light"; }
+
+		//设置Light组件图标：根据Light类型设置不同图标
+		virtual void SetIcon() override;
 	public:
 		Light() = default;
 		Light(Type type) :m_Type(type) {}
 		Light(const Light&) = default;
+
+		virtual const std::string& GetName() override { SetName(); return m_Name; }
+		virtual std::shared_ptr<Texture2D>& GetIcon() override { SetIcon(); return m_Icon; }
+
+		/// <summary>
+		/// 设置Shader Uniform数据
+		/// </summary>
+		void SetShaderData(const glm::vec3& position, const glm::vec3& direction, const std::shared_ptr<Shader>& shader, uint32_t index);
 
 		Type GetType() const { return m_Type; }
 		void SetType(Type type) { m_Type = type; }

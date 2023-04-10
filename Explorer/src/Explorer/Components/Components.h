@@ -1,28 +1,36 @@
 #pragma once
 
 #include "Explorer/Scene/ScriptableObject.h"
+#include "Explorer/Components/Component.h"
 
 namespace Explorer
 {
-	//TODO:给所有组件添加名字属性 用于后期小图标设置
-
 	/// <summary>
-	/// 名字组件
+	/// 自身属性组件：Object的固有属性
 	/// </summary>
-	class Name
+	class Self
 	{
+	private:
+		std::string m_ObjectName;	//挂载此组件的物体名
+		bool m_ObjectEnable;		//是否启用物体
 	public:
-		std::string m_Name;
+		Self() = default;
+		Self(const Self&) = default;
+		Self(const std::string& objectName, bool enableObject = true) 
+			:m_ObjectName(objectName), m_ObjectEnable(enableObject) {}
 
-		Name() = default;
-		Name(const Name&) = default;
-		Name(const std::string& name) :m_Name(name) {}
+		std::string& GetObjectName() { return m_ObjectName; }
+		void SetObjectName(const std::string& name) { m_ObjectName = name; }
+
+		bool GetObjectEnable() const { return m_ObjectEnable; }
+		bool& GetObjectEnable_Ref() { return m_ObjectEnable; }
+		void SetObjectEnable(bool enable) { m_ObjectEnable = enable; }
 	};
 
 	/// <summary>
 	/// 图片渲染器组件
 	/// </summary>
-	class SpriteRenderer
+	class SpriteRenderer :public Component
 	{
 	public:
 		glm::vec4 m_Color{ 1.0f, 1.0f, 1.0f, 1.0f };
@@ -30,6 +38,12 @@ namespace Explorer
 		SpriteRenderer() = default;
 		SpriteRenderer(const SpriteRenderer&) = default;
 		SpriteRenderer(const glm::vec4& color) :m_Color(color) {}
+
+		virtual void SetName() override { m_Name = "Camera"; }
+		virtual const std::string& GetName() override { SetName(); return m_Name; }
+
+		virtual void SetIcon() override {} //TODO:待办
+		virtual std::shared_ptr<Texture2D>& GetIcon() override { SetIcon(); return m_Icon; }
 	};
 
 	/// <summary>

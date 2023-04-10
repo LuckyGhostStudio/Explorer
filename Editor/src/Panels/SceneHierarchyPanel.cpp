@@ -32,11 +32,15 @@ namespace Explorer
 		//Hierarchy面板
 		ImGui::Begin("Hierarchy");
 
-		//遍历场景所有实体，并调用each内的函数
-		m_Scene->m_Registry.each([&](auto objectID)
+		//Scene场景根节点
+		UI::DrawTreeNode<Scene>(m_Scene->GetName(), true, [&](float lineHeight)
 		{
-			Object object{ objectID, m_Scene.get() };
-			DrawObjectNode(object);		//绘制实体结点
+			//遍历场景所有实体，并调用each内的函数
+			m_Scene->m_Registry.each([&](auto objectID)
+			{
+				Object object{ objectID, m_Scene.get() };
+				DrawObjectNode(object);		//绘制物体结点
+			});
 		});
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {	//鼠标悬停在该窗口 && 点击鼠标 （点击空白位置）
@@ -98,7 +102,6 @@ namespace Explorer
 
 		//环境参数设置面板
 		ImGui::Begin("Environment");
-		//TODO:序列化反序列化环境参数
 
 		Environment& environment = m_Scene->GetEnvironment();	//场景环境
 		Skybox& skybox = environment.GetSkybox();	//天空盒
@@ -257,7 +260,7 @@ namespace Explorer
 	
 	void SceneHierarchyPanel::DrawObjectNode(Object object)
 	{
-		auto& name = object.GetComponent<Name>().m_Name;	//物体名
+		auto& name = object.GetComponent<Self>().GetObjectName();	//物体名
 		
 		//树结点标志（绘制的节点是否被选中 ？被选中的标志 ：0 | 单击箭头时打开）
 		ImGuiTreeNodeFlags flags = (m_SelectionObject == object ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
@@ -278,7 +281,7 @@ namespace Explorer
 		}
 
 		if (opened) {			//树结点已打开
-			//TODO:结点展开内容
+			//TODO:结点展开内容 物体子节点
 			ImGui::TreePop();	//展开结点
 		}
 
@@ -384,12 +387,10 @@ namespace Explorer
 	/// </summary>
 	/// <typeparam name="T">组件类型</typeparam>
 	/// <typeparam name="UIFunction">组件功能函数类型</typeparam>
-	/// <param name="name">组件名</param>
 	/// <param name="entity">实体</param>
-	/// <param name="enable">是否启用</param>
 	/// <param name="uiFunction">组件功能函数</param>
 	template<typename T, typename UIFunction>
-	static void DrawComponent(const std::string& name, Object object, bool enable, UIFunction uiFunction)
+	static void DrawComponent(Object object, UIFunction uiFunction)
 	{
 		//T组件存在
 		if (object.HasComponent<T>()) {
@@ -409,29 +410,47 @@ namespace Explorer
 			//组件结点：组件类的哈希值作为结点id
 			bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, "##Component");
 			ImGui::PopStyleVar();
-			
-			ImGui::SameLine(lineHeight * 1.3f);
-			ImGui::SetCursorPos(ImVec2(nodePos.x + 28, nodePos.y + 4));	//设置Checkbox位置
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.1, 0.1));	
-			ImGui::Checkbox("##Checkbox", &enable);	//组件启用勾选框
+			//TODO:纹理绑定问题
+			//uint32_t settingsIconID  = std::make_shared<Texture2D>("asserts/textures/defaults/Icons/Buttons/ComponentSettings_Icon.png")->GetRendererID();
+			uint32_t iconID = component.GetIcon()->GetRendererID();	//组件图标ID
 			ImGui::SameLine();
-			ImGui::PopStyleVar();
+			ImGui::SetCursorPos(ImVec2(nodePos.x + 28, nodePos.y + 5));					//设置Icon位置
+			ImGui::Image((void*)iconID, ImVec2(16, 16), ImVec2(0, 1), ImVec2(1, 0));	//组件图标图片
 
-			ImGui::SetCursorPos(ImVec2(nodePos.x + 54, nodePos.y));	//设置Text位置
+			//勾选框存在：显示勾选框
+			if (component.GetSelectableEnable()) {
+				ImGui::SameLine();
+				ImGui::SetCursorPos(ImVec2(nodePos.x + 52, nodePos.y + 4));	//设置Checkbox位置
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.1, 0.1));
+				ImGui::Checkbox("##Checkbox", &component.GetEnable_Ref());	//组件启用勾选框
+				ImGui::PopStyleVar();
+			}
+			ImGui::SameLine();
+
+			ImGui::SetCursorPos(ImVec2(nodePos.x + 52 + 26, nodePos.y));	//设置Text位置
 			ImGui::PushFont(boldFont);	//设置结点文本字体为粗体
-			ImGui::Text(name.c_str());	//组件名
+			ImGui::Text(component.GetName().c_str());	//组件名
 			ImGui::PopFont();
+			ImGui::SameLine();
 
-			ImGui::SameLine(contentRegionAvail.x - lineHeight * 0.5f);	//同一行：左移行高的一半
-			if (ImGui::Button("+", ImVec2(lineHeight, lineHeight))) {	//组件设置按钮
+			//组件设置按钮图标ID
+			ImGui::SetCursorPos(ImVec2(nodePos.x + ImGui::GetWindowContentRegionWidth() - lineHeight, nodePos.y));	//设置位置
+			//ImGui::Image((void*)settingsIconID, ImVec2(16, 16), ImVec2(0, 1), ImVec2(1, 0));
+			if (ImGui::Button("+", ImVec2(lineHeight, lineHeight))) {	//组件设置按钮 TODO:设置Image
 				ImGui::OpenPopup("ComponentSettings");	//打开弹出框
 			}
 
 			//移除组件
 			bool componentRemoved = false;
 			if (ImGui::BeginPopup("ComponentSettings")) {	//渲染弹出框
+				bool disableRemove = false;	//禁用移除
+				//Transform 和 Material不能移除
+				if (component.GetName() == "Transform" || component.GetName() == "Material") {
+					disableRemove = true;
+				}
+
 				//移除组件菜单项
-				if (ImGui::MenuItem("Remove Component")) {
+				if (ImGui::MenuItem("Remove Component","",false, !disableRemove)) {
 					componentRemoved = true;	//组件标记为移除
 				}
 				ImGui::EndPopup();
@@ -452,66 +471,131 @@ namespace Explorer
 
 	void SceneHierarchyPanel::DrawComponents(Object object)
 	{
-		bool enable = true;
-		ImGui::Checkbox("##Enable Object", &enable);	//是否启用该Object：TODO:未实现
-		ImGui::SameLine();
+		//Self组件
+		if (object.HasComponent<Self>()) {
+			auto& self = object.GetComponent<Self>();	//Self组件
 
-		float panelWidth = ImGui::GetWindowContentRegionWidth();	//面板宽度
-		ImGui::PushItemWidth(panelWidth - 150);
-		//Name组件
-		if (object.HasComponent<Name>()) {
-			auto& name = object.GetComponent<Name>().m_Name;	//物体名
+			ImGui::Checkbox("##Enable Object", &self.GetObjectEnable_Ref());	//是否启用该Object 勾选框
+			ImGui::SameLine();
+
+			float panelWidth = ImGui::GetWindowContentRegionWidth();	//面板宽度
+			ImGui::PushItemWidth(panelWidth - 150);
+
+			auto& name = self.GetObjectName();	//物体名
 
 			char buffer[256];								//输入框内容buffer
 			memset(buffer, 0, sizeof(buffer));				//将buffer置零
 			strcpy_s(buffer, sizeof(buffer), name.c_str());	//buffer = name
 
+			ImGuiIO& io = ImGui::GetIO();
+			auto boldFont = io.Fonts->Fonts[0];	//粗体：0号字体
+
+			ImGui::PushFont(boldFont);	//设置结点文本字体为粗体
 			if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {	//创建输入框，输入框内容改变时
 				name = std::string(buffer);								//物体name设为buffer
 			}
+			ImGui::PopFont();
+
+			ImGui::PopItemWidth();
 		}
-		ImGui::PopItemWidth();
 
 		ImGui::SameLine();
 		//添加组件按钮
 		if (ImGui::Button("Add Component")) {
-			ImGui::OpenPopup("AddComponent");	//打开弹出框
+			ImGui::OpenPopup("AddComponent");	//打开弹出框 添加组件
 		}
-
+		
+		//TODO:设置组件库，保存已有组件，从组件库查找组件并添加 简化UI if语句
+		bool componentExist = false;
+		std::string componentName = "";
 		if (ImGui::BeginPopup("AddComponent")) {	//渲染弹出框
 			//添加Camera组件
 			if (ImGui::MenuItem("Camera")) {
-				m_SelectionObject.AddComponent<Camera>();
-				ImGui::CloseCurrentPopup();
+				//Camera组件已存在
+				if (m_SelectionObject.HasComponent<Camera>()) {
+					componentName = "Camera";
+					componentExist = true;
+				}
+				else {
+					m_SelectionObject.AddComponent<Camera>();
+					ImGui::CloseCurrentPopup();
+				}
 			}
+
 			//添加Light组件
 			if (ImGui::MenuItem("Light")) {
-				m_SelectionObject.AddComponent<Light>();
-				ImGui::CloseCurrentPopup();
+				//Light组件已存在
+				if (m_SelectionObject.HasComponent<Light>()) {
+					componentExist = true;
+					componentName = "Light";
+				}
+				else {
+					m_SelectionObject.AddComponent<Light>();
+					ImGui::CloseCurrentPopup();
+				}
 			}
 			//添加Mesh组件
 			if (ImGui::MenuItem("Mesh")) {
-				m_SelectionObject.AddComponent<Mesh>();
-				ImGui::CloseCurrentPopup();
+				//Mesh组件已存在
+				if (m_SelectionObject.HasComponent<Mesh>()) {
+					componentExist = true;
+					componentName = "Mesh";
+				}
+				else {
+					m_SelectionObject.AddComponent<Mesh>();
+					ImGui::CloseCurrentPopup();
+				}
 			}
 			//添加Material组件
 			if (ImGui::MenuItem("Material")) {
-				m_SelectionObject.AddComponent<Material>();
-				ImGui::CloseCurrentPopup();
+				//Material组件已存在
+				if (m_SelectionObject.HasComponent<Material>()) {
+					componentExist = true;
+					componentName = "Material";
+				}
+				else {
+					m_SelectionObject.AddComponent<Material>();
+					ImGui::CloseCurrentPopup();
+				}
 			}
-			//添加SpriteRenderer组件
-			if (ImGui::MenuItem("Sprite Renderer")) {
-				m_SelectionObject.AddComponent<SpriteRenderer>();
-				ImGui::CloseCurrentPopup();
+			////添加SpriteRenderer组件 TODO:待删除
+			//if (ImGui::MenuItem("Sprite Renderer")) {
+			//	m_SelectionObject.AddComponent<SpriteRenderer>();
+			//	ImGui::CloseCurrentPopup();
+			//}
+
+			ImGui::EndPopup();
+		}
+
+		//组件已存在
+		if (componentExist) {
+			ImGui::OpenPopup("Can't add the same component multiple times!");	//打开弹出窗口 不能添加相同组件多次
+		}
+
+		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));	//设置窗口位置
+		ImGui::SetNextWindowSize(ImVec2(320, 0));									//设置窗口大小
+		//弹出窗口 不能添加相同组件多次
+		ImVec2 windowPos = ImGui::GetCursorPos();
+		if (ImGui::BeginPopupModal("Can't add the same component multiple times!", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+			//文本内容 TODO:componentName显示异常
+			std::string& text = "The component " + componentName + " can't be added. because " + object.GetComponent<Self>().GetObjectName() + " already contains the same component.";
+			ImGui::TextWrapped(text.c_str());
+			//设置按钮位置
+			ImGui::SetCursorPos(ImVec2(windowPos.x + 180, windowPos.y + 20));
+			//取消按钮
+			if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+				ImGui::CloseCurrentPopup();		//关闭弹出窗口
 			}
 
 			ImGui::EndPopup();
 		}
 
+
 		ImGui::Separator();	//分隔符
 
 		//绘制Transform组件
-		DrawComponent<Transform>("Transform", object, true, [](Transform& transform)
+		DrawComponent<Transform>(object, [](Transform& transform)
 		{
 			DrawVec3Control("Position", transform.GetPosition());	//位置
 			DrawVec3Control("Rotation", transform.GetRotation());	//旋转
@@ -519,7 +603,7 @@ namespace Explorer
 		});
 
 		//绘制Light组件
-		DrawComponent<Light>("Light", object, true, [](Light& light)
+		DrawComponent<Light>(object, [](Light& light)
 		{
 			const char* types[] = { "Directional", "Point", "Spot"};	//光源类型：透视 正交 
 			const char* currentType = types[(int)light.GetType()];		//当前光源类型
@@ -547,7 +631,7 @@ namespace Explorer
 		});
 
 		//绘制Camera组件
-		DrawComponent<Camera>("Camera", object, true, [](Camera& camera)
+		DrawComponent<Camera>(object, [](Camera& camera)
 		{
 			UI::DrawCheckBox("Main Camera", &camera.IsPrimary_Ref());	//MainCamera是否是主相机 勾选框
 
@@ -586,7 +670,7 @@ namespace Explorer
 		});
 
 		//绘制Mesh组件
-		DrawComponent<Mesh>("Mesh", object, true, [](Mesh& mesh)
+		DrawComponent<Mesh>(object, [](Mesh& mesh)
 		{
 			const char* meshTypes[] = { "None (Mesh)", "Other", "Cube", "Sphere", "Capsule", "Cylinder", "Plane"};
 			const char* currentMeshType = meshTypes[(int)mesh.GetType()];	//当前网格类型
@@ -600,7 +684,7 @@ namespace Explorer
 		});
 
 		//绘制Material组件
-		DrawComponent<Material>("Material", object, true, [](Material& material)
+		DrawComponent<Material>(object, [](Material& material)
 		{
 			uint32_t count = ShaderLibrary::GetSize();
 
@@ -652,7 +736,7 @@ namespace Explorer
 		});
 
 		//绘制SpriteRenderer组件
-		DrawComponent<SpriteRenderer>("Sprite Renderer", object, true, [](SpriteRenderer& spriteRenderer)
+		DrawComponent<SpriteRenderer>(object, [](SpriteRenderer& spriteRenderer)
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(spriteRenderer.m_Color));
 		});

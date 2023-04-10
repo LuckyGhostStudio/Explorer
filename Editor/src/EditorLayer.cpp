@@ -211,7 +211,7 @@ namespace Explorer
 		//批渲染数据统计
 		ImGui::Begin("Renderer Stats");
 
-		std::string name = m_PickedObject ? m_PickedObject.GetComponent<Name>().m_Name : "None";
+		std::string name = m_PickedObject ? m_PickedObject.GetComponent<Self>().GetObjectName() : "None";
 		ImGui::Text("Hovered Object: %s", name.c_str());
 
 		auto stats = Renderer3D::GetStats();
@@ -220,6 +220,11 @@ namespace Explorer
 		ImGui::Text("Vertex Count: %d", stats.VertexCount);
 		ImGui::Text("Index Count: %d", stats.IndexCount);
 		ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());	//帧率
+		//TODO:纹理绑定问题
+		//std::shared_ptr<Texture2D>& icon = std::make_shared<Texture2D>("asserts/textures/defaults/Icons/Buttons/ComponentSettings_Icon.png");
+		//icon->Bind(0);
+		//uint32_t settingsIconID = icon->GetRendererID();
+		//ImGui::Image((void*)settingsIconID, ImVec2(16, 16), ImVec2(0, 1), ImVec2(1, 0));
 
 		ImGui::End();	//Renderer Stats
 
@@ -265,7 +270,7 @@ namespace Explorer
 		m_EditorCamera.OnEvent(event);	//编辑器相机事件
 
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<KeyPressedEvent>(EXP_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));					//调用按键按下事件
+		dispatcher.Dispatch<KeyPressedEvent>(EXP_BIND_EVENT_FUNC(EditorLayer::OnKeyPressed));					//调用按键按下事件TODO:焦点在场景窗口时才触发
 		dispatcher.Dispatch<MouseButtonPressedEvent>(EXP_BIND_EVENT_FUNC(EditorLayer::OnMouseButtonPressed));	//调用鼠标按钮按下事件
 	}
 

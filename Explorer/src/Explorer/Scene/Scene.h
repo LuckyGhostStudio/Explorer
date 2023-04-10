@@ -49,13 +49,15 @@ namespace Explorer
 		inline void SetName(const std::string& name) { m_Name = name; }
 
 		Environment& GetEnvironment() { return m_Environment; }
+		void SetEnvironment(const Environment& environment) { m_Environment = environment; }
 
 		/// <summary>
 		/// 创建空物体
 		/// </summary>
 		/// <param name="name">物体名</param>
+		/// <param name="enable">物体启用状态</param>
 		/// <returns>物体</returns>
-		Object CreateEmptyObject(const std::string& name = "Object");
+		Object CreateEmptyObject(const std::string& name = "Object", bool enable = true);
 		
 		/// <summary>
 		/// 创建网格物体

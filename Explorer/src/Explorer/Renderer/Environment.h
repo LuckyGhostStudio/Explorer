@@ -47,5 +47,6 @@ namespace Explorer
 		void SetIntensityMultiplier(float multiplier) { m_IntensityMultiplier = multiplier; }
 
 		glm::vec3& GetAmbientColor() { return m_AmbientColor; }
+		void SetAmbientColor(const glm::vec3& ambientColor) { m_AmbientColor = ambientColor; }
 	};
 }

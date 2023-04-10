@@ -2,12 +2,14 @@
 
 #include <glm/glm.hpp>
 
+#include "Explorer/Components/Component.h"
+
 namespace Explorer
 {
 	/// <summary>
 	/// 相机组件
 	/// </summary>
-	class Camera
+	class Camera :public Component
 	{
 	public:
 		/// <summary>
@@ -40,8 +42,18 @@ namespace Explorer
 		/// 重新计算投影矩阵
 		/// </summary>
 		void RecalculateProjection();
+
+		virtual void SetName() override { m_Name = "Camera"; }
+
+		/// <summary>
+		/// 设置Camera组件图标
+		/// </summary>
+		virtual void SetIcon() override { m_Icon = std::make_shared<Texture2D>("asserts/textures/defaults/Icons/Components/Camera_Icon.png"); }
 	public:
 		Camera();
+
+		virtual const std::string& GetName() override { SetName(); return m_Name; }
+		virtual std::shared_ptr<Texture2D>& GetIcon() override { SetIcon(); return m_Icon; }
 
 		/// <summary>
 		/// 设置正交投影参数->计算投影矩阵

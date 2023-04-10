@@ -6,6 +6,8 @@
 //#include <imgui.h>
 //#include <imgui_internal.h>
 
+#include "Explorer/Renderer/Texture.h"
+
 namespace Explorer
 {
 	class UI
@@ -118,7 +120,7 @@ namespace Explorer
 		/// <param name="currentValue">当前值</param>
 		/// <param name="values">所有值</param>
 		/// <param name="valueCount">值个数</param>
-		/// <param name="function">某项选中时回调函数</param>
+		/// <param name="function">某项选中时回调函数：参数（int index项编号，const char* value项值）</param>
 		/// <param name="labelColumnWidth">标签列宽</param>
 		/// <param name="widgetOffset">小部件右边界向左偏移量</param>
 		template<typename Func>
@@ -167,7 +169,7 @@ namespace Explorer
 		/// <typeparam name="Func">结点打开调用函数</typeparam>
 		/// <param name="label">结点标签名</param>
 		/// <param name="bold">标签名是否是粗体</param>
-		/// <param name="function">结点打开调用函数</param>
+		/// <param name="function">结点打开调用函数：参数（float lineHeight行高）</param>
 		template<typename T, typename Func>
 		static void DrawTreeNode(const std::string& label, bool bold, Func function)
 		{

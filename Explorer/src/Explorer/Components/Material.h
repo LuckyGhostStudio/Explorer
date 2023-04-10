@@ -6,12 +6,14 @@
 #include "Explorer/Renderer/Texture.h"
 #include "Skybox.h"
 
+#include "Explorer/Components/Component.h"
+
 namespace Explorer
 {
 	/// <summary>
 	/// 材质组件
 	/// </summary>
-	class Material
+	class Material :public Component
 	{
 	private:
 		std::shared_ptr<Shader> m_Shader;				//着色器
@@ -36,10 +38,25 @@ namespace Explorer
 		
 		bool m_AlbedoTextureExist = false;
 		bool m_SpecularTextureExist = false;
+	private:
+		virtual void SetName() override { m_Name = "Material"; }
+
+		/// <summary>
+		/// 设置Material组件图标
+		/// </summary>
+		virtual void SetIcon() override { m_Icon = std::make_shared<Texture2D>("asserts/textures/defaults/Icons/Components/Material_Icon.png"); }
 	public:
 		Material();
 
+		virtual const std::string& GetName() override { SetName(); return m_Name; }
+		virtual std::shared_ptr<Texture2D>& GetIcon() override { SetIcon(); return m_Icon; }
+
 		void BindTexture();
+
+		/// <summary>
+		/// 设置Shader Uniform数据
+		/// </summary>
+		void SetShaderData();
 		
 		glm::vec4& GetColor() { return m_Color; }
 		void SetColor(const glm::vec4& color) { m_Color = color; }

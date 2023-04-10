@@ -2,8 +2,6 @@
 
 #include <glm/glm.hpp>
 
-#include "RendererData.h"
-
 namespace Explorer
 {
 	/// <summary>
@@ -44,19 +42,6 @@ namespace Explorer
 		/// 解除绑定：调试时使用
 		/// </summary>
 		void UnBind() const;
-
-		/// <summary>
-		/// 设置Light数据：上传Light数据到着色器
-		/// </summary>
-		/// <param name="lightData">光源数据</param>
-		/// <param name="i">光源编号</param>
-		void SetLightData(const LightData& lightData, uint32_t i);
-
-		/// <summary>
-		/// 设置Material数据
-		/// </summary>
-		/// <param name="materialData">材质数据</param>
-		void SetMaterialData(const MaterialData& materialData);
 
 		/// <summary>
 		/// 设置uniform Int变量

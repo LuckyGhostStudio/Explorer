@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="src\Explorer.h" />
     <ClInclude Include="src\Explorer\Components\Camera.h" />
+    <ClInclude Include="src\Explorer\Components\Component.h" />
     <ClInclude Include="src\Explorer\Components\Components.h" />
     <ClInclude Include="src\Explorer\Components\Light.h" />
     <ClInclude Include="src\Explorer\Components\Material.h" />
@@ -177,7 +178,6 @@
     <ClInclude Include="src\Explorer\Renderer\Renderer.h" />
     <ClInclude Include="src\Explorer\Renderer\Renderer2D.h" />
     <ClInclude Include="src\Explorer\Renderer\Renderer3D.h" />
-    <ClInclude Include="src\Explorer\Renderer\RendererData.h" />
     <ClInclude Include="src\Explorer\Renderer\Shader.h" />
     <ClInclude Include="src\Explorer\Renderer\Texture.h" />
     <ClInclude Include="src\Explorer\Renderer\VertexArray.h" />
@@ -609,6 +609,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Components\Camera.cpp" />
+    <ClCompile Include="src\Explorer\Components\Light.cpp" />
     <ClCompile Include="src\Explorer\Components\Material.cpp" />
     <ClCompile Include="src\Explorer\Components\Mesh.cpp" />
     <ClCompile Include="src\Explorer\Components\Skybox.cpp" />

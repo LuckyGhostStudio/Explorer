@@ -17,6 +17,8 @@ struct Light
 	vec3 Position;		//位置
 	vec3 Direction;		//光照方向 z-
 
+	bool Enable;		//该组件是否启用
+
 	vec3 Color;			//光照颜色
 	float Intensity;	//光照强度：TODO:光照强度对颜色的影响
 	int RenderShadow;	//是否渲染阴影 0不渲染 1渲染 --- TODO:添加阴影渲染
@@ -44,10 +46,13 @@ struct Material
 	vec2 Offset;				//纹理偏移量
 };
 
+//环境设置
 struct Environment
 {
 	bool EnableSkybox;			//是否启用天空盒
 	samplerCube Cubemap;		//立方体贴图（Skybox）
+	vec3 TintColor;				//Skybox色调
+	float Expose;				//Skybox曝光度
 	mat4 SkyboxRotationMatrix;	//Skybox的旋转矩阵
 
 	int SourceType;				//环境光源类型：0 天空盒 1 颜色
@@ -189,7 +194,7 @@ void main()
 			sightReflectDir = vec3(sightReflectDir.x, -sightReflectDir.yz);	//根据Cubemap翻转方式 对反射方向做变换（Cubemap yz轴颠倒）
 			//反射的Skybox颜色：使用sightReflectDir从Cubemap采样 叠加 Skybox光强度倍数
 			vec3 skyboxColor = texture(u_Environment.Cubemap, sightReflectDir).rgb * (0.5 + u_Environment.IntensityMultiplier);
-			beamColor = skyboxColor;	//光照颜色 = Skybox映射颜色
+			beamColor = skyboxColor * u_Environment.Expose * u_Environment.TintColor;	//光照颜色 = Skybox映射颜色 * Skybox曝光度 * Skybox色调
 
 			//环境光源类型为 Color：叠加环境光源类型为颜色的环境光颜色
 			if(u_Environment.SourceType == 1){
@@ -202,16 +207,20 @@ void main()
 
 		//遍历所有Light：计算灯光光照
 		for(int i = 0; i < u_LightCount; i++){
-			switch(u_Lights[i].Type){	//光照类型
-				case 0:	//平行光
-					beamColor += CalculateDirectionalLight(u_Lights[i], cameraDir);	//计算平行光照
-					break;
-				case 1:	//点光源
-					beamColor += CalculatePointLight(u_Lights[i], cameraDir);		//计算点光源光照
-					break;
-				case 2:	//聚光源
-					beamColor += CalculateSpotLight(u_Lights[i], cameraDir);		//计算点聚光源光照
-					break;
+			//Light组件启用时计算光照
+			if(u_Lights[i].Enable){
+				switch(u_Lights[i].Type)	//光照类型
+				{	
+					case 0:	//平行光
+						beamColor += CalculateDirectionalLight(u_Lights[i], cameraDir);	//计算平行光照
+						break;
+					case 1:	//点光源
+						beamColor += CalculatePointLight(u_Lights[i], cameraDir);		//计算点光源光照
+						break;
+					case 2:	//聚光源
+						beamColor += CalculateSpotLight(u_Lights[i], cameraDir);		//计算点聚光源光照
+						break;
+				}
 			}
 		}
 

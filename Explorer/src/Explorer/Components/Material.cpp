@@ -39,4 +39,25 @@ namespace Explorer
         m_AlbedoTexture->Bind((int)TextureType::Albedo);            //绑定反光率贴图
         m_SpecularTexture->Bind((int)TextureType::Specular);        //绑定高光贴图
     }
+    
+    void Material::SetShaderData()
+    {
+        m_Shader->Bind();   //绑定着色器
+
+        m_Shader->SetInt("u_MaterialExist", m_Enable);		//材质是否存在
+
+        //Material组件已启用
+        if (m_Enable) {
+            BindTexture();	//绑定纹理
+
+            m_Shader->SetFloat4("u_Material.Color", m_Color);								        //颜色
+            m_Shader->SetInt("u_Material.AlbedoTextureExist", m_AlbedoTextureExist);		        //反照率贴图是否存在
+            m_Shader->SetInt("u_Material.SpecularTextureExist", m_SpecularTextureExist);	        //高光贴图是否存在
+            m_Shader->SetInt("u_Material.AlbedoTexture", (int)Material::TextureType::Albedo);		//反照率贴图
+            m_Shader->SetInt("u_Material.SpecularTexture", (int)Material::TextureType::Specular);	//高光贴图
+            m_Shader->SetFloat("u_Material.Shininess", m_Shininess);						        //反光度
+            m_Shader->SetFloat2("u_Material.Tiling", m_Tiling);							            //纹理平铺因子
+            m_Shader->SetFloat2("u_Material.Offset", m_Offset);							            //纹理偏移量
+        }
+    }
 }

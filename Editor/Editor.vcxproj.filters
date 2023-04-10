@@ -21,5 +21,23 @@
   <ItemGroup>
     <None Include="asserts\shaders\SkyboxShader.vert" />
     <None Include="asserts\shaders\SkyboxShader.frag" />
+    <None Include="asserts\shaders\TextureShader.vert" />
+    <None Include="asserts\shaders\StandardShader.frag" />
+    <None Include="asserts\shaders\StandardShader.vert" />
+    <None Include="asserts\shaders\TextureShader.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="asserts\textures\ChernoLogo.png" />
+    <Image Include="asserts\textures\defaults\Explorer_NoneSkybox.jpg" />
+    <Image Include="asserts\textures\skybox\back.jpg" />
+    <Image Include="asserts\textures\skybox\bottom.jpg" />
+    <Image Include="asserts\textures\skybox\front.jpg" />
+    <Image Include="asserts\textures\skybox\left.jpg" />
+    <Image Include="asserts\textures\skybox\right.jpg" />
+    <Image Include="asserts\textures\skybox\top.jpg" />
+    <Image Include="asserts\textures\Checkerboard.png" />
+    <Image Include="asserts\textures\defaults\CameraComponent_Icon.png" />
+    <Image Include="asserts\textures\defaults\Components Icon\MeshComponent_Icon.png" />
+    <Image Include="asserts\textures\defaults\Components Icon\CameraComponent_Icon.png" />
   </ItemGroup>
 </Project>

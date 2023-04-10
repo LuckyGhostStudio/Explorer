@@ -18,10 +18,10 @@ namespace Explorer
 
 	}
 
-	Object Scene::CreateEmptyObject(const std::string& name)
+	Object Scene::CreateEmptyObject(const std::string& name, bool enable)
 	{
 		Object object = { m_Registry.create(), this };	//创建空物体
-		object.AddComponent<Name>(name);				//添加Name组件（默认组件）
+		object.AddComponent<Self>(name, enable);		//添加Self组件（默认组件）
 		object.AddComponent<Transform>();				//添加Transform组件（默认组件）
 
 		return object;
@@ -31,7 +31,7 @@ namespace Explorer
 	{
 		Object cube = { m_Registry.create(), this };	//创建Cube
 
-		cube.AddComponent<Name>(name);
+		cube.AddComponent<Self>(name);
 		cube.AddComponent<Transform>();
 
 		cube.AddComponent<Mesh>(type);	//添加Mesh组件（type类型网格）
@@ -48,7 +48,7 @@ namespace Explorer
 		glm::vec3 position = { 3.7f, 2.5f, 3.5f };			//初始位置
 		glm::vec3 rotation = { 30.5f, -53.0f, 175.5f };		//初始旋转
 
-		camera.AddComponent<Name>(name);					//添加Name组件
+		camera.AddComponent<Self>(name);					//添加Self组件
 		camera.AddComponent<Transform>(position, rotation);	//添加Transform组件
 		camera.AddComponent<Camera>();						//添加Camera组件
 
@@ -79,7 +79,7 @@ namespace Explorer
 		 
 		Object lightObj = { m_Registry.create(), this };		//创建Light
 
-		lightObj.AddComponent<Name>(tempName);					//添加Name组件
+		lightObj.AddComponent<Self>(tempName);					//添加Self组件
 		lightObj.AddComponent<Transform>(position, rotation);	//添加Transform组件
 		lightObj.AddComponent<Light>(type);						//添加Light组件：type类型光源
 
@@ -126,9 +126,13 @@ namespace Explorer
 		//auto meshes = m_Registry.group<Transform>(entt::get<Mesh>);	//返回有Transform和Mesh的所有物体
 
 		for (auto object : meshes) {
-			auto [transform, mesh, material] = meshes.get<Transform, Mesh, Material>(object);
+			//TODO:object启用时渲染此Obj
+			Object obj = Object{ object, this };
+			if (obj.GetComponent<Self>().GetObjectEnable()) {
+				auto [transform, mesh, material] = meshes.get<Transform, Mesh, Material>(object);
 
-			Renderer3D::DrawMesh(transform, mesh, material,(int)object);	//绘制网格
+				Renderer3D::DrawMesh(transform, mesh, material, (int)object);	//绘制网格
+			}
 		}
 
 		Renderer3D::EndScene(m_Environment, camera);	//结束渲染场景
@@ -255,7 +259,7 @@ namespace Explorer
 	}
 
 	template<>
-	void Scene::OnComponentAdded<Name>(Object object, Name& name)
+	void Scene::OnComponentAdded<Self>(Object object, Self& name)
 	{
 
 	}

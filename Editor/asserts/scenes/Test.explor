@@ -1,58 +1,96 @@
 Scene: Untitled
 Objects:
   - Object: 12837192831273
-    Name Component:
-      Name: Cube
+    Self Component:
+      ObjectName: Cube
+      ObjectEnable: true
+    Transform Component:
+      Position: [-2.22568727, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Mesh Component:
+      Enable: false
+      Type: 0
+    Material Component:
+      Enable: true
+      Shader: Skybox
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
+      AlbedoTextureExist: false
+      SpecularTextureExist: false
+      Shininess: 32
+      Tiling: [1, 1]
+      Offset: [0, 0]
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Cube 2
+      ObjectEnable: true
+    Transform Component:
+      Position: [0, 0, 1.36424041]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Mesh Component:
+      Enable: false
+      Type: 2
+    Material Component:
+      Enable: true
+      Shader: Standard
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
+      AlbedoTextureExist: false
+      SpecularTextureExist: false
+      Shininess: 32
+      Tiling: [1, 1]
+      Offset: [0, 0]
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Cube111111
+      ObjectEnable: true
     Transform Component:
       Position: [0, 0, 0]
       Rotation: [0, 0, 0]
-      Scale: [0.00100000005, 1, 1]
+      Scale: [1, 1, 1]
     Mesh Component:
+      Enable: true
       Type: 2
+    Material Component:
+      Enable: false
+      Shader: Standard
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
+      AlbedoTextureExist: true
+      SpecularTextureExist: false
+      AlbedoTexturePath: E:\C++\Explorer\Editor\asserts\textures\skyboxes\Citadella2\front.jpg
+      Shininess: 32
+      Tiling: [1, 1]
+      Offset: [0, 0]
   - Object: 12837192831273
-    Name Component:
-      Name: Camera
+    Self Component:
+      ObjectName: Point Light
+      ObjectEnable: true
+    Transform Component:
+      Position: [2, 2.95000005, -1.5]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light Component:
+      Enable: false
+      Type: 1
+      Range: 100
+      SpotOuterAngle: 0.34906584
+      SpotInnerAngle: 0.319395244
+      Color: [1, 1, 1]
+      Intensity: 1
+      RenderShadow: true
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Camera
+      ObjectEnable: true
     Transform Component:
       Position: [3.70000005, 2.5, 3.5]
       Rotation: [30.5, -53, 175.5]
       Scale: [1, 1, 1]
     Camera Component:
+      Enable: true
       ProjectionType: 0
       Size: 5
-      FOV: 45
+      FOV: 0.785398185
       Near: 0.00999999978
       Far: 1000
       Primary: true
-  - Object: 12837192831273
-    Name Component:
-      Name: Point Light
-    Transform Component:
-      Position: [2, 2.95000005, -0.850000024]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    Light Component:
-      Type: 1
-      Range: 100
-      SpotOuterAngle: 20
-      SpotInnerAngle: 18.2999992
-      Color: [1, 1, 1]
-      Intensity: 1
-      RenderShadow: true
-  - Object: 12837192831273
-    Name Component:
-      Name: Cube 1
-    Transform Component:
-      Position: [-0.731058836, 0.0263701677, 1.07533383]
-      Rotation: [0, 0, 0]
-      Scale: [1, 0.32538262, 1]
-    Mesh Component:
-      Type: 2
-  - Object: 12837192831273
-    Name Component:
-      Name: Cube 2
-    Transform Component:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 0.0156978033]
-    Mesh Component:
-      Type: 2

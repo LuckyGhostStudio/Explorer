@@ -4,6 +4,7 @@
 #include "Explorer/Core/Core.h"
 #include "Explorer/Core/Log.h"
 #include "Explorer/Scene/Object.h"
+#include "Explorer/Renderer/Texture.h"
 
 namespace Explorer
 {
