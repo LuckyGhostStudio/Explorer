@@ -37,9 +37,10 @@ namespace Explorer
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
-		io.Fonts->AddFontFromFileTTF("asserts/fonts/opensans/OpenSans-Bold.ttf", 18.0f);	//添加粗体（0号）
+		float fontSize = 18.0f;
+		io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", fontSize);	//添加粗体（0号）
 		//默认字体 添加TTF字体 大小18
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("asserts/fonts/opensans/OpenSans-Regular.ttf", 18.0f);	//1号
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", fontSize);	//1号
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();

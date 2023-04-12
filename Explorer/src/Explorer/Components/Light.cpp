@@ -8,13 +8,13 @@ namespace Explorer
 		switch (m_Type)
 		{
 		case Type::Directional:
-			m_Icon = std::make_shared<Texture2D>("asserts/textures/defaults/Icons/Components/DirectionalLight_Icon.png");
+			m_Icon = std::make_shared<Texture2D>("assets/textures/defaults/Icons/Components/DirectionalLight_Icon.png");
 			break;
 		case Type::Point:
-			m_Icon = std::make_shared<Texture2D>("asserts/textures/defaults/Icons/Components/PointLight_Icon.png");
+			m_Icon = std::make_shared<Texture2D>("assets/textures/defaults/Icons/Components/PointLight_Icon.png");
 			break;
 		case Type::Spot:
-			m_Icon = std::make_shared<Texture2D>("asserts/textures/defaults/Icons/Components/SpotLight_Icon.png");
+			m_Icon = std::make_shared<Texture2D>("assets/textures/defaults/Icons/Components/SpotLight_Icon.png");
 			break;
 		}
 	}

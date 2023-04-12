@@ -48,7 +48,7 @@ namespace Explorer
 		/// <summary>
 		/// 设置Camera组件图标
 		/// </summary>
-		virtual void SetIcon() override { m_Icon = std::make_shared<Texture2D>("asserts/textures/defaults/Icons/Components/Camera_Icon.png"); }
+		virtual void SetIcon() override { m_Icon = std::make_shared<Texture2D>("assets/textures/defaults/Icons/Components/Camera_Icon.png"); }
 	public:
 		Camera();
 

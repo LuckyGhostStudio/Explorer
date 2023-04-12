@@ -48,15 +48,15 @@ namespace Explorer
 			samplers[i] = i;
 		}
 
-		//s_Data.MeshShader = std::make_shared<Shader>("asserts/shaders/StandardShader");	//创建默认着色器
+		//s_Data.MeshShader = std::make_shared<Shader>("assets/shaders/StandardShader");	//创建默认着色器
 		//s_Data.MeshShader->Bind();														//绑定着色器
 		//s_Data.MeshShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlotCount);	//设置textures变量 所有纹理槽
 
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;	//0号纹理槽为白色纹理
 
 		//----------------------------------------------
-		ShaderLibrary::Load("Standard", "asserts/shaders/StandardShader");	//加载标准着色器
-		ShaderLibrary::Load("Skybox", "asserts/shaders/SkyboxShader");		//加载天空盒着色器
+		ShaderLibrary::Load("Standard", "assets/shaders/StandardShader");	//加载标准着色器
+		ShaderLibrary::Load("Skybox", "assets/shaders/SkyboxShader");		//加载天空盒着色器
 	}
 
 	void Renderer3D::Shutdown()

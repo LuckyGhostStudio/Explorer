@@ -88,7 +88,7 @@ namespace Explorer
 		
 		int width, height, channels;			//宽 高 通道数
 
-		unsigned char* data = stbi_load("asserts/textures/defaults/Explorer_NoneSkybox.jpg", &width, &height, &channels, 0);	//加载默认NoneSkybox图片
+		unsigned char* data = stbi_load("assets/textures/defaults/Explorer_NoneSkybox.jpg", &width, &height, &channels, 0);	//加载默认NoneSkybox图片
 
 		EXP_CORE_ASSERT(data, "Failed to load image!");		//加载失败
 		

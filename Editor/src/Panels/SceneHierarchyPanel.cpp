@@ -14,8 +14,15 @@
 #include "Explorer/Utils/PlatformUtils.h"
 #include "Explorer/ImGui/UI.h"
 
+#include "ContentBrowserPanel.h"
+
 namespace Explorer
 {
+	extern const std::filesystem::path g_AssetPath;	//资产目录（全局）
+
+	//TODO:纹理创建读写冲突
+	//static std::shared_ptr<Texture2D> s_SettingsIcon = std::make_shared<Texture2D>("assets/textures/defaults/Icons/Buttons/ComponentSettings_Icon.png");
+
 	SceneHierarchyPanel::SceneHierarchyPanel(const std::shared_ptr<Scene>& scene)
 	{
 		SetScene(scene);
@@ -64,7 +71,6 @@ namespace Explorer
 				
 				ImGui::EndMenu();
 			}
-
 
 			//父菜单项：光源
 			if (ImGui::BeginMenu("Light"))
@@ -136,6 +142,12 @@ namespace Explorer
 					}
 				});
 
+				//将从拖拽源（Project面板）复制的数据拖放到目标（Right(+x)）	：文件路径
+				ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+				{
+					skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Right);	//设置Right预览贴图
+				});
+
 				//Left(-x)天空盒贴图 选择&预览按钮
 				UI::DrawImageButton("Left [-X]", leftTextureID, textureButtonSize, [&]()
 				{
@@ -143,6 +155,12 @@ namespace Explorer
 					if (!filepath.empty()) {
 						skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Left);	//设置Left预览贴图
 					}
+				});
+
+				//将从拖拽源（Project面板）复制的数据拖放到目标（Left(-x)）	：文件路径
+				ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+				{
+					skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Left);	//设置Left预览贴图
 				});
 
 				//Up(+y)天空盒贴图 选择&预览按钮
@@ -154,6 +172,12 @@ namespace Explorer
 					}
 				});
 
+				//将从拖拽源（Project面板）复制的数据拖放到目标（Up(+y)）	：文件路径
+				ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+				{
+					skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Up);	//设置Up预览贴图
+				});
+
 				//Down(-y)天空盒贴图 选择&预览按钮
 				UI::DrawImageButton("Down [-Y]", downTextureID, textureButtonSize, [&]()
 				{
@@ -161,6 +185,12 @@ namespace Explorer
 					if (!filepath.empty()) {
 						skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Down);	//设置Down预览贴图
 					}
+				});
+
+				//将从拖拽源（Project面板）复制的数据拖放到目标（Down(-y)）	：文件路径
+				ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+				{
+					skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Down);	//设置Down预览贴图
 				});
 
 				//Front(+z)天空盒贴图 选择&预览按钮
@@ -172,6 +202,12 @@ namespace Explorer
 					}
 				});
 
+				//将从拖拽源（Project面板）复制的数据拖放到目标（Front(+z)）	：文件路径
+				ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+				{
+					skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Front);	//设置Front预览贴图
+				});
+
 				//Back(-z)天空盒贴图 选择&预览按钮
 				UI::DrawImageButton("Back [-Z]", backTextureID, textureButtonSize, [&]()
 				{
@@ -179,6 +215,12 @@ namespace Explorer
 					if (!filepath.empty()) {
 						skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Back);	//设置Back预览贴图
 					}
+				});
+
+				//将从拖拽源（Project面板）复制的数据拖放到目标（Back(-z)）	：文件路径
+				ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+				{
+					skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Back);	//设置Back预览贴图
 				});
 			});
 
@@ -410,13 +452,12 @@ namespace Explorer
 			//组件结点：组件类的哈希值作为结点id
 			bool opened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, "##Component");
 			ImGui::PopStyleVar();
-			//TODO:纹理绑定问题
-			//uint32_t settingsIconID  = std::make_shared<Texture2D>("asserts/textures/defaults/Icons/Buttons/ComponentSettings_Icon.png")->GetRendererID();
+
 			uint32_t iconID = component.GetIcon()->GetRendererID();	//组件图标ID
 			ImGui::SameLine();
 			ImGui::SetCursorPos(ImVec2(nodePos.x + 28, nodePos.y + 5));					//设置Icon位置
 			ImGui::Image((void*)iconID, ImVec2(16, 16), ImVec2(0, 1), ImVec2(1, 0));	//组件图标图片
-
+			
 			//勾选框存在：显示勾选框
 			if (component.GetSelectableEnable()) {
 				ImGui::SameLine();
@@ -434,6 +475,7 @@ namespace Explorer
 			ImGui::SameLine();
 
 			//组件设置按钮图标ID
+			//uint32_t settingsIconID = s_SettingsIcon->GetRendererID();
 			ImGui::SetCursorPos(ImVec2(nodePos.x + ImGui::GetWindowContentRegionWidth() - lineHeight, nodePos.y));	//设置位置
 			//ImGui::Image((void*)settingsIconID, ImVec2(16, 16), ImVec2(0, 1), ImVec2(1, 0));
 			if (ImGui::Button("+", ImVec2(lineHeight, lineHeight))) {	//组件设置按钮 TODO:设置Image
@@ -507,7 +549,7 @@ namespace Explorer
 		
 		//TODO:设置组件库，保存已有组件，从组件库查找组件并添加 简化UI if语句
 		bool componentExist = false;
-		std::string componentName = "";
+		const char* componentName = "";
 		if (ImGui::BeginPopup("AddComponent")) {	//渲染弹出框
 			//添加Camera组件
 			if (ImGui::MenuItem("Camera")) {
@@ -579,8 +621,7 @@ namespace Explorer
 		ImVec2 windowPos = ImGui::GetCursorPos();
 		if (ImGui::BeginPopupModal("Can't add the same component multiple times!", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 			//文本内容 TODO:componentName显示异常
-			std::string& text = "The component " + componentName + " can't be added. because " + object.GetComponent<Self>().GetObjectName() + " already contains the same component.";
-			ImGui::TextWrapped(text.c_str());
+			ImGui::TextWrapped("The component %s can't be added. because %s already contains the same component.", componentName, object.GetComponent<Self>().GetObjectName().c_str());
 			//设置按钮位置
 			ImGui::SetCursorPos(ImVec2(windowPos.x + 180, windowPos.y + 20));
 			//取消按钮
@@ -680,7 +721,6 @@ namespace Explorer
 			{
 				mesh.SetType((Mesh::Type)index);	//设置网格类型
 			});
-			//TODO：if Type == Other then 添加按钮 从文件加载Mesh
 		});
 
 		//绘制Material组件
@@ -718,6 +758,12 @@ namespace Explorer
 						material.SetAlbedoTexture(filepath);	//设置Albedo贴图
 					}
 				});
+				
+				//将从拖拽源（Project面板）复制的数据拖放到目标（反照率贴图）	：文件路径
+				ContentBrowserPanel::DragDropToTarget({ ".png", ".jpg" }, [&](const std::filesystem::path& filepath)
+				{
+					material.SetAlbedoTexture(filepath.string());	//设置Albedo贴图
+				});
 
 				//Specular Map 反照率贴图 选择&预览按钮
 				uint32_t specularTextureID = material.GetSpecularTextureID();	//Specular贴图ID
@@ -727,6 +773,12 @@ namespace Explorer
 					if (!filepath.empty()) {
 						material.SetSpecularTexture(filepath);	//设置Specular贴图
 					}
+				});
+
+				//将从拖拽源（Project面板）复制的数据拖放到目标（高光贴图）	：文件路径
+				ContentBrowserPanel::DragDropToTarget({ ".png", ".jpg"}, [&](const std::filesystem::path& filepath)
+				{
+					material.SetSpecularTexture(filepath.string());	//设置Albedo贴图
 				});
 
 				UI::DrawSlider("Shininess", &material.GetShininess_Ref(), 1.0f, 648.0f);					//Shininess反光度 滑动条

@@ -2,65 +2,47 @@ Scene: Untitled
 Objects:
   - Object: 12837192831273
     Self Component:
-      ObjectName: Cube
+      ObjectName: Cube W
       ObjectEnable: true
     Transform Component:
-      Position: [-2.22568727, 0, 0]
+      Position: [-0.331298649, 0, 0.790211201]
       Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    Mesh Component:
-      Enable: false
-      Type: 0
-    Material Component:
-      Enable: true
-      Shader: Skybox
-      Color: [0.800000012, 0.800000012, 0.800000012, 1]
-      AlbedoTextureExist: false
-      SpecularTextureExist: false
-      Shininess: 32
-      Tiling: [1, 1]
-      Offset: [0, 0]
-  - Object: 12837192831273
-    Self Component:
-      ObjectName: Cube 2
-      ObjectEnable: true
-    Transform Component:
-      Position: [0, 0, 1.36424041]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    Mesh Component:
-      Enable: false
-      Type: 2
-    Material Component:
-      Enable: true
-      Shader: Standard
-      Color: [0.800000012, 0.800000012, 0.800000012, 1]
-      AlbedoTextureExist: false
-      SpecularTextureExist: false
-      Shininess: 32
-      Tiling: [1, 1]
-      Offset: [0, 0]
-  - Object: 12837192831273
-    Self Component:
-      ObjectName: Cube111111
-      ObjectEnable: true
-    Transform Component:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Scale: [1, 0.039661143, 1]
     Mesh Component:
       Enable: true
       Type: 2
     Material Component:
-      Enable: false
+      Enable: true
       Shader: Standard
       Color: [0.800000012, 0.800000012, 0.800000012, 1]
       AlbedoTextureExist: true
       SpecularTextureExist: false
-      AlbedoTexturePath: E:\C++\Explorer\Editor\asserts\textures\skyboxes\Citadella2\front.jpg
+      AlbedoTexturePath: E:\C++\Explorer\Editor\assets\textures\Checkerboard.png
       Shininess: 32
       Tiling: [1, 1]
       Offset: [0, 0]
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Cube C
+      ObjectEnable: true
+    Transform Component:
+      Position: [0, 0, -0.721427321]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Mesh Component:
+      Enable: true
+      Type: 2
+    Material Component:
+      Enable: true
+      Shader: Standard
+      Color: [0.32432431, 0.818487406, 1, 1]
+      AlbedoTextureExist: true
+      SpecularTextureExist: true
+      AlbedoTexturePath: E:\C++\Explorer\Editor\assets\textures\ChernoLogo.png
+      SpecularTexturePath: E:\C++\Explorer\Editor\assets\textures\Checkerboard.png
+      Shininess: 76.052002
+      Tiling: [-2.02999997, 1.32000005]
+      Offset: [0.449999988, 0]
   - Object: 12837192831273
     Self Component:
       ObjectName: Point Light
@@ -70,7 +52,7 @@ Objects:
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     Light Component:
-      Enable: false
+      Enable: true
       Type: 1
       Range: 100
       SpotOuterAngle: 0.34906584
@@ -94,3 +76,19 @@ Objects:
       Near: 0.00999999978
       Far: 1000
       Primary: true
+Environment:
+  SkyboxEnable: true
+  SourceType: 0
+  IntensityMultiplier: 1
+  AmbientColor: [0.0656370521, 0.363877714, 1]
+  Skybox:
+    Shader: Skybox
+    TintColor: [1, 0.436293423, 0.436293423]
+    Expose: 1
+    Rotation: 0
+    CubemapRightPath: ""
+    CubemapLeftPath: ""
+    CubemapUpPath: ""
+    CubemapDownPath: ""
+    CubemapFrontPath: ""
+    CubemapBackPath: ""

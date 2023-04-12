@@ -134,4 +134,28 @@ namespace Explorer
 
 		ImGui::PopID();
 	}
+
+	void UI::DrawImage(const std::string& label, uint32_t textureID, const glm::vec2& size, float framePadding, float labelColumnWidth, float widgetOffset)
+	{
+		ImGui::PushID(label.c_str());	//设置控件ID
+
+		float panelWidth = ImGui::GetWindowContentRegionWidth();	//面板宽度
+
+		ImGui::Columns(2, 0, false);	//设置为 两列 id 边界取消显示
+		ImGui::SetColumnWidth(0, labelColumnWidth);	//设置0号列宽
+
+		ImGui::Text(label.c_str());	//标签（0号列）
+
+		ImGui::NextColumn();
+
+		ImGui::PushItemWidth(panelWidth - labelColumnWidth - widgetOffset);	//设置1号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
+		//贴图选择&预览按钮（1号列）
+		ImGui::Image((ImTextureID)textureID, ImVec2(size.x, size.y), ImVec2(0, 1), ImVec2(1, 0));
+
+		ImGui::PopItemWidth();
+
+		ImGui::Columns(1);				//设置为一列
+
+		ImGui::PopID();
+	}
 }

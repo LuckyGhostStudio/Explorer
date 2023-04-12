@@ -241,6 +241,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Environment.h/.cpp
 - Skybox.h/.cpp
 
+### 69. 添加项目文件浏览窗口
+
+- ContentBrowser.h.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -480,6 +484,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - SceneHierarchyPanel.h/.cpp
 
   场景物体层级面板，显示所有场景物体及其层级关系。
+  
+- ContentBrowser.h.cpp
+
+  项目文件浏览面板，显示项目中所有资产文件。
 
 ### Sandbox 项目
 

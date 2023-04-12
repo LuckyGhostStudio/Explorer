@@ -78,6 +78,17 @@ namespace Explorer
 		/// <summary>
 		/// 绘制图像按钮
 		/// </summary>
+		/// <param name="label">标签名</param>
+		/// <param name="textureID">纹理ID</param>
+		/// <param name="size">尺寸</param>
+		/// <param name="framePadding">边框</param>
+		/// <param name="labelColumnWidth">标签列宽</param>
+		/// <param name="widgetOffset">小部件右边界向左偏移量</param>
+		static void DrawImage(const std::string& label, uint32_t textureID, const glm::vec2& size, float framePadding = 2.0f, float labelColumnWidth = 120.0f, float widgetOffset = 20.0f);
+
+		/// <summary>
+		/// 绘制图像按钮
+		/// </summary>
 		/// <typeparam name="Func">按钮监听函数</typeparam>
 		/// <param name="label">标签名</param>
 		/// <param name="textureID">纹理ID</param>
@@ -102,7 +113,7 @@ namespace Explorer
 
 			ImGui::PushItemWidth(panelWidth - labelColumnWidth - widgetOffset);	//设置1号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
 			//贴图选择&预览按钮（1号列）
-			if (ImGui::ImageButton((void*)textureID, ImVec2(size.x, size.y), ImVec2(0, 1), ImVec2(1, 0), framePadding)) {
+			if (ImGui::ImageButton((ImTextureID)textureID, ImVec2(size.x, size.y), ImVec2(0, 1), ImVec2(1, 0), framePadding)) {
 				function();	//按钮事件函数
 			}
 			ImGui::PopItemWidth();

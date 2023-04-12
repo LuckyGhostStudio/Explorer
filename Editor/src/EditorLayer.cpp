@@ -12,6 +12,8 @@
 
 namespace Explorer
 {
+	extern const std::filesystem::path g_AssetPath;	//资产目录（全局）
+
 	EditorLayer::EditorLayer() :Layer("EditorLayer")
 	{
 		
@@ -73,7 +75,7 @@ namespace Explorer
 
 		m_CameraObject.AddComponent<NativeScript>().Bind<CameraController>();	//添加脚本组件 并 绑定CameraController脚本
 #endif
-		m_HierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy面板的场景
+		m_SceneHierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy面板的场景
 	}
 
 	void EditorLayer::OnDetach()
@@ -171,7 +173,8 @@ namespace Explorer
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 		}
 		style.WindowMinSize.x = minWinSizeX;
-		style.FrameRounding = 4.0f;				//边框圆度
+		style.FrameRounding = 4.0f;				//控件边框圆度
+		style.WindowRounding = 4.0f;			//窗口边框圆度
 		style.FrameBorderSize = 1.0f;			//边框尺寸
 		style.WindowMenuButtonPosition = -1;	//窗口tabbar按钮取消显示
 
@@ -196,6 +199,28 @@ namespace Explorer
 					SaveSceneAs();
 				}
 
+				ImGui::Separator();
+				//导入3D物体
+				if (ImGui::BeginMenu("Import")) {
+					//.obj文件
+					if (ImGui::MenuItem("Wavefront(.obj)")) {
+						//TODO:导入.obj文件
+						// TODO:创建SubMesh
+						//TODO:创建Mesh
+					}
+					ImGui::EndMenu();
+				}
+
+				//导出场景物体
+				if (ImGui::BeginMenu("Export")) {
+					//.obj文件
+					if (ImGui::MenuItem("Wavefront(.obj)")) {
+						//TODO:导出为.obj文件
+					}
+					ImGui::EndMenu();
+				}
+				ImGui::Separator();
+
 				//退出
 				if (ImGui::MenuItem("Quit")) {
 					Application::GetInstance().Close();	//退出程序
@@ -206,7 +231,8 @@ namespace Explorer
 			ImGui::EndMenuBar();
 		}
 
-		m_HierarchyPanel.OnImGuiRender();	//渲染Hierarchy面板
+		m_SceneHierarchyPanel.OnImGuiRender();	//渲染Hierarchy面板
+		m_ContentBrowserPanel.OnImGuiRender();	//渲染Project面板
 
 		//批渲染数据统计
 		ImGui::Begin("Renderer Stats");
@@ -220,11 +246,6 @@ namespace Explorer
 		ImGui::Text("Vertex Count: %d", stats.VertexCount);
 		ImGui::Text("Index Count: %d", stats.IndexCount);
 		ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());	//帧率
-		//TODO:纹理绑定问题
-		//std::shared_ptr<Texture2D>& icon = std::make_shared<Texture2D>("asserts/textures/defaults/Icons/Buttons/ComponentSettings_Icon.png");
-		//icon->Bind(0);
-		//uint32_t settingsIconID = icon->GetRendererID();
-		//ImGui::Image((void*)settingsIconID, ImVec2(16, 16), ImVec2(0, 1), ImVec2(1, 0));
 
 		ImGui::End();	//Renderer Stats
 
@@ -250,12 +271,18 @@ namespace Explorer
 		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区0 ID
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
 
+		//将从拖拽源（Project面板）复制的数据拖放到目标（场景）	：场景路径
+		ContentBrowserPanel::DragDropToTarget({ ".explor" }, [&](const std::filesystem::path& scenePath)
+		{
+			OpenScene(scenePath);	//打开场景
+		});
+
 		//编辑器相机
 		const glm::mat4& cameraProjection = m_EditorCamera.GetProjectionMatrix();	//投影矩阵
 		const glm::mat4& cameraView = m_EditorCamera.GetViewMatrix();				//视图矩阵
 		
-		Gizmo::Init(m_ViewportBounds[0], m_ViewportBounds[1]);											//初始化Gizmo绘制参数	
-		Gizmo::DrawTransformation(m_HierarchyPanel.GetSelectedObject(), cameraView, cameraProjection);	//绘制Transform Gizmos
+		Gizmo::Init(m_ViewportBounds[0], m_ViewportBounds[1]);												//初始化Gizmo绘制参数	
+		Gizmo::DrawTransformation(m_SceneHierarchyPanel.GetSelectedObject(), cameraView, cameraProjection);	//绘制Transform Gizmos
 		
 		ImGui::End();	//Scene
 		ImGui::PopStyleVar();
@@ -285,22 +312,23 @@ namespace Explorer
 		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);		//Shift键按下
 
 		//菜单快捷键
-		switch (e.GetKeyCode()) {
-		case Key::N:
-			if (control) {
-				NewScene();		//创建新场景：Ctrl+N
-			}
-			break;
-		case Key::O:
-			if (control) {
-				OpenScene();	//打开场景：Ctrl+O
-			}
-			break;
-		case Key::S:
-			if (control && shift) {
-				SaveSceneAs();	//场景另存为：Ctrl+Shift+S
-			}
-			break;
+		switch (e.GetKeyCode()) 
+		{
+			case Key::N:
+				if (control) {
+					NewScene();		//创建新场景：Ctrl+N
+				}
+				break;
+			case Key::O:
+				if (control) {
+					OpenScene();	//打开场景：Ctrl+O
+				}
+				break;
+			case Key::S:
+				if (control && shift) {
+					SaveSceneAs();	//场景另存为：Ctrl+Shift+S
+				}
+				break;
 		}
 
 		//设置Transform Gizmo类型
@@ -324,7 +352,7 @@ namespace Explorer
 		if (e.GetMouseButton() == Mouse::ButtonLeft) {
 			//鼠标在视口内 Gizmo控制没结束
 			if (m_ViewportHovered && !ImGuizmo::IsOver()) {
-				m_HierarchyPanel.SetSelectedObject(m_PickedObject);	//设置被选中物体
+				m_SceneHierarchyPanel.SetSelectedObject(m_PickedObject);	//设置被选中物体
 			}
 		}
 
@@ -333,14 +361,14 @@ namespace Explorer
 
 	void EditorLayer::NewScene()
 	{
-		m_ActiveScene = std::make_shared<Scene>();			//创建新场景
+		m_ActiveScene = std::make_shared<Scene>("New Scene");			//创建新场景
 
 		m_Camera = m_ActiveScene->CreateCameraObject();						//创建默认Camera对象
 		m_Light = m_ActiveScene->CreateLightObject();						//创建默认Light对象
 		m_Cube = m_ActiveScene->CreateMeshObject("Cube", Mesh::Type::Cube);	//创建默认Cube对象
 
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
-		m_HierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
+		m_SceneHierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
 	}
 
 	void EditorLayer::OpenScene()
@@ -348,13 +376,18 @@ namespace Explorer
 		std::string filepath = FileDialogs::OpenFile("Explorer Scene(*.explor)\0*.explor\0");	//打开文件对话框（文件类型名\0 文件类型.explor）
 		//路径不为空
 		if (!filepath.empty()) {
-			m_ActiveScene = std::make_shared<Scene>();	//创建新场景
-			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
-			m_HierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
-
-			SceneSerializer serializer(m_ActiveScene);	//场景序列化器
-			serializer.Deserialize(filepath);			//反序列化：加载文件场景到新场景
+			OpenScene(filepath);	//打开场景
 		}
+	}
+
+	void EditorLayer::OpenScene(const std::filesystem::path& path)
+	{
+		m_ActiveScene = std::make_shared<Scene>(path.stem().string());	//创建新场景（场景名：没有扩展名）
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
+		m_SceneHierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
+
+		SceneSerializer serializer(m_ActiveScene);	//场景序列化器
+		serializer.Deserialize(path.string());		//反序列化：加载文件场景到新场景
 	}
 
 	void EditorLayer::SaveSceneAs()

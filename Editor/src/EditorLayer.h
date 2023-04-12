@@ -2,6 +2,7 @@
 
 #include "Explorer.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 #include "Explorer/Renderer/EditorCamera.h"
 
 namespace Explorer
@@ -31,7 +32,8 @@ namespace Explorer
 
 		int m_GizmoType = -1;	//Gizmo操作类型 -1无 0平移 1旋转 2缩放
 
-		SceneHierarchyPanel m_HierarchyPanel;	//场景Hierarchy面板s
+		SceneHierarchyPanel m_SceneHierarchyPanel;	//场景Hierarchy面板
+		ContentBrowserPanel m_ContentBrowserPanel;	//项目文件目录Project浏览面板
 	public:
 		EditorLayer();
 		virtual ~EditorLayer() = default;
@@ -72,6 +74,12 @@ namespace Explorer
 		/// 打开场景
 		/// </summary>
 		void OpenScene();
+
+		/// <summary>
+		/// 打开场景（从文件浏览面板打开）
+		/// </summary>
+		/// <param name="path">场景文件路径</param>
+		void OpenScene(const std::filesystem::path& path);
 
 		/// <summary>
 		/// 场景另存为
