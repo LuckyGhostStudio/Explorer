@@ -1,0 +1,72 @@
+Scene: Untitled
+Objects:
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Cube
+      ObjectEnable: true
+    Transform Component:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Mesh Component:
+      Enable: true
+      Type: 2
+    Material Component:
+      Enable: true
+      Shader: Standard
+      Color: [0.413127422, 0.41312328, 0.41312328, 1]
+      AlbedoTextureExist: true
+      SpecularTextureExist: false
+      AlbedoTexturePath: assets\textures\plane.png
+      Shininess: 32
+      Tiling: [1, 1]
+      Offset: [0, 0]
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Point Light
+      ObjectEnable: true
+    Transform Component:
+      Position: [2, 2.95000005, -1.5]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light Component:
+      Enable: true
+      Type: 1
+      Range: 100
+      SpotOuterAngle: 0.34906584
+      SpotInnerAngle: 0.319395244
+      Color: [1, 1, 1]
+      Intensity: 1
+      RenderShadow: true
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Camera
+      ObjectEnable: true
+    Transform Component:
+      Position: [3.70000005, 2.5, 3.5]
+      Rotation: [30.5, -53, 175.5]
+      Scale: [1, 1, 1]
+    Camera Component:
+      Enable: true
+      ProjectionType: 0
+      Size: 5
+      FOV: 0.785398185
+      Near: 0.00999999978
+      Far: 1000
+      Primary: true
+Environment:
+  SkyboxEnable: true
+  SourceType: 0
+  IntensityMultiplier: 1
+  AmbientColor: [0.211999997, 0.226999998, 0.259000003]
+  Skybox:
+    Shader: Skybox
+    TintColor: [0.5, 0.5, 0.5]
+    Expose: 1.79700005
+    Rotation: 0
+    CubemapRightPath: assets\textures\skyboxes\Citadella2\right.jpg
+    CubemapLeftPath: assets\textures\skyboxes\Citadella2\left.jpg
+    CubemapUpPath: assets\textures\skyboxes\Citadella2\up.jpg
+    CubemapDownPath: assets\textures\skyboxes\Citadella2\down.jpg
+    CubemapFrontPath: assets\textures\skyboxes\Citadella2\front.jpg
+    CubemapBackPath: assets\textures\skyboxes\Citadella2\back.jpg

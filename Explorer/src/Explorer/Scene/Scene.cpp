@@ -41,17 +41,17 @@ namespace Explorer
 		return cube;
 	}
 
-	Object Scene::CreateCameraObject(const std::string& name)
+	Object Scene::CreateCameraObject(const std::string& name, bool primary)
 	{
 		Object camera = { m_Registry.create(), this };		//创建Camera
 
-		glm::vec3 position = { 3.7f, 2.5f, 3.5f };			//初始位置
-		glm::vec3 rotation = { 30.5f, -53.0f, 175.5f };		//初始旋转
+		glm::vec3 position = { 2.325f, 0.963f, -1.309f };	//初始位置
+		glm::vec3 rotation = { -21.156, 120.181f, 0.0f };	//初始旋转
 
 		camera.AddComponent<Self>(name);					//添加Self组件
 		camera.AddComponent<Transform>(position, rotation);	//添加Transform组件
-		camera.AddComponent<Camera>();						//添加Camera组件
-
+		camera.AddComponent<Camera>().SetPrimary(primary);	//添加Camera组件：默认不是主相机
+		//TODO:限制场景内主相机只有一个
 		return camera;
 	}
 
@@ -104,30 +104,12 @@ namespace Explorer
 		}
 
 		Renderer3D::BeginScene(m_Environment, camera, lightObjects);	//开始渲染场景
-#if 0
-		auto meshes = m_Registry.view<Mesh>();	//场景中所有Mesh物体
-		std::vector<Object> meshObjects;		//场景所有Mesh对象
-		meshObjects.reserve(meshes.size());		//预留空间
-
-		for (auto object : meshes) {
-			meshObjects.push_back(Object{ object, this });
-		}
-
-		for (auto object : meshObjects) {
-			Transform& transform = object.GetComponent<Transform>();
-			Mesh& mesh = object.GetComponent<Mesh>();
-			Material& material = object.HasComponent<Material>() ? object.GetComponent<Material>() : Material(true);
-
-			Renderer3D::DrawMesh(transform, mesh, material, (int)object.operator entt::entity());	//绘制网格
-		}
-#endif
 
 		auto meshes = m_Registry.view<Transform, Mesh, Material>();	//返回有Transform Mesh Material的所有物体
-		//auto meshes = m_Registry.group<Transform>(entt::get<Mesh>);	//返回有Transform和Mesh的所有物体
 
 		for (auto object : meshes) {
-			//TODO:object启用时渲染此Obj
 			Object obj = Object{ object, this };
+			//object启用时渲染此Obj
 			if (obj.GetComponent<Self>().GetObjectEnable()) {
 				auto [transform, mesh, material] = meshes.get<Transform, Mesh, Material>(object);
 
@@ -153,6 +135,15 @@ namespace Explorer
 			script.Instance->OnUpdate(dt);		//调用脚本的OnOpdate函数
 		});
 
+		auto lights = m_Registry.view<Light>();	//所有拥有Light组件的物体
+		std::vector<Object> lightObjects;		//场景所有Light对象
+		lightObjects.reserve(lights.size());	//预留空间
+
+		//遍历场景所有Light对象
+		for (auto object : lights) {
+			lightObjects.push_back(Object{ object, this });	//添加到Light列表
+		}
+
 		Camera* mainCamera = nullptr;	//主相机
 		Transform* cameraTransform = nullptr;
 
@@ -169,18 +160,23 @@ namespace Explorer
 			}
 		}
 
-		//主相机存在
-		if (mainCamera) {
-			auto group = m_Registry.group<Transform>(entt::get<SpriteRenderer>);	//返回有Transform和SpriteRenderer的所有物体
+		//主相机存在 && 主相机已启用
+		if (mainCamera && mainCamera->GetEnable()) {
+			Renderer3D::BeginScene(m_Environment, *mainCamera, *cameraTransform, lightObjects);	//开始渲染场景
+			
+			auto meshes = m_Registry.view<Transform, Mesh, Material>();	//返回有Transform Mesh Material的所有物体
 
-			Renderer3D::BeginScene(*mainCamera, *cameraTransform);	//开始渲染场景
-			for (auto object : group) {
-				auto [transform, sprite] = group.get<Transform, SpriteRenderer>(object);
+			for (auto object : meshes) {
+				Object obj = Object{ object, this };
+				//object启用时渲染此Obj
+				if (obj.GetComponent<Self>().GetObjectEnable()) {
+					auto [transform, mesh, material] = meshes.get<Transform, Mesh, Material>(object);
 
-				//Renderer2D::DrawQuad(transform, sprite.m_Color);
-				//Renderer3D::DrawMesh(transform);	//绘制网格
+					Renderer3D::DrawMesh(transform, mesh, material, (int)object);	//绘制网格
+				}
 			}
-			Renderer3D::EndScene();			//结束渲染场景
+
+			Renderer3D::EndScene(m_Environment, *mainCamera, *cameraTransform);	//结束渲染场景
 		}
 	}
 	

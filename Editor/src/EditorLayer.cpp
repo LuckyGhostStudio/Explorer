@@ -21,6 +21,8 @@ namespace Explorer
 
 	void EditorLayer::OnAttach()
 	{
+		m_PlayIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/PlayButton.png");	//Play按钮图标
+
 		FramebufferSpecification fbSpec;	//帧缓冲区规范
 		fbSpec.Attachments = {
 			FramebufferTextureFormat::RGBA8,		//颜色缓冲区0格式
@@ -34,9 +36,9 @@ namespace Explorer
 		m_ActiveScene = std::make_shared<Scene>();								//创建场景
 		m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f);	//创建编辑器相机
 
-		m_Camera = m_ActiveScene->CreateCameraObject();						//创建默认Camera对象
-		m_Light = m_ActiveScene->CreateLightObject();						//创建默认Light对象（Point）
-		m_Cube = m_ActiveScene->CreateMeshObject("Cube", Mesh::Type::Cube);	//创建默认Cube对象
+		m_MainCamera = m_ActiveScene->CreateCameraObject("Main Camera", true);	//创建默认Camera对象：主相机
+		m_Light = m_ActiveScene->CreateLightObject();							//创建默认Light对象（Point）
+		m_Cube = m_ActiveScene->CreateMeshObject("Cube", Mesh::Type::Cube);		//创建默认Cube对象
 
 #if 0
 
@@ -97,18 +99,35 @@ namespace Explorer
 
 		if (m_ViewportFocused) {			//视口被聚焦
 		}
-			m_EditorCamera.OnUpdate(dt);	//更新编辑器相机
 
 		//Renderer
 		Renderer3D::ResetStats();	//重置统计数据
 
 		m_Framebuffer->Bind();										//绑定帧缓冲区
-		RenderCommand::SetClearColor(m_ActiveScene->GetEnvironment().GetNoneSkyboxColor());	//设置清屏颜色
-		RenderCommand::Clear();										//清除
 
-		m_Framebuffer->ClearAttachment(1, -1);	//清除颜色缓冲区1（物体id缓冲区）为 -1
+		glm::vec4& defaultClearColor = m_ActiveScene->GetEnvironment().GetNoneSkyboxColor();	//默认清屏颜色:天空盒缺失默认颜色
 
-		m_ActiveScene->OnUpdateEditor(dt, m_EditorCamera);	//更新编辑器场景
+		//场景状态
+		switch (m_SceneState)
+		{
+			case SceneState::Edit:	//编辑状态
+				RenderCommand::SetClearColor(defaultClearColor);	//设置清屏颜色:天空盒缺失默认颜色
+				RenderCommand::Clear();								//清除
+				m_Framebuffer->ClearAttachment(1, -1);				//清除颜色缓冲区1（物体id缓冲区）为 -1
+
+				m_EditorCamera.OnUpdate(dt);						//更新编辑器相机
+				m_ActiveScene->OnUpdateEditor(dt, m_EditorCamera);	//更新编辑器场景
+				break;
+			case SceneState::Play:	//运行状态
+				Camera& mainCamera = m_ActiveScene->GetPrimaryCameraObject().GetComponent<Camera>();	//场景主相机
+				glm::vec4& clearColor = mainCamera.GetClearFlag() == Camera::ClearFlag::Color ? mainCamera.GetBackgroundColor() : defaultClearColor;	//清屏颜色
+				RenderCommand::SetClearColor(clearColor);			//设置清屏颜色:场景主相机背景色
+				RenderCommand::Clear();								//清除
+				m_Framebuffer->ClearAttachment(1, -1);				//清除颜色缓冲区1（物体id缓冲区）为 -1
+
+				m_ActiveScene->OnUpdate(dt);						//运行时场景更新
+				break;
+		}
 
 		auto [mx, my] = ImGui::GetMousePos();	//鼠标位置
 		//计算鼠标相对于视口左上角的位置
@@ -125,7 +144,8 @@ namespace Explorer
 			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);	//读取1号颜色缓冲区像素
 			//被鼠标拾取的物体
 			m_PickedObject = pixelData == -1 ? Object() : Object((entt::entity)pixelData, m_ActiveScene.get());
-			//EXP_CORE_WARN("pixelData:{0}", pixelData);
+			EXP_CORE_WARN("pixelData:{0}", pixelData);
+			EXP_CORE_WARN("mx:{0}, my:{1}", mouseX, mouseY);
 		}
 
 		m_Framebuffer->Unbind();	//解除绑定帧缓冲区
@@ -175,6 +195,9 @@ namespace Explorer
 		style.WindowMinSize.x = minWinSizeX;
 		style.FrameRounding = 4.0f;				//控件边框圆度
 		style.WindowRounding = 4.0f;			//窗口边框圆度
+		style.GrabRounding = 4.0f;				//拖动条handle圆度
+		style.PopupRounding = 4.0f;				//弹出窗口圆度
+
 		style.FrameBorderSize = 1.0f;			//边框尺寸
 		style.WindowMenuButtonPosition = -1;	//窗口tabbar按钮取消显示
 
@@ -237,8 +260,8 @@ namespace Explorer
 		//批渲染数据统计
 		ImGui::Begin("Renderer Stats");
 
-		std::string name = m_PickedObject ? m_PickedObject.GetComponent<Self>().GetObjectName() : "None";
-		ImGui::Text("Hovered Object: %s", name.c_str());
+		//std::string name = m_PickedObject ? m_PickedObject.GetComponent<Self>().GetObjectName() : "None";
+		//ImGui::Text("Hovered Object: %s", name.c_str());
 
 		auto stats = Renderer3D::GetStats();
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
@@ -246,14 +269,16 @@ namespace Explorer
 		ImGui::Text("Vertex Count: %d", stats.VertexCount);
 		ImGui::Text("Index Count: %d", stats.IndexCount);
 		ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());	//帧率
-
+		
 		ImGui::End();	//Renderer Stats
 
 		//场景视口
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
 		ImGui::Begin("Scene");
+		UI_ToolBar();	//工具栏
 
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();	//视口可用区域最小值（视口左上角相对于视口左上角位置）
+		viewportMinRegion.y += 34;	//TODO:向下偏移工具栏的高度
 		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();	//视口可用区域最大值（视口右下角相对于视口左上角位置）
 		auto viewportOffset = ImGui::GetWindowPos();	//视口偏移量：视口面板左上角位置（相对于屏幕左上角）
 
@@ -290,6 +315,39 @@ namespace Explorer
 		//ImGui::ShowDemoWindow();	//样例窗口
 		
 		ImGui::End();	//DockSpace
+	}
+
+	void EditorLayer::UI_ToolBar()
+	{
+		float buttonSize = 20.0f;
+		static ImVec4 playButtonColor = { 0.2f, 0.205f, 0.21f, 1.0f };	//Play按钮颜色
+
+		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x * 0.5f - buttonSize * 0.5f);	//按钮居中
+		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + 4.0f);
+		
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, playButtonColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { playButtonColor.x + 0.01f, playButtonColor.y + 0.01f, playButtonColor.z + 0.01f, 1.0f });
+		//Play|Stop按钮 按下
+		if (ImGui::ImageButton((ImTextureID)m_PlayIcon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1))) {
+			//场景状态
+			switch (m_SceneState)
+			{
+				case SceneState::Edit:	//编辑状态
+					playButtonColor = { 0.14f, 0.29f, 0.42f, 1.0f };	//蓝色
+					OnScenePlay();
+					break;
+				case SceneState::Play:	//运行状态
+					playButtonColor = { 0.2f, 0.205f, 0.21f, 1.0f };
+					OnSceneStop();
+					break;
+			}
+		}
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
 	}
 
 	void EditorLayer::OnEvent(Event& event)
@@ -363,9 +421,9 @@ namespace Explorer
 	{
 		m_ActiveScene = std::make_shared<Scene>("New Scene");			//创建新场景
 
-		m_Camera = m_ActiveScene->CreateCameraObject();						//创建默认Camera对象
-		m_Light = m_ActiveScene->CreateLightObject();						//创建默认Light对象
-		m_Cube = m_ActiveScene->CreateMeshObject("Cube", Mesh::Type::Cube);	//创建默认Cube对象
+		m_MainCamera = m_ActiveScene->CreateCameraObject("Main Camera", true);	//创建默认Camera对象：主相机
+		m_Light = m_ActiveScene->CreateLightObject();							//创建默认Light对象
+		m_Cube = m_ActiveScene->CreateMeshObject("Cube", Mesh::Type::Cube);		//创建默认Cube对象
 
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
 		m_SceneHierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
@@ -399,5 +457,15 @@ namespace Explorer
 			SceneSerializer serializer(m_ActiveScene);	//场景序列化器
 			serializer.Serialize(filepath);				//序列化：保存场景
 		}
+	}
+
+	void EditorLayer::OnScenePlay()
+	{
+		m_SceneState = SceneState::Play;	//开始运行
+	}
+
+	void EditorLayer::OnSceneStop()
+	{
+		m_SceneState = SceneState::Edit;	//停止运行
 	}
 }

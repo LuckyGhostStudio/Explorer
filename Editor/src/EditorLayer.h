@@ -18,7 +18,7 @@ namespace Explorer
 		std::shared_ptr<Scene> m_ActiveScene;	//活动场景
 		EditorCamera m_EditorCamera;			//编辑器相机
 
-		Object m_Camera;						//场景默认相机
+		Object m_MainCamera;					//场景默认相机：主相机
 		Object m_Cube;							//场景默认正方体
 		Object m_Light;							//场景默认光源
 
@@ -32,8 +32,18 @@ namespace Explorer
 
 		int m_GizmoType = -1;	//Gizmo操作类型 -1无 0平移 1旋转 2缩放
 
+		enum class SceneState
+		{
+			Edit = 0,	//编辑
+			Play = 1	//运行
+		};
+
+		SceneState m_SceneState = SceneState::Edit;	//场景状态
+		
 		SceneHierarchyPanel m_SceneHierarchyPanel;	//场景Hierarchy面板
 		ContentBrowserPanel m_ContentBrowserPanel;	//项目文件目录Project浏览面板
+
+		std::shared_ptr<Texture2D> m_PlayIcon;	//Play按钮图标
 	public:
 		EditorLayer();
 		virtual ~EditorLayer() = default;
@@ -64,6 +74,20 @@ namespace Explorer
 		/// </summary>
 		/// <param name="event">事件</param>
 		virtual void OnEvent(Event& event) override;
+	private:
+		/// <summary>
+		/// 按键按下时调用
+		/// </summary>
+		/// <param name="e">按键按下事件</param>
+		/// <returns>处理结果</returns>
+		bool OnKeyPressed(KeyPressedEvent& e);
+
+		/// <summary>
+		/// 鼠标按钮按下时调用
+		/// </summary>
+		/// <param name="e">鼠标按钮按下事件</param>
+		/// <returns>处理结果</returns>
+		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
 		/// <summary>
 		/// 创建新场景
@@ -85,19 +109,20 @@ namespace Explorer
 		/// 场景另存为
 		/// </summary>
 		void SaveSceneAs();
-	private:
-		/// <summary>
-		/// 按键按下时调用
-		/// </summary>
-		/// <param name="e">按键按下事件</param>
-		/// <returns>处理结果</returns>
-		bool OnKeyPressed(KeyPressedEvent& e);
 
 		/// <summary>
-		/// 鼠标按钮按下时调用
+		/// Play按钮按下时调用
 		/// </summary>
-		/// <param name="e">鼠标按钮按下事件</param>
-		/// <returns>处理结果</returns>
-		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+		void OnScenePlay();
+
+		/// <summary>
+		/// Stop按钮按下时调用
+		/// </summary>
+		void OnSceneStop();
+
+		/// <summary>
+		/// 工具栏
+		/// </summary>
+		void UI_ToolBar();
 	};
 }

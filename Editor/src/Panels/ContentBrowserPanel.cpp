@@ -11,8 +11,8 @@ namespace Explorer
 
 	ContentBrowserPanel::ContentBrowserPanel() :m_CurrentDirectory(g_AssetPath)
 	{
-		m_DirectoryIcon = std::make_shared<Texture2D>("assets/textures/defaults/Icons/Buttons/Directory_Icon.png");
-		m_FileIcon = std::make_shared<Texture2D>("assets/textures/defaults/Icons/Buttons/File_Icon.png");
+		m_DirectoryIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/Directory_Icon.png");
+		m_FileIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/File_Icon.png");
 	}
 
 	void ContentBrowserPanel::OnImGuiRender()
@@ -33,13 +33,11 @@ namespace Explorer
 		ImGui::NextColumn();
 
 		//文件缩略图面板：右列
-		ImGui::BeginGroup();
-		ImGui::BeginChild("File Thumbnails Panel", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+		ImGui::BeginChild("File Thumbnails Panel");
 			
 		DrawFileThumbnailsPanel();	//绘制文件缩略图面板
 
 		ImGui::EndChild();
-		ImGui::EndGroup();
 
 		ImGui::Columns(1);	//设为1列
 
@@ -86,7 +84,6 @@ namespace Explorer
 		}
 
 		ImGui::PopID();
-
 	}
 
 	void ContentBrowserPanel::DrawFileThumbnailsPanel()
@@ -101,7 +98,6 @@ namespace Explorer
 		if (thumbnailSize <= 16.0f) columnCount = 1;	//缩略<=16 设为一列
 
 		ImGui::Columns(columnCount, 0, false);	//设置为columnCount列
-		//ImGui::SetColumnOffset(0, padding);
 
 		//迭代当前目录
 		for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory)) {
@@ -153,7 +149,11 @@ namespace Explorer
 
 		ImGui::Columns(1);	//设为一列（文件缩略图列）
 
+		ImGui::Begin("##tool", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+		
 		UI::DrawSlider("Thumbnail Size", &thumbnailSize, 16, 128);	//缩略图大小 滑动条 28
 		//ImGui::SliderFloat("Padding", &padding, 0, 32);
+
+		ImGui::End();
 	}
 }

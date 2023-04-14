@@ -40,7 +40,7 @@ namespace Explorer
 		/// 开始渲染场景：设置场景参数
 		/// </summary>
 		/// <param name="camera">场景相机</param>
-		static void BeginScene(const Camera& camera, Transform& transform);
+		static void BeginScene(Environment& environment, const Camera& camera, Transform& transform, std::vector<Object>& lightObjects);
 
 		/// <summary>
 		/// 开始渲染场景
@@ -54,6 +54,7 @@ namespace Explorer
 		/// 结束渲染场景
 		/// </summary>
 		static void EndScene(Environment& environment, const EditorCamera& camera);
+		static void EndScene(Environment& environment, const Camera& camera, Transform& transform);
 
 		static void EndScene();
 

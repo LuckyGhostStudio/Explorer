@@ -22,7 +22,7 @@ namespace Explorer
 		/// </summary>
 		enum class ProjectionType { Perspective = 0, Orthographic = 1 };
 	private:
-		bool m_Primary = true;	//是主相机
+		bool m_Primary = false;	//是否主相机
 
 		ClearFlag m_ClearFlag = ClearFlag::Color;						//清屏类型
 		glm::vec4 m_BackgroundColor = { 0.2f, 0.3f, 0.5f, 1.0f };		//背景颜色：清屏颜色
@@ -48,7 +48,7 @@ namespace Explorer
 		/// <summary>
 		/// 设置Camera组件图标
 		/// </summary>
-		virtual void SetIcon() override { m_Icon = std::make_shared<Texture2D>("assets/textures/defaults/Icons/Components/Camera_Icon.png"); }
+		virtual void SetIcon() override { m_Icon = std::make_shared<Texture2D>("Resources/Icons/Components/Camera_Icon.png"); }
 	public:
 		Camera();
 
@@ -94,19 +94,19 @@ namespace Explorer
 		void SetProjectionType(ProjectionType type) { m_ProjectionType = type; RecalculateProjection(); }
 
 		float GetNearClip() const { return m_Near; }
-		float& GetNearClip_Ref() { return m_Near; }
+		float& GetNearClip_Ref() { RecalculateProjection(); return m_Near; }
 		void SetNearClip(float nearClip) { m_Near = nearClip; RecalculateProjection(); }
 
 		float GetFarClip() const { return m_Far; }
-		float& GetFarClip_Ref() { return m_Far; }
+		float& GetFarClip_Ref() { RecalculateProjection(); return m_Far; }
 		void SetFarClip(float farClip) { m_Far = farClip; RecalculateProjection(); }
 
 		float GetSize() const { return m_Size; }
-		float& GetSize_Ref() { return m_Size; }
+		float& GetSize_Ref() { RecalculateProjection(); return m_Size; }
 		void SetSize(float size) { m_Size = size; RecalculateProjection(); }
 
 		float GetFOV() const { return m_Fov; }
-		float& GetFOV_Ref() { return m_Fov; }
+		float& GetFOV_Ref() { RecalculateProjection(); return m_Fov; }
 		void SetFOV(float fov) { m_Fov = fov; RecalculateProjection(); }
 	};
 }

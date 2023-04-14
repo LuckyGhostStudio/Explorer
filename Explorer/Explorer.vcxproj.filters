@@ -1543,4 +1543,7 @@
     <ClCompile Include="src\Explorer\ImGui\UI.cpp" />
     <ClCompile Include="src\Explorer\Components\Light.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

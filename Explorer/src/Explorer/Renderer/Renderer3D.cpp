@@ -64,10 +64,26 @@ namespace Explorer
 		
 	}
 
-	void Renderer3D::BeginScene(const Camera& camera, Transform& transform)
+	void Renderer3D::BeginScene(Environment& environment, const Camera& camera, Transform& transform, std::vector<Object>& lightObjects)
 	{
-		if (camera.GetEnable()) {
+		s_Data.CurrentLightCount = lightObjects.size();	//当前光源数量
 
+		auto& standardShader = ShaderLibrary::Get("Standard");		//标准着色器
+		standardShader->Bind();	//绑定标准着色器
+
+		glm::mat4& viewProjectionMatrix = camera.GetProjection() * glm::inverse(transform.GetTransform());	//计算VP矩阵 vp = p * v 
+
+		standardShader->SetMat4("u_ViewProjectionMatrix", viewProjectionMatrix);	//设置vp矩阵
+		standardShader->SetFloat3("u_CameraPos", transform.GetPosition());			//设置相机位置
+		standardShader->SetInt("u_LightCount", s_Data.CurrentLightCount);			//光源数量
+
+		//遍历Light对象列表
+		for (int i = 0; i < s_Data.CurrentLightCount; i++) {
+			Transform& lightTransform = lightObjects[i].GetComponent<Transform>();	//光源Transform
+			Light& light = lightObjects[i].GetComponent<Light>();					//光源Light
+
+			//设置Light Uniform数据
+			light.SetShaderData(lightTransform.GetPosition(), -lightTransform.GetForwardDirection(), standardShader, i);
 		}
 	}
 
@@ -127,6 +143,34 @@ namespace Explorer
 
 			RenderCommand::DrawIndexed(skybox.GetVertexArray());
 			glDepthFunc(GL_LESS);	//TODO:转移到RenderCommand
+		}
+	}
+
+	void Renderer3D::EndScene(Environment& environment, const Camera& camera, Transform& transform)
+	{
+		//启用天空盒
+		if (environment.GetSkyboxEnable()) {
+			//清屏标志为Skybox
+			if (camera.GetClearFlag() == Camera::ClearFlag::Skybox) {
+				glDepthFunc(GL_LEQUAL);	//TODO:转移到RenderCommand
+				Skybox& skybox = environment.GetSkybox();	//天空盒
+				auto& skyboxShader = skybox.GetShader();	//Skybox着色器
+				skyboxShader->Bind();						//绑定Skybox着色器
+				skybox.GetCubemap()->Bind();				//绑定Cubemap纹理
+
+				glm::mat4& rotationMatrix = glm::rotate(glm::mat4(1.0f), skybox.GetRotation(), { 0, 1, 0 });	//旋转矩阵（绕y轴）
+				glm::mat4& viewMatrix = glm::mat4(glm::mat3(glm::inverse(transform.GetTransform())));			//移除view矩阵位移部分 使相机永远处于天空盒中心
+
+				skyboxShader->SetMat4("u_RotationMatrix", rotationMatrix);				//设置旋转矩阵
+				skyboxShader->SetMat4("u_ProjectionMatrix", camera.GetProjection());	//设置projection矩阵
+				skyboxShader->SetMat4("u_ViewMatrix", viewMatrix);						//设置view矩阵
+				skyboxShader->SetInt("u_Cubemap", 0);									//设置Cubemap 0号槽位
+				skyboxShader->SetFloat3("u_TintColor", skybox.GetTintColor());			//设置Skybox色调
+				skyboxShader->SetFloat("u_Expose", skybox.GetExpose());					//设置Skybox曝光度
+
+				RenderCommand::DrawIndexed(skybox.GetVertexArray());
+				glDepthFunc(GL_LESS);	//TODO:转移到RenderCommand
+			}
 		}
 	}
 

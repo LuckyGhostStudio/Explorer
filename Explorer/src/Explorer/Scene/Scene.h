@@ -71,8 +71,9 @@ namespace Explorer
 		/// 创建Camera
 		/// </summary>
 		/// <param name="name">相机名</param>
+		/// <param name="primary">是否是主相机</param>
 		/// <returns>相机</returns>
-		Object CreateCameraObject(const std::string& name = "Camera");
+		Object CreateCameraObject(const std::string& name = "Camera", bool primary = false);
 
 		/// <summary>
 		/// 创建Light
@@ -96,7 +97,7 @@ namespace Explorer
 		void OnUpdateEditor(DeltaTime dt, EditorCamera& camera);
 
 		/// <summary>
-		/// 更新：每帧调用
+		/// 运行时更新：每帧调用
 		/// </summary>
 		/// <param name="dt">帧间隔</param>
 		void OnUpdate(DeltaTime dt);
