@@ -13,24 +13,22 @@ namespace Explorer
 	class EditorLayer :public Layer
 	{
 	private:
-		std::shared_ptr<Framebuffer> m_Framebuffer;			//帧缓冲区
+		std::shared_ptr<Framebuffer> m_Framebuffer;	//帧缓冲区
 
-		std::shared_ptr<Scene> m_ActiveScene;	//活动场景
-		EditorCamera m_EditorCamera;			//编辑器相机
+		std::shared_ptr<Scene> m_ActiveScene;		//活动场景
+		EditorCamera m_EditorCamera;				//编辑器相机
 
-		Object m_MainCamera;					//场景默认相机：主相机
-		Object m_Cube;							//场景默认正方体
-		Object m_Light;							//场景默认光源
+		Object m_MainCamera;						//场景默认相机：主相机
+		Object m_Cube;								//场景默认正方体
+		Object m_Light;								//场景默认光源
 
-		Object m_PickedObject;					//被鼠标拾取的物体
+		Object m_PickedObject;						//被鼠标拾取的物体
 
 		bool m_ViewportFocused = false;				//视口被聚焦
 		bool m_ViewportHovered = false;				//鼠标悬停在视口
 
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };	//视口大小
 		glm::vec2 m_ViewportBounds[2];				//视口边界位置
-
-		int m_GizmoType = -1;	//Gizmo操作类型 -1无 0平移 1旋转 2缩放
 
 		enum class SceneState
 		{
@@ -109,6 +107,17 @@ namespace Explorer
 		/// 场景另存为
 		/// </summary>
 		void SaveSceneAs();
+
+		/// <summary>
+		/// 导入模型文件
+		/// </summary>
+		void ImportModelFile();
+
+		/// <summary>
+		/// 导入模型文件
+		/// </summary>
+		/// <param name="path">模型文件路径</param>
+		void ImportModelFile(const std::filesystem::path& path);
 
 		/// <summary>
 		/// Play按钮按下时调用

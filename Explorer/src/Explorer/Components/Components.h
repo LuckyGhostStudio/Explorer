@@ -13,6 +13,8 @@ namespace Explorer
 	private:
 		std::string m_ObjectName;	//挂载此组件的物体名
 		bool m_ObjectEnable;		//是否启用物体
+
+		std::vector<entt::entity> m_ChildrenID{ entt::null };	//子物体ID TODO:添加父子物体
 	public:
 		Self() = default;
 		Self(const Self&) = default;

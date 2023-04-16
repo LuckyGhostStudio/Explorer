@@ -6,6 +6,7 @@
 
 #include "Explorer/Scene/SceneSerializer.h"
 #include "Explorer/Utils/PlatformUtils.h"
+#include "Explorer/Utils/ModelImporter.h"
 
 #include "ImGuizmo.h"
 #include "Explorer/Math/Math.h"
@@ -144,8 +145,8 @@ namespace Explorer
 			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);	//读取1号颜色缓冲区像素
 			//被鼠标拾取的物体
 			m_PickedObject = pixelData == -1 ? Object() : Object((entt::entity)pixelData, m_ActiveScene.get());
-			EXP_CORE_WARN("pixelData:{0}", pixelData);
-			EXP_CORE_WARN("mx:{0}, my:{1}", mouseX, mouseY);
+			//EXP_CORE_WARN("pixelData:{0}", pixelData);
+			//EXP_CORE_WARN("mx:{0}, my:{1}", mouseX, mouseY);
 		}
 
 		m_Framebuffer->Unbind();	//解除绑定帧缓冲区
@@ -200,6 +201,7 @@ namespace Explorer
 
 		style.FrameBorderSize = 1.0f;			//边框尺寸
 		style.WindowMenuButtonPosition = -1;	//窗口tabbar按钮取消显示
+		style.ButtonTextAlign = { 0.5f, 0.5f };	//按钮文字居中
 
 		//菜单条
 		if (ImGui::BeginMenuBar())
@@ -227,9 +229,7 @@ namespace Explorer
 				if (ImGui::BeginMenu("Import")) {
 					//.obj文件
 					if (ImGui::MenuItem("Wavefront(.obj)")) {
-						//TODO:导入.obj文件
-						// TODO:创建SubMesh
-						//TODO:创建Mesh
+						ImportModelFile();	//导入模型文件
 					}
 					ImGui::EndMenu();
 				}
@@ -297,9 +297,18 @@ namespace Explorer
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
 
 		//将从拖拽源（Project面板）复制的数据拖放到目标（场景）	：场景路径
-		ContentBrowserPanel::DragDropToTarget({ ".explor" }, [&](const std::filesystem::path& scenePath)
+		ContentBrowserPanel::DragDropToTarget({ ".explor", ".obj"}, [&](const std::filesystem::path& filepath)
 		{
-			OpenScene(scenePath);	//打开场景
+			const std::string filename = filepath.filename().string();	//文件名
+			uint32_t dotIndex = filename.find_last_of('.');
+			std::string suffixname = filename.substr(dotIndex, filename.length() - dotIndex);	//文件后缀名
+
+			if (suffixname == ".explor") {	//场景文件
+				OpenScene(filepath);		//打开场景
+			}
+			else if (suffixname == ".obj") {	//.obj模型文件
+				ImportModelFile(filepath);		//导入模型文件
+			}
 		});
 
 		//编辑器相机
@@ -344,10 +353,8 @@ namespace Explorer
 					break;
 			}
 		}
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
-		ImGui::PopStyleColor();
-		ImGui::PopStyleColor();
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
 	}
 
 	void EditorLayer::OnEvent(Event& event)
@@ -457,6 +464,32 @@ namespace Explorer
 			SceneSerializer serializer(m_ActiveScene);	//场景序列化器
 			serializer.Serialize(filepath);				//序列化：保存场景
 		}
+	}
+
+	void EditorLayer::ImportModelFile()
+	{
+		std::string filepath = FileDialogs::OpenFile("Wavefront(*.obj)\0*.obj\0");	//打开文件对话框 .obj文件
+		//路径不为空
+		if (!filepath.empty()) {
+			ImportModelFile(filepath);	//导入模型文件
+		}
+	}
+
+	void EditorLayer::ImportModelFile(const std::filesystem::path& path)
+	{
+		ModelImporter::Load(path.string());		//加载文件
+
+		auto& mesh = ModelImporter::GetMesh();	//已导入的Mesh
+
+		std::string& name = path.stem().string();	//物体名/网格名
+
+		Object object = m_ActiveScene->CreateEmptyObject(name);	//创建空物体
+			
+		mesh.SetType(Mesh::Type::Other);	//Mesh类型：其他网格
+		mesh.SetName(name);					//设置Mesh名
+
+		object.AddComponent<Mesh>(mesh);	//添加Mesh组件
+		object.AddComponent<Material>();	//添加Material组件
 	}
 
 	void EditorLayer::OnScenePlay()

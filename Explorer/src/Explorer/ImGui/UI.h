@@ -87,6 +87,45 @@ namespace Explorer
 		static void DrawImage(const std::string& label, uint32_t textureID, const glm::vec2& size, float framePadding = 2.0f, float labelColumnWidth = 120.0f, float widgetOffset = 20.0f);
 
 		/// <summary>
+		/// 绘制按钮
+		/// </summary>
+		/// <typeparam name="Func">按钮监听函数</typeparam>
+		/// <param name="label">标签名</param>
+		/// <param name="text">按钮文本</param>
+		/// <param name="function">按钮监听函数</param>
+		/// <param name="height">按钮高</param>s
+		/// <param name="labelColumnWidth">标签列宽</param>
+		/// <param name="widgetOffset">小部件右边界向左偏移量</param>
+		template<typename Func>
+		static void DrawButton(const std::string& label, const std::string& text, Func function, float height = 0, float labelColumnWidth = 120.0f, float widgetOffset = 20.0f)
+		{
+			ImGui::PushID(label.c_str());	//设置控件ID
+
+			float panelWidth = ImGui::GetWindowContentRegionWidth();	//面板宽度
+
+			ImGui::Columns(2, 0, false);	//设置为 两列 id 边界取消显示
+			ImGui::SetColumnWidth(0, labelColumnWidth);	//设置0号列宽
+
+			ImGui::Text(label.c_str());	//标签（0号列）
+
+			ImGui::NextColumn();
+
+			ImGui::PushItemWidth(panelWidth - labelColumnWidth - widgetOffset);	//设置1号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
+
+			float width = panelWidth - labelColumnWidth - widgetOffset;
+			//按钮（1号列）
+			ImGui::GetStyle().ButtonTextAlign = ImVec2(0.0f, 0.5f);	//文本左对齐
+			if (ImGui::Button(text.c_str(), ImVec2(width, height))) {
+				function();	//按钮事件函数
+			}
+			ImGui::PopItemWidth();
+
+			ImGui::Columns(1);				//设置为一列
+
+			ImGui::PopID();
+		}
+
+		/// <summary>
 		/// 绘制图像按钮
 		/// </summary>
 		/// <typeparam name="Func">按钮监听函数</typeparam>
@@ -112,7 +151,7 @@ namespace Explorer
 			ImGui::NextColumn();
 
 			ImGui::PushItemWidth(panelWidth - labelColumnWidth - widgetOffset);	//设置1号列宽 = 面板宽 - 标签列宽 - 小部件右边界向左偏移量
-			//贴图选择&预览按钮（1号列）
+			//按钮（1号列）
 			if (ImGui::ImageButton((ImTextureID)textureID, ImVec2(size.x, size.y), ImVec2(0, 1), ImVec2(1, 0), framePadding)) {
 				function();	//按钮事件函数
 			}

@@ -2,7 +2,7 @@ Scene: Untitled
 Objects:
   - Object: 12837192831273
     Self Component:
-      ObjectName: Cube
+      ObjectName: BookStore
       ObjectEnable: true
     Transform Component:
       Position: [0, 0, 0]
@@ -10,15 +10,15 @@ Objects:
       Scale: [1, 1, 1]
     Mesh Component:
       Enable: true
-      Type: 2
+      Type: 0
     Material Component:
       Enable: true
       Shader: Standard
-      Color: [0.413127422, 0.41312328, 0.41312328, 1]
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
       AlbedoTextureExist: true
       SpecularTextureExist: false
-      AlbedoTexturePath: assets\textures\plane.png
-      Shininess: 32
+      AlbedoTexturePath: assets\textures\ImphenziaPalette01.png
+      Shininess: 648
       Tiling: [1, 1]
       Offset: [0, 0]
   - Object: 12837192831273
@@ -40,11 +40,11 @@ Objects:
       RenderShadow: true
   - Object: 12837192831273
     Self Component:
-      ObjectName: Camera
+      ObjectName: Main Camera
       ObjectEnable: true
     Transform Component:
-      Position: [3.70000005, 2.5, 3.5]
-      Rotation: [30.5, -53, 175.5]
+      Position: [2.87400007, 2.88599992, 3.48399997]
+      Rotation: [-20.9659996, 35.5900002, 0]
       Scale: [1, 1, 1]
     Camera Component:
       Enable: true
@@ -56,17 +56,17 @@ Objects:
       Primary: true
 Environment:
   SkyboxEnable: true
-  SourceType: 0
+  SourceType: 1
   IntensityMultiplier: 1
-  AmbientColor: [0.211999997, 0.226999998, 0.259000003]
+  AmbientColor: [0.216214046, 0.216214776, 0.216216207]
   Skybox:
     Shader: Skybox
     TintColor: [0.5, 0.5, 0.5]
-    Expose: 1.79700005
+    Expose: 1.01699996
     Rotation: 0
-    CubemapRightPath: assets\textures\skyboxes\Citadella2\right.jpg
-    CubemapLeftPath: assets\textures\skyboxes\Citadella2\left.jpg
-    CubemapUpPath: assets\textures\skyboxes\Citadella2\up.jpg
-    CubemapDownPath: assets\textures\skyboxes\Citadella2\down.jpg
-    CubemapFrontPath: assets\textures\skyboxes\Citadella2\front.jpg
-    CubemapBackPath: assets\textures\skyboxes\Citadella2\back.jpg
+    CubemapRightPath: ""
+    CubemapLeftPath: ""
+    CubemapUpPath: ""
+    CubemapDownPath: ""
+    CubemapFrontPath: ""
+    CubemapBackPath: ""

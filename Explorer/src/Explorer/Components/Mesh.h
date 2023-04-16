@@ -47,11 +47,8 @@ namespace Explorer
 			Other = 1,	//其他类型：不是原生Mesh
 
 			//原生类型
-			Cube = 2,		//正方体
-			Sphere = 3,		//球
-			Capsule = 4,	//胶囊
-			Cylinder = 5,	//圆柱体
-			Plane = 6		//平面
+			Cube = 2,	//正方体
+			Plane = 3	//平面
 		};
 	private:
 		Type m_Type = Type::None;
@@ -63,8 +60,6 @@ namespace Explorer
 		uint32_t m_VertexCount = 0;			//顶点个数
 		uint32_t m_VertexIndexCount = 0;	//顶点索引个数
 	private:
-		virtual void SetName() override;
-
 		/// <summary>
 		/// 设置Mesh组件图标
 		/// </summary>
@@ -75,7 +70,8 @@ namespace Explorer
 		Mesh(const Mesh&) = default;
 		Mesh(const std::vector<SubMesh>& subMeshes, Type type = Type::None);
 
-		virtual const std::string& GetName() override { SetName(); return m_Name; }
+		void SetName(const std::string& name) { m_Name = name + " (Mesh)"; }
+		virtual const std::string& GetName() override { return m_Name; }
 		virtual std::shared_ptr<Texture2D>& GetIcon() override { SetIcon(); return m_Icon; }
 
 		Type GetType() const { return m_Type; }

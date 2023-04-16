@@ -12,6 +12,8 @@
 #include "Explorer/Components/Material.h"
 
 #include "Explorer/Utils/PlatformUtils.h"
+#include "Explorer/Utils/ModelImporter.h"
+
 #include "Explorer/ImGui/UI.h"
 
 #include "ContentBrowserPanel.h"
@@ -584,7 +586,7 @@ namespace Explorer
 					componentName = "Mesh";
 				}
 				else {
-					m_SelectionObject.AddComponent<Mesh>();
+					m_SelectionObject.AddComponent<Mesh>(Mesh::Type::None);
 					ImGui::CloseCurrentPopup();
 				}
 			}
@@ -600,11 +602,6 @@ namespace Explorer
 					ImGui::CloseCurrentPopup();
 				}
 			}
-			////添加SpriteRenderer组件 TODO:待删除
-			//if (ImGui::MenuItem("Sprite Renderer")) {
-			//	m_SelectionObject.AddComponent<SpriteRenderer>();
-			//	ImGui::CloseCurrentPopup();
-			//}
 
 			ImGui::EndPopup();
 		}
@@ -713,13 +710,37 @@ namespace Explorer
 		//绘制Mesh组件
 		DrawComponent<Mesh>(object, [](Mesh& mesh)
 		{
-			const char* meshTypes[] = { "None (Mesh)", "Other", "Cube", "Sphere", "Capsule", "Cylinder", "Plane"};
-			const char* currentMeshType = meshTypes[(int)mesh.GetType()];	//当前网格类型
+			//Mesh名：去掉'(Mesh)'
+			std::string meshName = mesh.GetName() != "[None] (Mesh)" ? mesh.GetName().substr(0, mesh.GetName().find(' ')) : "None (Mesh)";
 
-			//Mesh网格选择下拉列表
-			UI::DrawDropdownList("Mesh", currentMeshType, meshTypes, 7, [&](int index, const char* value)
+			//Mesh选择&显示按钮
+			UI::DrawButton("Mesh", meshName, [&]()
 			{
-				mesh.SetType((Mesh::Type)index);	//设置网格类型
+				std::string filepath = FileDialogs::OpenFile("Wavefront(*.obj)\0*.obj\0");	//打开文件对话框 .obj文件
+				//路径不为空
+				if (!filepath.empty()) {
+					ModelImporter::Load(filepath);		//加载文件
+
+					auto& m = ModelImporter::GetMesh();	//Mesh
+
+					m.SetType(Mesh::Type::Other);								//Mesh类型
+					m.SetName(std::filesystem::path(filepath).stem().string());	//Mesh名
+
+					mesh = m;
+				}
+			});
+
+			//将从拖拽源（Project面板）复制的数据拖放到目标（Mesh文件）
+			ContentBrowserPanel::DragDropToTarget({ ".obj" }, [&](const std::filesystem::path& filepath)
+			{
+				ModelImporter::Load(filepath.string());	//加载文件
+
+				auto& m = ModelImporter::GetMesh();		//Mesh
+				
+				m.SetType(Mesh::Type::Other);			//Mesh类型
+				m.SetName(filepath.stem().string());	//Mesh名
+
+				mesh = m;
 			});
 		});
 

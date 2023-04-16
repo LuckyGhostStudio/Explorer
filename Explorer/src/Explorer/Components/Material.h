@@ -47,6 +47,8 @@ namespace Explorer
 		virtual void SetIcon() override { m_Icon = std::make_shared<Texture2D>("Resources/Icons/Components/Material_Icon.png"); }
 	public:
 		Material();
+		Material(const std::string& albedoPath, const std::string& specularPath);
+		Material(const std::shared_ptr<Texture2D>& albedoTexture, const std::shared_ptr<Texture2D>& specularTexture);
 
 		virtual const std::string& GetName() override { SetName(); return m_Name; }
 		virtual std::shared_ptr<Texture2D>& GetIcon() override { SetIcon(); return m_Icon; }
@@ -63,6 +65,9 @@ namespace Explorer
 
 		void SetAlbedoTexture(const std::string& filepath);
 		void SetSpecularTexture(const std::string& filepath);
+
+		void SetAlbedoTexture(const std::shared_ptr<Texture2D>& texture);
+		void SetSpecularTexture(const std::shared_ptr<Texture2D>& texture);
 
 		std::shared_ptr<Texture2D>& GetAlbedoTexture() { return m_AlbedoTexture; }
 		std::shared_ptr<Texture2D>& GetSpecularTexture() { return m_SpecularTexture; }

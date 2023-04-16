@@ -55,7 +55,7 @@ namespace Explorer
 				const wchar_t* path = (const wchar_t*)payload->Data;	//负载数据
 				std::filesystem::path filepath = std::filesystem::path(g_AssetPath) / path;	//文件路径
 
-				const std::string filename = filepath.filename().string();	//场景文件名
+				const std::string filename = filepath.filename().string();	//文件名
 				uint32_t dotIndex = filename.find_last_of('.');
 				std::string suffixname = filename.substr(dotIndex, filename.length() - dotIndex);	//文件后缀名
 
@@ -64,7 +64,7 @@ namespace Explorer
 					//找到后缀名匹配的文件类型
 					if (suffixname == fileType) {
 						findType = true;
-						function(filepath);	//处理文件
+						function(filepath);	//处理文件（文件名）
 						break;
 					}
 				}

@@ -234,7 +234,7 @@ namespace Explorer
 			out << YAML::Key << "Enable" << YAML::Value << mesh.GetEnable();
 
 			out << YAML::Key << "Type" << YAML::Value << (int)mesh.GetType();
-			//TODO:添加其他属性
+			//TODO:添加其他属性 顶点 顶点索引 子网格
 
 			out << YAML::EndMap;	//结束Mesh组件Map
 		}
@@ -265,18 +265,6 @@ namespace Explorer
 			out << YAML::Key << "Offset" << YAML::Value << material.GetOffset();							//纹理平铺因子
 
 			out << YAML::EndMap;	//结束Material组件Map
-		}
-
-		//SpriteRenderer组件 TODO:待删除
-		if (object.HasComponent<SpriteRenderer>())
-		{
-			out << YAML::Key << "SpriteRenderer Component";
-			out << YAML::BeginMap;	//开始SpriteRenderer组件Map
-
-			auto& spriteRenderer = object.GetComponent<SpriteRenderer>();
-			out << YAML::Key << "Color" << YAML::Value << spriteRenderer.m_Color;
-
-			out << YAML::EndMap;	//结束SpriteRenderer组件Map
 		}
 
 		out << YAML::EndMap;	//结束物体Map
@@ -494,13 +482,7 @@ namespace Explorer
 								5, 20, 8,	// B G C z-
 							};
 
-							mesh.AddSubMesh(SubMesh(vertices, indices));	//添加Cube子网格
-							break;
-						case Mesh::Type::Sphere:
-							break;
-						case Mesh::Type::Capsule:
-							break;
-						case Mesh::Type::Cylinder:
+							mesh.AddSubMesh(SubMesh(vertices, indices));	//添加子网格
 							break;
 						case Mesh::Type::Plane:
 							break;
@@ -531,14 +513,6 @@ namespace Explorer
 					material.SetShininess(materialNode["Shininess"].as<float>());
 					material.SetTiling(materialNode["Tiling"].as<glm::vec2>());
 					material.SetOffset(materialNode["Offset"].as<glm::vec2>());
-				}
-
-				//SpriteRenderer组件结点 TODO:待删除
-				auto spriteRendererNode = object["SpriteRenderer Component"];
-				if (spriteRendererNode)
-				{
-					auto& spriteRenderer = deserializedObject.AddComponent<SpriteRenderer>();	//添加SpriteRenderer组件
-					spriteRenderer.m_Color = spriteRendererNode["Color"].as<glm::vec4>();
 				}
 			}
 		}

@@ -35,7 +35,6 @@ namespace Explorer
 		cube.AddComponent<Transform>();
 
 		cube.AddComponent<Mesh>(type);	//添加Mesh组件（type类型网格）
-
 		cube.AddComponent<Material>();	//添加Material组件
 
 		return cube;
@@ -45,8 +44,8 @@ namespace Explorer
 	{
 		Object camera = { m_Registry.create(), this };		//创建Camera
 
-		glm::vec3 position = { 2.325f, 0.963f, -1.309f };	//初始位置
-		glm::vec3 rotation = { -21.156, 120.181f, 0.0f };	//初始旋转
+		glm::vec3 position = { 2.734f, 1.796f, 3.294f };	//初始位置
+		glm::vec3 rotation = { -20.796f, 40.670f, 0.0f };	//初始旋转
 
 		camera.AddComponent<Self>(name);					//添加Self组件
 		camera.AddComponent<Transform>(position, rotation);	//添加Transform组件

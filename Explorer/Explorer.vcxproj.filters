@@ -66,6 +66,9 @@
     <ClInclude Include="src\Explorer\Components\Camera.h">
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Component.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Components\Components.h">
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
@@ -76,6 +79,12 @@
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Components\Mesh.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Skybox.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\SubMesh.h">
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Components\Transform.h">
@@ -126,7 +135,13 @@
     <ClInclude Include="src\Explorer\Events\MouseEvent.h">
       <Filter>src\Explorer\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\ImGui\Gizmo.h">
+      <Filter>src\Explorer\ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\ImGui\ImGuiLayer.h">
+      <Filter>src\Explorer\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\ImGui\UI.h">
       <Filter>src\Explorer\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Math\Math.h">
@@ -136,6 +151,9 @@
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\EditorCamera.h">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Renderer\Environment.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Framebuffer.h">
@@ -176,6 +194,9 @@
     </ClInclude>
     <ClInclude Include="src\Explorer\Scene\ScriptableObject.h">
       <Filter>src\Explorer\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Utils\ModelImporter.h">
+      <Filter>src\Explorer\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Utils\PlatformUtils.h">
       <Filter>src\Explorer\Utils</Filter>
@@ -1437,22 +1458,24 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\ImGui\Gizmo.h" />
-    <ClInclude Include="src\Explorer\Components\SubMesh.h" />
-    <ClInclude Include="src\Explorer\Utils\GeneralUtils.h" />
-    <ClInclude Include="src\Explorer\Renderer\Environment.h" />
-    <ClInclude Include="src\Explorer\Components\Skybox.h" />
-    <ClInclude Include="src\Explorer\ImGui\UI.h" />
-    <ClInclude Include="src\Explorer\Components\Component.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Components\Camera.cpp">
+      <Filter>src\Explorer\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Components\Light.cpp">
       <Filter>src\Explorer\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Components\Material.cpp">
       <Filter>src\Explorer\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Components\Mesh.cpp">
+      <Filter>src\Explorer\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Components\Skybox.cpp">
+      <Filter>src\Explorer\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Components\SubMesh.cpp">
       <Filter>src\Explorer\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Core\Application.cpp">
@@ -1473,10 +1496,16 @@
     <ClCompile Include="src\Explorer\Core\Window.cpp">
       <Filter>src\Explorer\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Explorer\ImGui\Gizmo.cpp">
+      <Filter>src\Explorer\ImGui</Filter>
+    </ClCompile>
     <ClCompile Include="src\Explorer\ImGui\ImGuiBuild.cpp">
       <Filter>src\Explorer\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\ImGui\ImGuiLayer.cpp">
+      <Filter>src\Explorer\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\ImGui\UI.cpp">
       <Filter>src\Explorer\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Math\Math.cpp">
@@ -1486,6 +1515,9 @@
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\EditorCamera.cpp">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Renderer\Environment.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Framebuffer.cpp">
@@ -1536,14 +1568,6 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\ImGui\Gizmo.cpp" />
-    <ClCompile Include="src\Explorer\Components\SubMesh.cpp" />
-    <ClCompile Include="src\Explorer\Renderer\Environment.cpp" />
-    <ClCompile Include="src\Explorer\Components\Skybox.cpp" />
-    <ClCompile Include="src\Explorer\ImGui\UI.cpp" />
-    <ClCompile Include="src\Explorer\Components\Light.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ClCompile Include="src\Explorer\Utils\ModelImporter.cpp" />
   </ItemGroup>
 </Project>

@@ -108,9 +108,10 @@ namespace Explorer
 
 			ImGui::PushID(filenameString.c_str());	//设置拖拽项id ：拖拽项文件名
 
+			//TODO:根据文件类型设置图标
 			std::shared_ptr<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;	//文件图标
 
-			//文件图标按钮
+			//文件图标按钮 
 			ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
 			ImGui::ImageButton((ImTextureID)icon->GetRendererID(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
 

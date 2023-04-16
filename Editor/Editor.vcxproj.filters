@@ -7,51 +7,24 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\EditorLayer.h" />
+    <ClInclude Include="src\Panels\ContentBrowserPanel.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
     <ClInclude Include="src\Panels\SceneHierarchyPanel.h">
       <Filter>Panels</Filter>
     </ClInclude>
-    <ClInclude Include="src\Panels\ContentBrowserPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorLayer.cpp" />
     <ClCompile Include="src\ExplorerEditor.cpp" />
+    <ClCompile Include="src\Panels\ContentBrowserPanel.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
     <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp">
       <Filter>Panels</Filter>
     </ClCompile>
-    <ClCompile Include="src\Panels\ContentBrowserPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\SkyboxShader.vert" />
-    <None Include="assets\shaders\SkyboxShader.frag" />
-    <None Include="assets\shaders\TextureShader.vert" />
-    <None Include="assets\shaders\StandardShader.frag" />
-    <None Include="assets\shaders\StandardShader.vert" />
-    <None Include="assets\shaders\TextureShader.frag" />
-    <None Include="assets\textures\defaults\Components Icon.afdesign" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="assets\textures\ChernoLogo.png" />
-    <Image Include="assets\textures\defaults\Explorer_NoneSkybox.jpg" />
-    <Image Include="asserts\textures\skybox\back.jpg" />
-    <Image Include="asserts\textures\skybox\bottom.jpg" />
-    <Image Include="asserts\textures\skybox\front.jpg" />
-    <Image Include="asserts\textures\skybox\left.jpg" />
-    <Image Include="asserts\textures\skybox\right.jpg" />
-    <Image Include="asserts\textures\skybox\top.jpg" />
-    <Image Include="assets\textures\Checkerboard.png" />
-    <Image Include="asserts\textures\defaults\CameraComponent_Icon.png" />
-    <Image Include="asserts\textures\defaults\Components Icon\MeshComponent_Icon.png" />
-    <Image Include="asserts\textures\defaults\Components Icon\CameraComponent_Icon.png" />
-    <Image Include="assets\textures\defaults\Icons\Buttons\ComponentSettings_Icon.png" />
-    <Image Include="assets\textures\defaults\Icons\Components\Camera_Icon.png" />
-    <Image Include="assets\textures\defaults\Icons\Components\DirectionalLight_Icon.png" />
-    <Image Include="assets\textures\defaults\Icons\Components\Material_Icon.png" />
-    <Image Include="assets\textures\defaults\Icons\Components\Mesh_Icon.png" />
-    <Image Include="assets\textures\defaults\Icons\Components\PointLight_Icon.png" />
-    <Image Include="assets\textures\defaults\Icons\Components\SpotLight_Icon.png" />
-    <Image Include="assets\textures\defaults\Icons\Components\Transform_Icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="assets\textures\defaults\Icons\Component Icon格式说明.txt" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>exppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;EXP_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;..\packages\Assimp.3.0.0\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -97,7 +97,7 @@
       <PrecompiledHeaderFile>exppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;EXP_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;..\packages\Assimp.3.0.0\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -121,7 +121,7 @@
       <PrecompiledHeaderFile>exppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;EXP_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\ImGuizmo;..\packages\Assimp.3.0.0\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -185,7 +185,7 @@
     <ClInclude Include="src\Explorer\Scene\Scene.h" />
     <ClInclude Include="src\Explorer\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Explorer\Scene\ScriptableObject.h" />
-    <ClInclude Include="src\Explorer\Utils\GeneralUtils.h" />
+    <ClInclude Include="src\Explorer\Utils\ModelImporter.h" />
     <ClInclude Include="src\Explorer\Utils\PlatformUtils.h" />
     <ClInclude Include="src\exppch.h" />
     <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h" />
@@ -640,6 +640,7 @@
     <ClCompile Include="src\Explorer\Scene\Object.cpp" />
     <ClCompile Include="src\Explorer\Scene\Scene.cpp" />
     <ClCompile Include="src\Explorer\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\Explorer\Utils\ModelImporter.cpp" />
     <ClCompile Include="src\Explorer\Utils\PlatformUtils.cpp" />
     <ClCompile Include="src\exppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -663,19 +664,7 @@
       <Project>{88F1A057-74BE-FB62-9DD7-E90A890331F1}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\Assimp.redist.3.0.0\build\native\Assimp.redist.targets" Condition="Exists('..\packages\Assimp.redist.3.0.0\build\native\Assimp.redist.targets')" />
-    <Import Project="..\packages\Assimp.3.0.0\build\native\Assimp.targets" Condition="Exists('..\packages\Assimp.3.0.0\build\native\Assimp.targets')" />
   </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Assimp.redist.3.0.0\build\native\Assimp.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Assimp.redist.3.0.0\build\native\Assimp.redist.targets'))" />
-    <Error Condition="!Exists('..\packages\Assimp.3.0.0\build\native\Assimp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Assimp.3.0.0\build\native\Assimp.targets'))" />
-  </Target>
 </Project>

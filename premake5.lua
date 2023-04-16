@@ -21,6 +21,7 @@ IncludeDir["stb_image"] = "Explorer/vendor/stb_image"
 IncludeDir["entt"] = "Explorer/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "Explorer/vendor/yaml-cpp/include"
 IncludeDir["ImGuizmo"] = "Explorer/vendor/ImGuizmo"
+IncludeDir["Assimp"] = "packages/Assimp.3.0.0/build/native/include"
 
 group "Dependencies"
 	include "Explorer/vendor/GLFW"		--包含GLFW目录
@@ -71,7 +72,8 @@ project "Explorer"		--项目
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGuizmo}"
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.Assimp}"
 	}
 
 	links
@@ -188,7 +190,8 @@ project "Editor"		--项目
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.ImGuizmo}"
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.Assimp}"
 	}
 
 	links

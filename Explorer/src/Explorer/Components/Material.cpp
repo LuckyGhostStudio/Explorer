@@ -20,24 +20,53 @@ namespace Explorer
         m_SpecularTextureExist = false;
     }
 
+    Material::Material(const std::string& albedoPath, const std::string& specularPath)
+    {
+        m_Shader = ShaderLibrary::Get("Standard");  //标准着色器
+        m_Shader->Bind();
+
+        SetAlbedoTexture(albedoPath);       //设置Albedo贴图
+        SetSpecularTexture(specularPath);   //设置Specular贴图
+    }
+
+    Material::Material(const std::shared_ptr<Texture2D>& albedoTexture, const std::shared_ptr<Texture2D>& specularTexture)
+    {
+        SetAlbedoTexture(albedoTexture);       //设置Albedo贴图
+        SetSpecularTexture(specularTexture);   //设置Specular贴图
+    }
+
     void Material::SetAlbedoTexture(const std::string& filepath)
     {
-        m_AlbedoTexture = std::make_shared<Texture2D>(filepath);    //创建反光率贴图
-        m_AlbedoTexture->Bind((int)TextureType::Albedo);            //绑定反光率贴图
+        m_AlbedoTexture = std::make_shared<Texture2D>(filepath);    //创建Albedo贴图
+        m_AlbedoTexture->Bind((int)TextureType::Albedo);            //绑定Albedo贴图
         m_AlbedoTextureExist = true;
     }
 
     void Material::SetSpecularTexture(const std::string& filepath)
     {
-        m_SpecularTexture = std::make_shared<Texture2D>(filepath);  //创建高光贴图
-        m_SpecularTexture->Bind((int)TextureType::Specular);        //绑定高光贴图
+        m_SpecularTexture = std::make_shared<Texture2D>(filepath);  //创建Specular贴图
+        m_SpecularTexture->Bind((int)TextureType::Specular);        //绑定Specular贴图
+        m_SpecularTextureExist = true;
+    }
+
+    void Material::SetAlbedoTexture(const std::shared_ptr<Texture2D>& texture)
+    {
+        m_AlbedoTexture = texture;                          //设置Albedo贴图
+        m_AlbedoTexture->Bind((int)TextureType::Albedo);    //绑定Albedo贴图
+        m_AlbedoTextureExist = true;
+    }
+
+    void Material::SetSpecularTexture(const std::shared_ptr<Texture2D>& texture)
+    {
+        m_SpecularTexture = texture;                                //创建Specular贴图
+        m_SpecularTexture->Bind((int)TextureType::Specular);        //绑定Specular贴图
         m_SpecularTextureExist = true;
     }
 
     void Material::BindTexture()
     {
-        m_AlbedoTexture->Bind((int)TextureType::Albedo);            //绑定反光率贴图
-        m_SpecularTexture->Bind((int)TextureType::Specular);        //绑定高光贴图
+        m_AlbedoTexture->Bind((int)TextureType::Albedo);            //绑定Albedo贴图
+        m_SpecularTexture->Bind((int)TextureType::Specular);        //绑定Specular贴图
     }
     
     void Material::SetShaderData()
