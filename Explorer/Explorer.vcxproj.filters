@@ -1458,6 +1458,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Utils\GeneralUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Components\Camera.cpp">
@@ -1569,5 +1570,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Utils\ModelImporter.cpp" />
+    <ClCompile Include="src\Explorer\Utils\GeneralUtils.cpp" />
   </ItemGroup>
 </Project>

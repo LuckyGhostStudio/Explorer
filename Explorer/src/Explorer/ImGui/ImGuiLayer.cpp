@@ -38,9 +38,9 @@ namespace Explorer
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
 		float fontSize = 18.0f;
-		io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", fontSize);	//添加粗体（0号）
+		io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/OpenSans-Bold.ttf", fontSize);	//添加粗体（0号）
 		//默认字体 添加TTF字体 大小18
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", fontSize);	//1号
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/OpenSans-Regular.ttf", fontSize);	//1号
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();

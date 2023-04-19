@@ -101,7 +101,7 @@ float CalculateAttenuation(Light light)
 	return attenuation;
 }
 
-//计算冯氏光照模型光照
+//计算冯氏光照模型光照 TODO 没有光源时反照率贴图不显示
 vec3 CalculatePhongLighting(vec3 lightDir, vec3 lightColor, vec3 cameraDir)
 {
 	//漫反射颜色

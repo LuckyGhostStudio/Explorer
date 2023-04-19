@@ -234,7 +234,59 @@ namespace Explorer
 			out << YAML::Key << "Enable" << YAML::Value << mesh.GetEnable();
 
 			out << YAML::Key << "Type" << YAML::Value << (int)mesh.GetType();
-			//TODO:添加其他属性 顶点 顶点索引 子网格
+
+			//不是内置Mesh类型
+			if (mesh.GetType() == Mesh::Type::Other) {
+				out << YAML::Key << "Name" << YAML::Value << mesh.GetName();
+
+				out << YAML::Key << "SubMeshes" << YAML::Value << YAML::BeginSeq;	//子网格：开始SubMesh序列
+			
+				//遍历所有子网格
+				for (int i = 0; i < mesh.GetSubMeshCount(); i++) {
+					SubMesh& subMesh = mesh.GetSubMeshes()[i];
+
+					out << YAML::BeginMap;			//开始SubMesh Map
+					out << YAML::Key << "SubMesh" << YAML::Value << i;	//SubMesh结点
+
+					out << YAML::Key << "Vertices" << YAML::Value << YAML::BeginSeq;	//顶点：开始Vertex序列
+					
+					//顶点数据
+					for (int j = 0; j < subMesh.GetVertexCount(); j++) {
+						Vertex& vertex = subMesh.GetVertices()[j];
+
+						out << YAML::BeginMap;			//开始Vertex Map
+						out << YAML::Key << "Vertex" << YAML::Value << j;	//Vertex结点
+
+						out << YAML::Key << "Position" << YAML::Value << vertex.Position;
+						out << YAML::Key << "Color" << YAML::Value << vertex.Color;
+						out << YAML::Key << "Normal" << YAML::Value << vertex.Normal;
+						out << YAML::Key << "TexCoord" << YAML::Value << vertex.TexCoord;
+						out << YAML::Key << "ID" << YAML::Value << vertex.ID;
+						out << YAML::Key << "ObjectID" << YAML::Value << vertex.ObjectID;
+
+						out << YAML::EndMap;			//结束Vertex Map
+					}
+
+					out << YAML::EndSeq;												//结束Vertex序列
+
+					out << YAML::Key << "VertexIndices" << YAML::Value << YAML::BeginSeq;	//顶点索引：开始VertexIndices序列
+
+					//顶点索引数据
+					for (int j = 0; j < subMesh.GetVertexIndexCount(); j++) {
+						out << YAML::BeginMap;									//开始VertexIndex Map
+						out << YAML::Key << "VertexIndex" << YAML::Value << j;	//VertexIndex结点
+
+						out << YAML::Key << "Index" << YAML::Value << subMesh.GetVertexIndices()[j];
+
+						out << YAML::EndMap;				//结束VertexIndex Map
+					}
+
+					out << YAML::EndSeq;												//结束VertexIndices序列
+
+					out << YAML::EndMap;			//结束SubMesh Map
+				}
+				out << YAML::EndSeq;												//结束SubMesh序列
+			}
 
 			out << YAML::EndMap;	//结束Mesh组件Map
 		}
@@ -274,7 +326,7 @@ namespace Explorer
 	{
 		YAML::Emitter out;		//发射器
 		out << YAML::BeginMap;	//开始场景Map
-		out << YAML::Key << "Scene" << YAML::Value << "Untitled";			//场景：场景名
+		out << YAML::Key << "Scene" << YAML::Value << m_Scene->GetName();	//场景：场景名
 
 		out << YAML::Key << "Objects" << YAML::Value << YAML::BeginSeq;		//物体：开始物体序列
 		m_Scene->m_Registry.each([&](auto objectID)		//遍历场景注册表所有物体
@@ -340,6 +392,8 @@ namespace Explorer
 			return false;
 
 		std::string sceneName = data["Scene"].as<std::string>();	//场景名
+		m_Scene->SetName(sceneName);
+
 		EXP_CORE_TRACE("Deserializing scene '{0}'", sceneName);
 
 		YAML::Node objects = data["Objects"];			//物体序列结点
@@ -418,76 +472,48 @@ namespace Explorer
 
 					mesh.SetType((Mesh::Type)meshNode["Type"].as<int>());
 
-					std::vector<Vertex> vertices;	//Mesh顶点
-					std::vector<uint32_t> indices;	//Mesh顶点索引
+					//不是内置Mesh类型
+					if (mesh.GetType() == Mesh::Type::Other) {
+						mesh.SetName(meshNode["Name"].as<std::string>());	//Mesh名
 
-					switch (mesh.GetType())
-					{
-						case Mesh::Type::None:
-							break;
-						case Mesh::Type::Other:
-							break;
-						case Mesh::Type::Cube:
-							//正方体顶点
-							vertices =
-							{
-								// ---------位置---------	----------颜色----------		---------法线--------	---纹理坐标---  ID objID
-								{ {  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f }, { 0.0f, 0.0f }, 0, 0 },	// A 0 x+
-								{ {  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f }, { 0.0f, 0.0f }, 0, 0 },	// A 1 y-
-								{ {  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f }, { 0.0f, 0.0f }, 0, 0 },	// A 2 z+
+						YAML::Node subMeshes = meshNode["SubMeshes"];	//SubMeshes序列结点
 
-								{ {  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f },	{ 0.0f, 1.0f }, 1, 0 },	// B 3
-								{ {  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f },	{ 0.0f, 1.0f }, 1, 0 },	// B 4
-								{ {  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 0.0f, 1.0f }, 1, 0 },	// B 5
+						//SubMeshes序列结点存在
+						if (subMeshes) {
+							for (auto& subMeshNode : subMeshes) {
+								YAML::Node verticesNode = subMeshNode["Vertices"];				//Vertices序列结点
+								YAML::Node vertexIndicesNode = subMeshNode["VertexIndices"];	//VertexIndices序列结点
 
-								{ {  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f },	{ 1.0f, 1.0f }, 2, 0 },	// C 6
-								{ {  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f },	{ 1.0f, 1.0f }, 2, 0 },	// C 7
-								{ {  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 1.0f, 1.0f }, 2, 0 },	// C 8
+								std::vector<Vertex> vertices;	//顶点列表
+								std::vector<uint32_t> indices;	//顶点索引列表
 
-								{ {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f }, { 1.0f, 0.0f }, 3, 0 },	// D 9
-								{ {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f }, { 1.0f, 0.0f }, 3, 0 },	// D 10
-								{ {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f }, { 1.0f, 0.0f }, 3, 0 },	// D 11
+								//Vertices序列结点存在
+								if (verticesNode) {
+									for (auto& vertexNode : verticesNode) {
+										//设置Vertex数据
+										Vertex vertex;
+										vertex.Position = vertexNode["Position"].as<glm::vec3>();
+										vertex.Color = vertexNode["Color"].as<glm::vec4>();
+										vertex.Normal = vertexNode["Normal"].as<glm::vec3>();
+										vertex.TexCoord = vertexNode["TexCoord"].as<glm::vec2>();
+										vertex.ID = vertexNode["ID"].as<int>();
+										vertex.ObjectID = vertexNode["ObjectID"].as<int>();
 
-								{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 0.0f, 0.0f }, 4, 0 },	// E 12
-								{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f },	{ 0.0f, 0.0f }, 4, 0 },	// E 13
-								{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f },	{ 0.0f, 0.0f }, 4, 0 },	// E 14
+										vertices.push_back(vertex);	//添加到顶点列表
+									}
+								}
 
-								{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 0.0f, 1.0f }, 5, 0 },	// F 15
-								{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f },	{ 0.0f, 1.0f }, 5, 0 },	// F 16
-								{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 0.0f, 1.0f }, 5, 0 },	// F 17
+								//VertexIndices序列结点存在 
+								if (vertexIndicesNode) {
+									for (auto& indexNode : vertexIndicesNode) {
+										indices.push_back(indexNode["Index"].as<uint32_t>());	//添加顶点索引数据到列表
+									}
+								}
 
-								{ { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 1.0f, 1.0f }, 6, 0 },	// G 18
-								{ { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f },	{ 1.0f, 1.0f }, 6, 0 },	// G 19
-								{ { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 1.0f, 1.0f }, 6, 0 },	// G 20
-
-								{ { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 1.0f, 0.0f }, 7, 0 },	// H 21
-								{ { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f },	{ 1.0f, 0.0f }, 7, 0 },	// H 22
-								{ { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f },	{ 1.0f, 0.0f }, 7, 0 },	// H 23
-							};
-
-							//顶点索引
-							indices =
-							{
-								0, 3, 6,	// A B C x+
-								6, 9, 0,	// C D A x+
-								18, 15, 12,	// G F E x-
-								18, 21, 12,	// G H E x-
-								22, 7, 19,	// H C G y+
-								7, 10, 22,	// C D H y+
-								13, 16, 4,	// E F B y-
-								4, 1, 13,	// B A E y-
-								23, 14, 2,	// H E A z+
-								2, 11, 23,	// A D H z+
-								20, 5, 17,	// G B F z-
-								5, 20, 8,	// B G C z-
-							};
-
-							mesh.AddSubMesh(SubMesh(vertices, indices));	//添加子网格
-							break;
-						case Mesh::Type::Plane:
-							break;
+								mesh.AddSubMesh(SubMesh(vertices, indices));	//添加SubMesh到Mesh
+							}
+						}
 					}
-					//TODO:补充属性
 				}
 
 				//Material组件结点

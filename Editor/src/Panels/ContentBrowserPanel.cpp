@@ -2,6 +2,8 @@
 #include "ContentBrowserPanel.h"
 
 #include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Explorer/ImGui/UI.h"
 
@@ -9,10 +11,64 @@ namespace Explorer
 {
 	extern const std::filesystem::path g_AssetPath = "assets";	//资产目录（全局）
 
+	/// <summary>
+	/// 文件类型转为内置资产类型
+	/// </summary>
+	/// <param name="fileTypeString">文件类型（扩展名）</param>
+	/// <returns>内置资产类型</returns>
+	AssetType FileTypeToAssetType(const std::string& fileTypeString)
+	{
+		if (fileTypeString == ".font") return AssetType::FONT;
+		else if (fileTypeString == ".png") return AssetType::PNG;
+		else if (fileTypeString == ".jpg") return AssetType::JPG;
+		else if (fileTypeString == ".txt") return AssetType::TXT;
+		else if (fileTypeString == ".mesh") return AssetType::MESH;
+		else if (fileTypeString == ".obj") return AssetType::OBJ;
+		else if (fileTypeString == ".explor") return AssetType::EXPLOR;
+		else if (fileTypeString == ".mat") return AssetType::MAT;
+		else if (fileTypeString == ".vert") return AssetType::VERT;
+		else if (fileTypeString == ".frag") return AssetType::FRAG;
+		else if (fileTypeString == ".skybox") return AssetType::SKYBOX;
+		else return AssetType::NONE;
+	}
+
+	std::shared_ptr<Texture2D>& ContentBrowserPanel::SetAssetFileIcon(AssetType assetType, const std::filesystem::path& path)
+	{
+		switch (assetType)
+		{
+			case AssetType::NONE:	return m_NoneFileIcon;
+			case AssetType::FONT:	return m_NoneFileIcon;	//TODO
+			case AssetType::PNG:	return m_PngFileIcon;
+			case AssetType::JPG:	return m_JpgFileIcon;
+			case AssetType::TXT:	return m_TxtFileIcon;
+			case AssetType::MESH:	return m_MeshFileIcon;
+			case AssetType::OBJ:	return m_ObjFileIcon;
+			case AssetType::EXPLOR:	return m_ExplorFileIcon;
+			case AssetType::MAT:	return m_NoneFileIcon;	//TODO
+			case AssetType::VERT:	return m_VertFileIcon;
+			case AssetType::FRAG:	return m_FragFileIcon;
+			case AssetType::SKYBOX:	return m_NoneFileIcon;	//TODO
+		}
+
+		EXP_ASSERT(false, "Asset Type Not Found!");
+		return std::make_shared<Texture2D>(1, 1);
+	}
+
 	ContentBrowserPanel::ContentBrowserPanel() :m_CurrentDirectory(g_AssetPath)
 	{
 		m_DirectoryIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/Directory_Icon.png");
-		m_FileIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/File_Icon.png");
+		m_DirectoryClosedIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/DirectoryClosed_Icon.png");
+		m_DirectoryOpenedIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/DirectoryOpened_Icon.png");
+
+		m_NoneFileIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/File_Icon.png");
+		m_PngFileIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/PNGFile_Icon.png");
+		m_JpgFileIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/JPGFile_Icon.png");
+		m_TxtFileIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/TXTFile_Icon.png");
+		m_ObjFileIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/OBJFile_Icon.png");
+		m_MeshFileIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/MESHFile_Icon.png");
+		m_VertFileIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/VERTFile_Icon.png");
+		m_FragFileIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/FRAGFile_Icon.png");
+		m_ExplorFileIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/EXPLORFile_Icon.png");
 	}
 
 	void ContentBrowserPanel::OnImGuiRender()
@@ -58,18 +114,52 @@ namespace Explorer
 		std::string filename = directory.filename().string();	//目录名
 		ImGui::PushID(filename.c_str());
 
+		//树节点标志：允许重叠
+		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_AllowItemOverlap;
+
 		ImGuiTreeNodeFlags flags = (m_CurrentDirectory == directory ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
-		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;	//水平延伸到边框
+		flags |= ImGuiTreeNodeFlags_SpanAvailWidth | treeNodeFlags;	//水平延伸到边框
 		
-		if (directory == g_AssetPath) flags |= ImGuiTreeNodeFlags_DefaultOpen;	//是资产根目录 默认打开
+		ImGuiIO& io = ImGui::GetIO();
+		ImFont* font = io.Fonts->Fonts[1];	//默认字体：1号字体
+
+		//Assets根目录
+		if (directory == g_AssetPath) {
+			flags |= ImGuiTreeNodeFlags_DefaultOpen;	//资产根目录 默认打开
+			font = io.Fonts->Fonts[0];	//粗体：0号字体
+		}
 		if (isLeaf) flags |= ImGuiTreeNodeFlags_Leaf;							//是叶结点 没有箭头
 
-		//TODO:添加目录图标
-		bool opened = ImGui::TreeNodeEx((void*)filename.c_str(), flags, filename.c_str());	//目录树节点：结点id 结点标志 结点名（目录名）
-		
-		if (ImGui::IsItemClicked()) {		//当前结点被点击
+		static ImVec4 headerColor = { 0, 0, 0, 0 };	//树节点颜色
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1, 1));	//设置边框尺寸
+		ImGui::PushStyleColor(ImGuiCol_Header, headerColor);
+
+		ImVec2 nodePos = ImGui::GetCursorPos();	//目录结点位置坐标
+
+		bool opened = ImGui::TreeNodeEx((void*)filename.c_str(), flags, "");	//目录树节点：结点id 结点标志 结点名（目录名）
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+
+		//当前结点被点击
+		if (ImGui::IsItemClicked()) {		
 			m_CurrentDirectory = directory;	//directory被选中
+			headerColor = ImVec4(0.13f, 0.30f, 0.43f, 1.0f);	//设置选中颜色
 		}
+
+		uint32_t directoryIconID = opened && !isLeaf ? m_DirectoryOpenedIcon->GetRendererID() : m_DirectoryClosedIcon->GetRendererID();	//目录图标ID
+
+		ImGui::SameLine();
+		ImGui::SetCursorPos(ImVec2(nodePos.x + 28, nodePos.y + 2));							//设置Icon位置
+		ImGui::Image((void*)directoryIconID, ImVec2(16, 16), ImVec2(0, 1), ImVec2(1, 0));	//目录图标图片
+
+		ImGui::SameLine();
+
+		ImGui::SetCursorPos(ImVec2(nodePos.x + 52, nodePos.y));	//设置Text位置
+
+		ImGui::PushFont(font);			//设置结点文本字体为粗体
+		ImGui::Text(filename.c_str());	//目录名
+		ImGui::PopFont();
 
 		//当前结点是目录结点
 		if (opened) {
@@ -104,12 +194,22 @@ namespace Explorer
 			const std::filesystem::path& path = directoryEntry.path();			//当前目录的 子目录或文件路径
 			auto relativePath = std::filesystem::relative(path, g_AssetPath);	//path相对于资产目录的路径
 
-			std::string filenameString = relativePath.filename().string();	//目录或文件名
+			std::string filenameString = relativePath.filename().string();	//目录或文件名（包含扩展名）
+			std::string stemString = relativePath.stem().string();			//目录或文件名（不包含扩展名）
 
 			ImGui::PushID(filenameString.c_str());	//设置拖拽项id ：拖拽项文件名
 
-			//TODO:根据文件类型设置图标
-			std::shared_ptr<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;	//文件图标
+			std::shared_ptr<Texture2D> icon;
+			//根据文件类型设置文件图标
+			if (directoryEntry.is_directory()) {
+				icon = m_DirectoryClosedIcon;	//文件夹关闭图标
+			}
+			else {
+				std::string fileTypeString = GeneralUtils::GetFileType(filenameString);	//文件后缀名
+				AssetType assetType = FileTypeToAssetType(fileTypeString);				//资产类型
+
+				icon = SetAssetFileIcon(assetType, path);	//设置资产文件图标
+			}
 
 			//文件图标按钮 
 			ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
@@ -139,9 +239,8 @@ namespace Explorer
 				textAlignValue = 0.5f;
 			}
 			ImGui::PushStyleVar(ImGuiStyleVar_SelectableTextAlign, { textAlignValue, textAlignValue });	//文本居中对齐
-			ImGui::Selectable(filenameString.c_str(), m_CurrentDirectory == path);
+			ImGui::Selectable(stemString.c_str(), m_CurrentDirectory == path);
 			ImGui::PopStyleVar();
-			//ImGui::TextWrapped(filenameString.c_str());	//文件名
 
 			ImGui::NextColumn();
 

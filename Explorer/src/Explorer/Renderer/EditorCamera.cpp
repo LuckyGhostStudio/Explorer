@@ -85,7 +85,7 @@ namespace Explorer
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)
 	{
-		float delta = e.GetYOffset() * 0.1f;	//滚轮Y偏移量
+		float delta = e.GetYOffset() * 0.4f;	//滚轮Y偏移量 TODO:修改偏移系数（在设置中设置偏移系数）
 		ViewZoom(delta);						//视图缩放
 		UpdateView();							//更新视图
 		return false;

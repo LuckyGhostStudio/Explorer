@@ -1,21 +1,65 @@
 #pragma once
 
 #include "Explorer/Renderer/Texture.h"
+#include "Explorer/Utils/GeneralUtils.h"
 
 #include <filesystem>
 
 namespace Explorer
 {
 	/// <summary>
+	/// 资产文件类型
+	/// </summary>
+	enum class AssetType
+	{
+		NONE = 0,	//未知类型
+
+		FONT = 1,	//字体	TODO:待实现
+		//Texture
+		PNG = 2,
+		JPG = 3,
+
+		TXT = 4,	//文本
+
+		//Model
+		MESH = 5,	//网格
+		OBJ = 6,
+
+		EXPLOR = 7,	//场景
+
+		MAT = 8,	//材质	TODO:待实现
+
+		//Shader TODO:待更改为自定义Shader资产
+		VERT = 9,
+		FRAG = 10,
+
+		SKYBOX = 11	//天空盒	TODO:待实现
+	};
+
+	/// <summary>
 	/// 项目文件目录浏览面板
 	/// </summary>
 	class ContentBrowserPanel
 	{
 	private:
-		std::filesystem::path m_CurrentDirectory;	//当前目录
+		std::filesystem::path m_CurrentDirectory;		//当前目录
 
-		std::shared_ptr<Texture2D> m_DirectoryIcon;	//目录图标
-		std::shared_ptr<Texture2D> m_FileIcon;		//文件图标
+		std::shared_ptr<Texture2D> m_DirectoryIcon;		//目录图标
+		std::shared_ptr<Texture2D> m_DirectoryClosedIcon;	//文件夹关闭图标
+		std::shared_ptr<Texture2D> m_DirectoryOpenedIcon;	//文件夹打开图标
+
+		std::shared_ptr<Texture2D> m_NoneFileIcon;		//未知文件图标
+		std::shared_ptr<Texture2D> m_FontFileIcon;		//字体文件图标
+		std::shared_ptr<Texture2D> m_PngFileIcon;		//png文件图标
+		std::shared_ptr<Texture2D> m_JpgFileIcon;		//jpj文件图标
+		std::shared_ptr<Texture2D> m_TxtFileIcon;		//文本文件图标
+		std::shared_ptr<Texture2D> m_MeshFileIcon;		//Mesh文件图标
+		std::shared_ptr<Texture2D> m_ObjFileIcon;		//Obj文件图标
+		std::shared_ptr<Texture2D> m_ExplorFileIcon;	//场景文件图标
+		std::shared_ptr<Texture2D> m_MatFileIcon;		//材质文件图标	TODO
+		std::shared_ptr<Texture2D> m_VertFileIcon;		//顶点着色器文件图标
+		std::shared_ptr<Texture2D> m_FragFileIcon;		//片元着色器文件图标
+		std::shared_ptr<Texture2D> m_SkyboxFileIcon;	//天空盒文件图标	TODO
 
 		/// <summary>
 		/// 绘制目录树节点
@@ -27,6 +71,14 @@ namespace Explorer
 		/// 绘制缩略图面板
 		/// </summary>
 		void DrawFileThumbnailsPanel();
+
+		/// <summary>
+		/// 设置资产文件图标
+		/// </summary>
+		/// <param name="assetType">资产类型</param>
+		/// <param name="path">资产文件路径</param>
+		/// <returns>资产图标</returns>
+		std::shared_ptr<Texture2D>& SetAssetFileIcon(AssetType assetType, const std::filesystem::path& path);
 	public:
 		ContentBrowserPanel();
 
@@ -55,9 +107,7 @@ namespace Explorer
 				const wchar_t* path = (const wchar_t*)payload->Data;	//负载数据
 				std::filesystem::path filepath = std::filesystem::path(g_AssetPath) / path;	//文件路径
 
-				const std::string filename = filepath.filename().string();	//文件名
-				uint32_t dotIndex = filename.find_last_of('.');
-				std::string suffixname = filename.substr(dotIndex, filename.length() - dotIndex);	//文件后缀名
+				std::string suffixname = GeneralUtils::GetFileType(filepath.filename().string());	//文件后缀名
 
 				bool findType = false;
 				for (auto& fileType : fileTypes) {

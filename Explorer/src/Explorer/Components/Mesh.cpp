@@ -1,6 +1,8 @@
 #include <exppch.h>
 #include "Mesh.h"
 
+#include "Explorer/Utils/ModelImporter.h"
+
 namespace Explorer
 {
 	Mesh::Mesh(Type type)
@@ -26,9 +28,7 @@ namespace Explorer
 		if (type != Type::Other) {
 			ClearSubMeshes();	//清空子网格
 
-			std::vector<Vertex> vertices;	//Mesh顶点
-			std::vector<uint32_t> indices;	//Mesh顶点索引
-
+			//以下的.mesh文件都是.obj文件（仅仅改变后缀名，文件结构无变化，为区分内置Mesh）TODO
 			switch (type)
 			{
 				case Type::None:
@@ -36,69 +36,26 @@ namespace Explorer
 					break;
 				case Type::Cube:
 					m_Name = "Cube (Mesh)";
-
-					//正方体顶点
-					vertices =
-					{
-						// ---------位置---------	----------颜色----------		---------法线--------	---纹理坐标---  ID objID
-						{ {  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f }, { 0.0f, 0.0f }, 0, 0 },	// A 0 x+
-						{ {  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f }, { 0.0f, 0.0f }, 0, 0 },	// A 1 y-
-						{ {  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f }, { 0.0f, 1.0f }, 0, 0 },	// A 2 z+
-
-						{ {  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f },	{ 1.0f, 0.0f }, 1, 0 },	// B 3
-						{ {  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f },	{ 0.0f, 1.0f }, 1, 0 },	// B 4
-						{ {  0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 0.0f, 0.0f }, 1, 0 },	// B 5
-
-						{ {  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f },	{ 1.0f, 1.0f }, 2, 0 },	// C 6
-						{ {  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f },	{ 0.0f, 0.0f }, 2, 0 },	// C 7
-						{ {  0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 0.0f, 1.0f }, 2, 0 },	// C 8
-
-						{ {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  1.0f,  0.0f,  0.0f }, { 0.0f, 1.0f }, 3, 0 },	// D 9
-						{ {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f }, { 0.0f, 1.0f }, 3, 0 },	// D 10
-						{ {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f }, { 0.0f, 0.0f }, 3, 0 },	// D 11
-
-						{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 1.0f, 0.0f }, 4, 0 },	// E 12
-						{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f },	{ 1.0f, 0.0f }, 4, 0 },	// E 13
-						{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f },	{ 1.0f, 1.0f }, 4, 0 },	// E 14
-
-						{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 0.0f, 0.0f }, 5, 0 },	// F 15
-						{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f, -1.0f,  0.0f },	{ 1.0f, 1.0f }, 5, 0 },	// F 16
-						{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 1.0f, 0.0f }, 5, 0 },	// F 17
-
-						{ { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 0.0f, 1.0f }, 6, 0 },	// G 18
-						{ { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f },	{ 1.0f, 0.0f }, 6, 0 },	// G 19
-						{ { -0.5f,  0.5f, -0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f, -1.0f },	{ 1.0f, 1.0f }, 6, 0 },	// G 20
-
-						{ { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, { -1.0f,  0.0f,  0.0f },	{ 1.0f, 1.0f }, 7, 0 },	// H 21
-						{ { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  1.0f,  0.0f },	{ 1.0f, 1.0f }, 7, 0 },	// H 22
-						{ { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f, 1.0f, 1.0f }, {  0.0f,  0.0f,  1.0f },	{ 1.0f, 0.0f }, 7, 0 },	// H 23
-					};
-
-					//顶点索引
-					indices =
-					{
-						0, 3, 6,	// A B C x+
-						6, 9, 0,	// C D A x+
-						18, 15, 12,	// G F E x-
-						18, 21, 12,	// G H E x-
-						22, 7, 19,	// H C G y+
-						7, 10, 22,	// C D H y+
-						13, 16, 4,	// E F B y-
-						4, 1, 13,	// B A E y-
-						23, 14, 2,	// H E A z+
-						2, 11, 23,	// A D H z+
-						20, 5, 17,	// G B F z-
-						5, 20, 8,	// B G C z-
-					};
-
-					AddSubMesh(SubMesh(vertices, indices));	//添加子网格
+					ModelImporter::Load("assets/models/defaults/Cube.mesh");		//加载Cube.mesh文件
 					break;
 				case Type::Plane:
 					m_Name = "Plane (Mesh)";
-
-					//TODO::添加平面顶点数据
+					ModelImporter::Load("assets/models/defaults/Plane.mesh");		//加载Plane.mesh文件
+					break;
+				case Type::Cone:
+					m_Name = "Cone (Mesh)";
+					ModelImporter::Load("assets/models/defaults/Cone.mesh");		//加载Cone.mesh文件
+					break;
+				case Type::Cylinder:
+					m_Name = "Cylinder (Mesh)";
+					ModelImporter::Load("assets/models/defaults/Cylinder.mesh");	//加载Cylinder.mesh文件
+					break;
+				case Type::Sphere:
+					m_Name = "Sphere (Mesh)";
+					ModelImporter::Load("assets/models/defaults/Sphere.mesh");		//加载Sphere.mesh文件
 					break;
 			}
+			AddSubMesh(ModelImporter::GetMesh().GetSubMeshes()[0]);	//添加第0个子网格
 		}
 	}
 

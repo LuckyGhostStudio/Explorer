@@ -1,0 +1,151 @@
+Scene: Untitled
+Objects:
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Sphere
+      ObjectEnable: true
+    Transform Component:
+      Position: [2.1636765, 0.958328009, 2.54658365]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Mesh Component:
+      Enable: true
+      Type: 6
+    Material Component:
+      Enable: true
+      Shader: Standard
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
+      AlbedoTextureExist: false
+      SpecularTextureExist: false
+      Shininess: 32
+      Tiling: [1, 1]
+      Offset: [0, 0]
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Cylinder
+      ObjectEnable: true
+    Transform Component:
+      Position: [2.9481678, 1.24582422, -0.92043972]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Mesh Component:
+      Enable: true
+      Type: 5
+    Material Component:
+      Enable: true
+      Shader: Standard
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
+      AlbedoTextureExist: false
+      SpecularTextureExist: false
+      Shininess: 32
+      Tiling: [1, 1]
+      Offset: [0, 0]
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Cone
+      ObjectEnable: true
+    Transform Component:
+      Position: [0, 1.27764916, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Mesh Component:
+      Enable: true
+      Type: 4
+    Material Component:
+      Enable: true
+      Shader: Standard
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
+      AlbedoTextureExist: false
+      SpecularTextureExist: false
+      Shininess: 32
+      Tiling: [1, 1]
+      Offset: [0, 0]
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Cube
+      ObjectEnable: true
+    Transform Component:
+      Position: [-1.88443828, 1.11655593, 1.80683792]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Mesh Component:
+      Enable: true
+      Type: 2
+    Material Component:
+      Enable: true
+      Shader: Standard
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
+      AlbedoTextureExist: false
+      SpecularTextureExist: false
+      Shininess: 32
+      Tiling: [1, 1]
+      Offset: [0, 0]
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Plane
+      ObjectEnable: true
+    Transform Component:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [8.03250027, 8.03250027, 8.03250027]
+    Mesh Component:
+      Enable: true
+      Type: 3
+    Material Component:
+      Enable: true
+      Shader: Standard
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
+      AlbedoTextureExist: false
+      SpecularTextureExist: false
+      Shininess: 32
+      Tiling: [1, 1]
+      Offset: [0, 0]
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Point Light
+      ObjectEnable: true
+    Transform Component:
+      Position: [2, 4.6031189, 6.13345957]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light Component:
+      Enable: true
+      Type: 1
+      Range: 100
+      SpotOuterAngle: 0.34906584
+      SpotInnerAngle: 0.319395244
+      Color: [1, 1, 1]
+      Intensity: 1
+      RenderShadow: true
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Main Camera
+      ObjectEnable: true
+    Transform Component:
+      Position: [2.73399997, 1.796, 3.29399991]
+      Rotation: [-20.7959995, 40.6699982, 0]
+      Scale: [1, 1, 1]
+    Camera Component:
+      Enable: true
+      ProjectionType: 0
+      Size: 5
+      FOV: 0.785398185
+      Near: 0.00999999978
+      Far: 1000
+      Primary: true
+Environment:
+  SkyboxEnable: false
+  SourceType: 1
+  IntensityMultiplier: 1
+  AmbientColor: [0.211999997, 0.226999998, 0.259000003]
+  Skybox:
+    Shader: Skybox
+    TintColor: [0.5, 0.5, 0.5]
+    Expose: 1
+    Rotation: 0
+    CubemapRightPath: ""
+    CubemapLeftPath: ""
+    CubemapUpPath: ""
+    CubemapDownPath: ""
+    CubemapFrontPath: ""
+    CubemapBackPath: ""

@@ -245,6 +245,10 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 
 - ContentBrowser.h.cpp
 
+### 70. 添加导入.obj文件
+
+- ModelImporter.h/.cpp
+
 ## 文件说明
 
 ### Explorer 项目
@@ -458,6 +462,12 @@ Explorer Engine This is a simple Rendering Engine based on OpenGL and C++.
 - Material.h/.cpp
 
   材质组件，设置着色器和材质贴图。
+
+##### PlatformUtils
+
+- ModelImporter.h/.cpp
+
+  模型导入器，用来导入外部3d模型Mesh，暂时仅支持.obj文件。
 
 ### Editor 项目
 

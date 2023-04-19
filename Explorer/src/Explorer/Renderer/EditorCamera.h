@@ -22,12 +22,12 @@ namespace Explorer
 		glm::mat4 m_ViewMatrix;								//视图矩阵
 		glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);		//投影矩阵
 
-		glm::vec3 m_Position = { 7.3f, 5.0f, -7.0f };		//相机位置
+		glm::vec3 m_Position = { 14.6f, 10.0f, -14.0f };	//相机位置
 		glm::vec3 m_FocalPoint = { 0.0f, 0.0f, 0.0f };		//焦点位置
 
 		glm::vec2 m_InitialMousePosition = { 0.0f, 0.0f };	//鼠标初始位置
 
-		float m_Distance = 5.0f;					//相机与焦点距离
+		float m_Distance = 10.0f;					//相机与焦点距离
 		float m_Pitch = 0.3f;						//俯仰角（x轴）弧度
 		float m_Yaw = -0.98f;						//偏航角（y轴）弧度
 

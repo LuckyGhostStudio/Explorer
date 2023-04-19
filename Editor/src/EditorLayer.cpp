@@ -22,7 +22,13 @@ namespace Explorer
 
 	void EditorLayer::OnAttach()
 	{
-		m_PlayIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/PlayButton.png");	//Play按钮图标
+		m_SelectionIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/SelectionButton.png");		//Selection按钮图标
+
+		m_TranslationIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/TranslationButton.png");	//Translation按钮图标
+		m_RotationIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/RotationButton.png");			//Rotation按钮图标
+		m_ScaleIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/ScaleButton.png");				//Scale按钮图标
+
+		m_PlayIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/PlayButton.png");					//Play按钮图标
 
 		FramebufferSpecification fbSpec;	//帧缓冲区规范
 		fbSpec.Attachments = {
@@ -149,6 +155,16 @@ namespace Explorer
 			//EXP_CORE_WARN("mx:{0}, my:{1}", mouseX, mouseY);
 		}
 
+		//Delete键按下
+		if (Input::IsKeyPressed(Key::Delete)) {
+			//选中物体存在
+			if (m_SceneHierarchyPanel.GetSelectedObject()) {
+				Object& object = m_SceneHierarchyPanel.GetSelectedObject();
+				m_ActiveScene->DestroyObject(object);			//删除选中物体
+				m_SceneHierarchyPanel.SetSelectedObject({});	//选中物体设置为空
+			}
+		}
+
 		m_Framebuffer->Unbind();	//解除绑定帧缓冲区
 	}
 
@@ -259,14 +275,17 @@ namespace Explorer
 
 		//批渲染数据统计
 		ImGui::Begin("Renderer Stats");
+		if (ImGui::BeginMenuBar()) {
 
+			ImGui::EndMenuBar();
+		}
 		//std::string name = m_PickedObject ? m_PickedObject.GetComponent<Self>().GetObjectName() : "None";
 		//ImGui::Text("Hovered Object: %s", name.c_str());
 
 		auto stats = Renderer3D::GetStats();
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 		ImGui::Text("Triangle Count: %d", stats.TriangleCount);
-		ImGui::Text("Vertex Count: %d", stats.VertexCount);
+		ImGui::Text("Vertex Count (Real): %d", stats.VertexCount);
 		ImGui::Text("Index Count: %d", stats.IndexCount);
 		ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());	//帧率
 		
@@ -297,7 +316,7 @@ namespace Explorer
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
 
 		//将从拖拽源（Project面板）复制的数据拖放到目标（场景）	：场景路径
-		ContentBrowserPanel::DragDropToTarget({ ".explor", ".obj"}, [&](const std::filesystem::path& filepath)
+		ContentBrowserPanel::DragDropToTarget({ ".explor", ".obj", ".mesh" }, [&](const std::filesystem::path& filepath)
 		{
 			const std::string filename = filepath.filename().string();	//文件名
 			uint32_t dotIndex = filename.find_last_of('.');
@@ -306,7 +325,7 @@ namespace Explorer
 			if (suffixname == ".explor") {	//场景文件
 				OpenScene(filepath);		//打开场景
 			}
-			else if (suffixname == ".obj") {	//.obj模型文件
+			else if (suffixname == ".obj" || suffixname == ".mesh") {	//.obj模型文件 or .mesh文件（实际也是.obj）
 				ImportModelFile(filepath);		//导入模型文件
 			}
 		});
@@ -329,6 +348,91 @@ namespace Explorer
 	void EditorLayer::UI_ToolBar()
 	{
 		float buttonSize = 20.0f;
+
+		//按钮颜色
+		static ImVec4 buttonColor[4] = { 
+			{ 0.14f, 0.29f, 0.42f, 1.0f },	//Selection按钮颜色 默认选中
+			{ 0.2f, 0.205f, 0.21f, 1.0f },	//Translation按钮颜色
+			{ 0.2f, 0.205f, 0.21f, 1.0f },	//Rotation按钮颜色
+			{ 0.2f, 0.205f, 0.21f, 1.0f }	//Scale按钮颜色
+		};	
+		
+		for (int i = 0; i < 4; i++) {
+			int selected = int(Gizmo::s_TransformType) + 1;	//已选中的操作
+			if (i != selected) {
+				buttonColor[i] = { 0.2f, 0.205f, 0.21f, 1.0f };	//原色
+			}
+			else {
+				buttonColor[i] = { 0.14f, 0.29f, 0.42f, 1.0f };	//蓝色
+			}
+		}
+		
+		//TODO 按钮按下会失去选中物体
+
+		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMin().x + 4.0f);
+		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + 4.0f);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor[0]);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColor[0].x + 0.01f, buttonColor[0].y + 0.01f, buttonColor[0].z + 0.01f, 1.0f });
+		
+		//Selection按钮 按下
+		if (ImGui::ImageButton((ImTextureID)m_SelectionIcon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 1), ImVec2(1, 0))) {
+			Gizmo::s_TransformType = Gizmo::TransformationType::None;	//变换类型 ：None
+		}
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
+		
+		//Translation按钮------------------------------------------
+		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMin().x + 4.0f * 2 + 4.0f + buttonSize);
+		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + 4.0f);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor[1]);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColor[1].x + 0.01f, buttonColor[1].y + 0.01f, buttonColor[1].z + 0.01f, 1.0f });
+
+		//Translation按钮 按下
+		if (ImGui::ImageButton((ImTextureID)m_TranslationIcon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 1), ImVec2(1, 0))) {
+			Gizmo::s_TransformType = Gizmo::TransformationType::Translate;	//平移
+		}
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
+
+		//Rotation按钮------------------------------------------
+		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMin().x + 4.0f * 3 + 4.0f * 2 + buttonSize * 2);
+		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + 4.0f);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor[2]);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColor[2].x + 0.01f, buttonColor[2].y + 0.01f, buttonColor[2].z + 0.01f, 1.0f });
+
+		//Rotation按钮 按下
+		if (ImGui::ImageButton((ImTextureID)m_RotationIcon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 1), ImVec2(1, 0))) {
+			Gizmo::s_TransformType = Gizmo::TransformationType::Rotate;	//旋转
+		}
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
+
+		//Scale按钮------------------------------------------
+		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMin().x + 4.0f * 4 + 4.0f * 3 + buttonSize * 3);
+		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + 4.0f);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor[3]);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColor[3].x + 0.01f, buttonColor[3].y + 0.01f, buttonColor[3].z + 0.01f, 1.0f });
+
+		//Scale按钮 按下
+		if (ImGui::ImageButton((ImTextureID)m_ScaleIcon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 1), ImVec2(1, 0))) {
+			Gizmo::s_TransformType = Gizmo::TransformationType::Scale;	//缩放
+		}
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
+
+		//Play按钮设置-------------------------------
 		static ImVec4 playButtonColor = { 0.2f, 0.205f, 0.21f, 1.0f };	//Play按钮颜色
 
 		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x * 0.5f - buttonSize * 0.5f);	//按钮居中
@@ -338,7 +442,7 @@ namespace Explorer
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 		ImGui::PushStyleColor(ImGuiCol_Button, playButtonColor);
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { playButtonColor.x + 0.01f, playButtonColor.y + 0.01f, playButtonColor.z + 0.01f, 1.0f });
-		//Play|Stop按钮 按下
+		//Play按钮 按下
 		if (ImGui::ImageButton((ImTextureID)m_PlayIcon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1))) {
 			//场景状态
 			switch (m_SceneState)
@@ -399,14 +503,17 @@ namespace Explorer
 		//设置Transform Gizmo类型
 		switch (e.GetKeyCode())
 		{
+			case Key::W:
+				Gizmo::s_TransformType = Gizmo::TransformationType::None;		//选择
+				break;
 			case Key::G:
-				Gizmo::s_TransformType = (Gizmo::TransformationType)ImGuizmo::OPERATION::TRANSLATE;	//平移
+				Gizmo::s_TransformType = Gizmo::TransformationType::Translate;	//平移
 				break;
 			case Key::R:
-				Gizmo::s_TransformType = (Gizmo::TransformationType)ImGuizmo::OPERATION::ROTATE;	//旋转
+				Gizmo::s_TransformType = Gizmo::TransformationType::Rotate;		//旋转
 				break;
 			case Key::S:
-				Gizmo::s_TransformType = (Gizmo::TransformationType)ImGuizmo::OPERATION::SCALE;		//缩放
+				Gizmo::s_TransformType = Gizmo::TransformationType::Scale;		//缩放
 				break;
 		}
 	}
@@ -447,7 +554,7 @@ namespace Explorer
 
 	void EditorLayer::OpenScene(const std::filesystem::path& path)
 	{
-		m_ActiveScene = std::make_shared<Scene>(path.stem().string());	//创建新场景（场景名：没有扩展名）
+		m_ActiveScene = std::make_shared<Scene>();		//创建新场景
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
 		m_SceneHierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
 
@@ -461,6 +568,9 @@ namespace Explorer
 
 		//路径不为空
 		if (!filepath.empty()) {
+			std::string sceneName = std::filesystem::path(filepath).stem().string();	//场景名（场景文件名）
+			m_ActiveScene->SetName(sceneName);
+
 			SceneSerializer serializer(m_ActiveScene);	//场景序列化器
 			serializer.Serialize(filepath);				//序列化：保存场景
 		}

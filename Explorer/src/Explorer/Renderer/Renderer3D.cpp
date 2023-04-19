@@ -216,7 +216,7 @@ namespace Explorer
 		s_Data.IndexCount += mesh.GetVertexIndexCount();	//累计Mesh索引个数
 
 		s_Data.Stats.TriangleCount += mesh.GetVertexIndexCount() / 3;	//三角形个数
-		s_Data.Stats.VertexCount += mesh.GetVertexCount();				//累计顶点个数
+		s_Data.Stats.VertexCount += mesh.GetVertexCount();				//累计顶点个数（实际顶点个数）
 		s_Data.Stats.IndexCount += mesh.GetVertexIndexCount();			//累计顶点索引个数
 	}
 

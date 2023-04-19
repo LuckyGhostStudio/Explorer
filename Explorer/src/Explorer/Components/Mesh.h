@@ -43,12 +43,15 @@ namespace Explorer
 		/// </summary>
 		enum class Type
 		{
-			None = 0,	//无Mesh
-			Other = 1,	//其他类型：不是原生Mesh
+			None = 0,		//无Mesh
+			Other = 1,		//其他类型：不是原生Mesh
 
-			//原生类型
-			Cube = 2,	//正方体
-			Plane = 3	//平面
+			//内置类型
+			Cube = 2,		//正方体
+			Plane = 3,		//平面
+			Cone = 4,		//圆锥
+			Cylinder = 5,	//圆柱
+			Sphere = 6		//经纬球
 		};
 	private:
 		Type m_Type = Type::None;

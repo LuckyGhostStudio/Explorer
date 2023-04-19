@@ -70,7 +70,18 @@ namespace Explorer
 				if (ImGui::MenuItem("Cube")) {		//子菜单项：创建Cube
 					object = m_Scene->CreateMeshObject("Cube", Mesh::Type::Cube);
 				}
-				
+				if (ImGui::MenuItem("Plane")) {		//子菜单项：创建Plane
+					object = m_Scene->CreateMeshObject("Plane", Mesh::Type::Plane);
+				}
+				if (ImGui::MenuItem("Cone")) {		//子菜单项：创建Cone
+					object = m_Scene->CreateMeshObject("Cone", Mesh::Type::Cone);
+				}
+				if (ImGui::MenuItem("Cylinder")) {	//子菜单项：创建Cylinder
+					object = m_Scene->CreateMeshObject("Cylinder", Mesh::Type::Cylinder);
+				}
+				if (ImGui::MenuItem("Sphere")) {	//子菜单项：创建Sphere
+					object = m_Scene->CreateMeshObject("Sphere", Mesh::Type::Sphere);
+				}
 				ImGui::EndMenu();
 			}
 
@@ -731,7 +742,7 @@ namespace Explorer
 			});
 
 			//将从拖拽源（Project面板）复制的数据拖放到目标（Mesh文件）
-			ContentBrowserPanel::DragDropToTarget({ ".obj" }, [&](const std::filesystem::path& filepath)
+			ContentBrowserPanel::DragDropToTarget({ ".obj", ".mesh"}, [&](const std::filesystem::path& filepath)
 			{
 				ModelImporter::Load(filepath.string());	//加载文件
 

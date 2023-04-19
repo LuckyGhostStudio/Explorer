@@ -10,6 +10,17 @@
 
 namespace Explorer
 {
+	/// <summary>
+	/// 可选择按钮
+	/// </summary>
+	class SelectableButton
+	{
+	private:
+
+	public:
+
+	};
+
 	class UI
 	{
 	public:
@@ -125,6 +136,7 @@ namespace Explorer
 			ImGui::PopID();
 		}
 
+		//TODO 封装 Button类
 		/// <summary>
 		/// 绘制图像按钮
 		/// </summary>
@@ -158,6 +170,44 @@ namespace Explorer
 			ImGui::PopItemWidth();
 
 			ImGui::Columns(1);				//设置为一列
+
+			ImGui::PopID();
+		}
+
+		/// <summary>
+		/// 绘制可选择的图片按钮
+		/// </summary>
+		/// <typeparam name="Func">按钮监听函数</typeparam>
+		/// <param name="label">标签名</param>
+		/// <param name="textureID">图片ID</param>
+		/// <param name="function">按钮监听函数</param>
+		/// <param name="selected">选中状态</param>
+		/// <param name="buttonSize">按钮尺寸</param>
+		/// <param name="offset">按钮偏移量：相对于窗口左上角</param>
+		template<typename Func>
+		static void DrawSelectableButton(const std::string& label, uint32_t textureID, Func function, bool selected = true, float buttonSize = 20.0f, const glm::vec2& offset = { 4.0f, 4.0f })
+		{
+			ImGui::PushID(label.c_str());	//设置控件ID
+
+			static ImVec4 buttonColor = { 0.2f, 0.205f, 0.21f, 1.0f };	//Play按钮颜色
+
+			ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMin().x + offset.x);
+			ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + offset.y);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+			ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColor.x + 0.01f, buttonColor.y + 0.01f, buttonColor.z + 0.01f, 1.0f });
+
+			//未选中
+			if (!selected) {
+				//按钮 按下
+				if (ImGui::ImageButton((ImTextureID)textureID, ImVec2(buttonSize, buttonSize), ImVec2(0, 1), ImVec2(1, 0))) {
+					function();
+				}
+			}
+			ImGui::PopStyleVar(2);
+			ImGui::PopStyleColor(2);
 
 			ImGui::PopID();
 		}
