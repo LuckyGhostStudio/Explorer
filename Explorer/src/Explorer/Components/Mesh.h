@@ -8,31 +8,6 @@
 namespace Explorer
 {
 	/// <summary>
-	/// 边
-	/// </summary>
-	struct Edge
-	{
-		int ID;	//边ID
-
-		uint32_t VertesIndex1;	//顶点1索引
-		uint32_t VertesIndex2;	//顶点2索引
-	};
-
-	/// <summary>
-	/// 面
-	/// </summary>
-	struct Face
-	{
-		int ID;	//面ID
-
-		std::vector<Edge> Edges;				//边列表
-
-		std::vector<uint32_t> VertexIndices;	//顶点索引列表
-		std::vector<uint32_t> UVIndices;		//UV索引列表
-		std::vector<uint32_t> NormalIndices;	//法线索引列表
-	};
-
-	/// <summary>
 	/// 网格：只保存网格数据 不做OpenGL数据处理
 	/// </summary>
 	class Mesh :public Component

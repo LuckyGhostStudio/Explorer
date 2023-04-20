@@ -13,6 +13,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"	--输出目录
 
 --包含目录列表
 IncludeDir = {}
+IncludeDir["Box2D"] = "Explorer/vendor/Box2D/include"
 IncludeDir["GLFW"] = "Explorer/vendor/GLFW/include"
 IncludeDir["GLAD"] = "Explorer/vendor/GLAD/include"
 IncludeDir["ImGui"] = "Explorer/vendor/imgui"
@@ -23,7 +24,12 @@ IncludeDir["yaml_cpp"] = "Explorer/vendor/yaml-cpp/include"
 IncludeDir["ImGuizmo"] = "Explorer/vendor/ImGuizmo"
 IncludeDir["Assimp"] = "packages/Assimp.3.0.0/build/native/include"
 
+--库目录列表
+LibDir = {}
+LibDir["Assimp"] = "packages/Assimp.3.0.0/build/native/lib/x64"
+
 group "Dependencies"
+	include "Explorer/vendor/Box2D"		--包含Box2D目录
 	include "Explorer/vendor/GLFW"		--包含GLFW目录
 	include "Explorer/vendor/GLAD"		--包含GLAD目录
 	include "Explorer/vendor/imgui"		--包含imgui目录
@@ -65,6 +71,7 @@ project "Explorer"		--项目
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
+		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
@@ -76,12 +83,19 @@ project "Explorer"		--项目
 		"%{IncludeDir.Assimp}"
 	}
 
+	libdirs		--附加库目录
+	{
+		"%{LibDir.Assimp}"
+	}
+
 	links
 	{
+		"Box2D",		--引用Box2D
 		"GLFW",			--引用GLFW
 		"GLAD",			--引用GLAD
 		"ImGui",		--引用imgui
 		"yaml-cpp",		--引用yaml-cpp
+		"assimp.lib",	--引用assimp
 		"opengl32.lib"
 	}
 

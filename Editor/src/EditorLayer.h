@@ -23,6 +23,7 @@ namespace Explorer
 		Object m_Light;								//场景默认光源
 
 		Object m_PickedObject;						//被鼠标拾取的物体
+		bool m_Pickable = true;						//是否可拾取：可重新设置被选中物体
 
 		bool m_ViewportFocused = false;				//视口被聚焦
 		bool m_ViewportHovered = false;				//鼠标悬停在视口

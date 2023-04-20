@@ -5,23 +5,10 @@
 #include "Explorer/Renderer/VertexArray.h"
 #include "Explorer/Renderer/Shader.h"
 
+#include "Vertex.h"
+
 namespace Explorer
 {
-	/// <summary>
-	/// 顶点
-	/// </summary>
-	struct Vertex
-	{
-		glm::vec3 Position;	//位置
-		glm::vec4 Color;	//颜色
-		glm::vec3 Normal;	//法线
-		glm::vec2 TexCoord;	//纹理坐标
-		//float TexIndex;		//纹理索引
-
-		int ID;				//顶点ID
-		int ObjectID;		//所属物体ID
-	};
-
 	/// <summary>
 	/// 子网格
 	/// </summary>

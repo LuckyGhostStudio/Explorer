@@ -7,6 +7,7 @@
 #include "Explorer/Components/Camera.h"
 #include "Explorer/Components/Light.h"
 #include "Explorer/Components/Mesh.h"
+#include "Explorer/Components/SpriteRenderer.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -319,6 +320,21 @@ namespace Explorer
 			out << YAML::EndMap;	//结束Material组件Map
 		}
 
+		//SpriteRenderer组件
+		if (object.HasComponent<SpriteRenderer>())
+		{
+			out << YAML::Key << "SpriteRenderer Component";
+			out << YAML::BeginMap;	//开始SpriteRenderer组件Map
+
+			auto& spriteRenderer = object.GetComponent<SpriteRenderer>();
+
+			out << YAML::Key << "Enable" << YAML::Value << spriteRenderer.GetEnable();
+			out << YAML::Key << "Color" << YAML::Value << spriteRenderer.GetColor();
+			//TODO:待添加Sprite
+
+			out << YAML::EndMap;	//结束SpriteRenderer组件Map
+		}
+
 		out << YAML::EndMap;	//结束物体Map
 	}
 
@@ -522,7 +538,6 @@ namespace Explorer
 				{
 					auto& material = deserializedObject.AddComponent<Material>();	//添加Material组件
 
-					//设置光源组件数据
 					//TODO:添加Shader类型
 					material.SetEnable(materialNode["Enable"].as<bool>());	//组件启用状态
 
@@ -539,6 +554,17 @@ namespace Explorer
 					material.SetShininess(materialNode["Shininess"].as<float>());
 					material.SetTiling(materialNode["Tiling"].as<glm::vec2>());
 					material.SetOffset(materialNode["Offset"].as<glm::vec2>());
+				}
+
+				//SpriteRenderer组件结点
+				auto spriteRendererNode = object["SpriteRenderer Component"];
+				if (spriteRendererNode)
+				{
+					auto& spriteRenderer = deserializedObject.AddComponent<SpriteRenderer>();	//添加SpriteRenderer组件
+
+					spriteRenderer.SetEnable(spriteRendererNode["Enable"].as<bool>());	//组件启用状态
+					spriteRenderer.SetColor(spriteRendererNode["Color"].as<glm::vec4>());
+					//TODO待添加Sprite
 				}
 			}
 		}

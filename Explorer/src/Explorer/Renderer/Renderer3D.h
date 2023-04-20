@@ -5,6 +5,7 @@
 #include "Explorer/Components/Light.h"
 #include "Explorer/Components/Mesh.h"
 #include "Explorer/Components/Material.h"
+#include "Explorer/Components/SpriteRenderer.h"
 #include "Explorer/Components/Components.h"
 
 #include "Explorer/Renderer/EditorCamera.h"
@@ -35,6 +36,13 @@ namespace Explorer
 		static void Init();
 
 		static void Shutdown();
+
+		static void BeginScene(const EditorCamera& camera);
+		static void BeginScene(const Camera& camera, Transform& transform);
+		static void DrawSprite(const Transform& transform, SpriteRenderer& spriteRenderer, /*Material& material,*/ int objectID = -1);
+		
+		template<typename T>
+		static void Processing(T& t);
 
 		/// <summary>
 		/// 开始渲染场景：设置场景参数
@@ -84,4 +92,16 @@ namespace Explorer
 		/// </summary>
 		static void ResetStats();
 	};
+	
+	template<typename T>
+	inline void Renderer3D::Processing(T& t)
+	{
+		uint32_t dataSize = (uint32_t)sizeof(Vertex) * t.GetVertexBufferData().size();	//计算顶点缓冲区数据大小（字节）
+
+		t.GetVertexBuffer()->SetData(t.GetVertexBufferData().data(), dataSize);	//设置顶点缓冲区数据
+
+		RenderCommand::DrawIndexed(t.GetVertexArray());	//绘制调用
+
+		s_Data.Stats.DrawCalls++;	//绘制调用次数++
+	}
 }

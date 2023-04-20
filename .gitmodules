@@ -16,3 +16,9 @@
 [submodule "Explorer/vendor/ImGuizmo"]
 	path = Explorer/vendor/ImGuizmo
 	url = https://github.com/TheCherno/ImGuizmo.git
+[submodule "Explorer/vender/Box2D"]
+	path = Explorer/vender/Box2D
+	url = https://github.com/TheCherno/box2d.git
+[submodule "Explorer/vendor/Box2D"]
+	path = Explorer/vendor/Box2D
+	url = https://github.com/TheCherno/box2d.git

@@ -1,8 +1,10 @@
 #include "exppch.h"
 #include "Scene.h"
 
+#include "Explorer/Renderer/Renderer2D.h"
 #include "Explorer/Renderer/Renderer3D.h"
 #include "Explorer/Components/Components.h"
+#include "Explorer/Components/SpriteRenderer.h"
 
 #include "Object.h"
 
@@ -25,6 +27,18 @@ namespace Explorer
 		object.AddComponent<Transform>();				//添加Transform组件（默认组件）
 
 		return object;
+	}
+
+	Object Scene::CreateSpriteObject(const std::string& name, bool enable)
+	{
+		Object sprite = { m_Registry.create(), this };	//创建Sprite
+		
+		sprite.AddComponent<Self>(name);
+		sprite.AddComponent<Transform>();
+
+		sprite.AddComponent<SpriteRenderer>();
+
+		return sprite;
 	}
 
 	Object Scene::CreateMeshObject(const std::string& name, const Mesh::Type type)
@@ -102,9 +116,9 @@ namespace Explorer
 			lightObjects.push_back(Object{ object, this });	//添加到Light列表
 		}
 
+		//-----------------Mesh---------------------------
 		Renderer3D::BeginScene(m_Environment, camera, lightObjects);	//开始渲染场景
-
-		auto meshes = m_Registry.view<Transform, Mesh, Material>();	//返回有Transform Mesh Material的所有物体
+		auto meshes = m_Registry.view<Transform, Mesh, Material>();		//返回有Transform Mesh Material的所有物体
 
 		for (auto object : meshes) {
 			Object obj = Object{ object, this };
@@ -115,8 +129,22 @@ namespace Explorer
 				Renderer3D::DrawMesh(transform, mesh, material, (int)object);	//绘制网格
 			}
 		}
-
 		Renderer3D::EndScene(m_Environment, camera);	//结束渲染场景
+
+		//-----------------Sprite--------------------------
+		Renderer3D::BeginScene(camera);									//开始渲染场景
+		auto sprites = m_Registry.view<Transform, SpriteRenderer>();	//返回有Transform SpriteRenderer的所有物体 TODO 待添加Material
+		
+		for (auto object : sprites) {
+			Object obj = Object{ object, this };
+			//object启用时渲染此Obj
+			if (obj.GetComponent<Self>().GetObjectEnable()) {
+				auto [transform, sprite] = sprites.get<Transform, SpriteRenderer>(object);
+
+				Renderer3D::DrawSprite(transform, sprite, (int)object);	//绘制Sprite
+			}
+		}
+		Renderer3D::EndScene();
 	}
 
 	void Scene::OnUpdate(DeltaTime dt)
@@ -161,6 +189,7 @@ namespace Explorer
 
 		//主相机存在 && 主相机已启用
 		if (mainCamera && mainCamera->GetEnable()) {
+			//-----------------Mesh---------------------------
 			Renderer3D::BeginScene(m_Environment, *mainCamera, *cameraTransform, lightObjects);	//开始渲染场景
 			
 			auto meshes = m_Registry.view<Transform, Mesh, Material>();	//返回有Transform Mesh Material的所有物体
@@ -176,6 +205,21 @@ namespace Explorer
 			}
 
 			Renderer3D::EndScene(m_Environment, *mainCamera, *cameraTransform);	//结束渲染场景
+
+			//-----------------Sprite--------------------------
+			Renderer3D::BeginScene(*mainCamera, *cameraTransform);			//开始渲染场景
+			auto sprites = m_Registry.view<Transform, SpriteRenderer>();	//返回有Transform SpriteRenderer的所有物体 TODO 待添加Material
+
+			for (auto object : sprites) {
+				Object obj = Object{ object, this };
+				//object启用时渲染此Obj
+				if (obj.GetComponent<Self>().GetObjectEnable()) {
+					auto [transform, sprite] = sprites.get<Transform, SpriteRenderer>(object);
+
+					Renderer3D::DrawSprite(transform, sprite, (int)object);	//绘制Sprite
+				}
+			}
+			Renderer3D::EndScene();
 		}
 	}
 	

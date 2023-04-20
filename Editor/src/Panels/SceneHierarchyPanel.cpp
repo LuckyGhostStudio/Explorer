@@ -10,6 +10,7 @@
 #include "Explorer/Components/Light.h"
 #include "Explorer/Components/Mesh.h"
 #include "Explorer/Components/Material.h"
+#include "Explorer/Components/SpriteRenderer.h"
 
 #include "Explorer/Utils/PlatformUtils.h"
 #include "Explorer/Utils/ModelImporter.h"
@@ -62,6 +63,10 @@ namespace Explorer
 			
 			if (ImGui::MenuItem("Create Empty")) {		//菜单项：创建空物体
 				object = m_Scene->CreateEmptyObject("Object");	//创建空物体
+			}
+
+			if (ImGui::MenuItem("Sprite")) {
+				object = m_Scene->CreateSpriteObject();	//创建Sprite
 			}
 
 			//父菜单项：3D物体
@@ -613,6 +618,18 @@ namespace Explorer
 					ImGui::CloseCurrentPopup();
 				}
 			}
+			//添加SpriteRenderer组件
+			if (ImGui::MenuItem("Sprite Renderer")) {
+				//SpriteRenderer组件已存在
+				if (m_SelectionObject.HasComponent<SpriteRenderer>()) {
+					componentExist = true;
+					componentName = "Sprite Renderer";
+				}
+				else {
+					m_SelectionObject.AddComponent<SpriteRenderer>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
 
 			ImGui::EndPopup();
 		}
@@ -760,7 +777,7 @@ namespace Explorer
 		{
 			uint32_t count = ShaderLibrary::GetSize();
 
-			const char* shaderNames[2];
+			const char* shaderNames[3];
 			const char* currentShaderName = "";
 			int i = 0;
 			//遍历着色器库
@@ -822,7 +839,8 @@ namespace Explorer
 		//绘制SpriteRenderer组件
 		DrawComponent<SpriteRenderer>(object, [](SpriteRenderer& spriteRenderer)
 		{
-			ImGui::ColorEdit4("Color", glm::value_ptr(spriteRenderer.m_Color));
+			UI::DrawColorEditor4("Color", glm::value_ptr(spriteRenderer.GetColor()));	//Color Sprite颜色 颜色编辑器
+			//TODO 待添加Sprite
 		});
 	}
 }

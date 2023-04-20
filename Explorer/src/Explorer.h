@@ -39,4 +39,5 @@
 #include "Explorer/Components/Light.h"
 #include "Explorer/Components/Mesh.h"
 #include "Explorer/Components/Material.h"
+#include "Explorer/Components/SpriteRenderer.h"
 //---------------------------------

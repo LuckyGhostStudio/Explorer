@@ -20,7 +20,6 @@ namespace Explorer
 			{ShaderDataType::Float4, "a_Color"},	//颜色
 			{ShaderDataType::Float3, "a_Normal"},	//法线
 			{ShaderDataType::Float2, "a_TexCoord"},	//纹理坐标
-			//{ShaderDataType::Float, "a_TexIndex"},	//纹理索引
 			{ShaderDataType::Int, "a_ID"},			//ID
 			{ShaderDataType::Int, "a_ObjectID"},	//物体ID
 		});

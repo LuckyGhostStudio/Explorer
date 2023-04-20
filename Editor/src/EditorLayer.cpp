@@ -151,7 +151,7 @@ namespace Explorer
 			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);	//读取1号颜色缓冲区像素
 			//被鼠标拾取的物体
 			m_PickedObject = pixelData == -1 ? Object() : Object((entt::entity)pixelData, m_ActiveScene.get());
-			//EXP_CORE_WARN("pixelData:{0}", pixelData);
+			EXP_CORE_WARN("pixelData:{0}", pixelData);
 			//EXP_CORE_WARN("mx:{0}, my:{1}", mouseX, mouseY);
 		}
 
@@ -294,10 +294,9 @@ namespace Explorer
 		//场景视口
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
 		ImGui::Begin("Scene");
-		UI_ToolBar();	//工具栏
-
+		
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();	//视口可用区域最小值（视口左上角相对于视口左上角位置）
-		viewportMinRegion.y += 34;	//TODO:向下偏移工具栏的高度
+		//viewportMinRegion.y += 34;	//TODO:向下偏移工具栏的高度
 		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();	//视口可用区域最大值（视口右下角相对于视口左上角位置）
 		auto viewportOffset = ImGui::GetWindowPos();	//视口偏移量：视口面板左上角位置（相对于屏幕左上角）
 
@@ -314,6 +313,7 @@ namespace Explorer
 
 		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区0 ID
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
+		ImGui::SetItemAllowOverlap();	//允许覆盖
 
 		//将从拖拽源（Project面板）复制的数据拖放到目标（场景）	：场景路径
 		ContentBrowserPanel::DragDropToTarget({ ".explor", ".obj", ".mesh" }, [&](const std::filesystem::path& filepath)
@@ -329,6 +329,11 @@ namespace Explorer
 				ImportModelFile(filepath);		//导入模型文件
 			}
 		});
+
+		//设置工具栏
+		ImGui::SetCursorPos(ImGui::GetWindowContentRegionMin());
+		UI_ToolBar();	//工具栏
+		ImGui::SetItemAllowOverlap();
 
 		//编辑器相机
 		const glm::mat4& cameraProjection = m_EditorCamera.GetProjectionMatrix();	//投影矩阵
@@ -349,8 +354,12 @@ namespace Explorer
 	{
 		float buttonSize = 20.0f;
 
+		static bool buttonHovereds[5] = { false, false, false, false, false };	//按钮是否被悬浮
+
+		m_Pickable = !(buttonHovereds[0] | buttonHovereds[1] | buttonHovereds[2] | buttonHovereds[3] | buttonHovereds[4]);	//可拾取：都没有被悬浮
+
 		//按钮颜色
-		static ImVec4 buttonColor[4] = { 
+		static ImVec4 buttonColors[4] = { 
 			{ 0.14f, 0.29f, 0.42f, 1.0f },	//Selection按钮颜色 默认选中
 			{ 0.2f, 0.205f, 0.21f, 1.0f },	//Translation按钮颜色
 			{ 0.2f, 0.205f, 0.21f, 1.0f },	//Rotation按钮颜色
@@ -360,22 +369,21 @@ namespace Explorer
 		for (int i = 0; i < 4; i++) {
 			int selected = int(Gizmo::s_TransformType) + 1;	//已选中的操作
 			if (i != selected) {
-				buttonColor[i] = { 0.2f, 0.205f, 0.21f, 1.0f };	//原色
+				buttonColors[i] = { 0.2f, 0.205f, 0.21f, 1.0f };	//原色
 			}
 			else {
-				buttonColor[i] = { 0.14f, 0.29f, 0.42f, 1.0f };	//蓝色
+				buttonColors[i] = { 0.14f, 0.29f, 0.42f, 1.0f };	//蓝色
 			}
 		}
 		
-		//TODO 按钮按下会失去选中物体
 
 		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMin().x + 4.0f);
 		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + 4.0f);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
-		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor[0]);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColor[0].x + 0.01f, buttonColor[0].y + 0.01f, buttonColor[0].z + 0.01f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColors[0]);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColors[0].x + 0.01f, buttonColors[0].y + 0.01f, buttonColors[0].z + 0.01f, 1.0f });
 		
 		//Selection按钮 按下
 		if (ImGui::ImageButton((ImTextureID)m_SelectionIcon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 1), ImVec2(1, 0))) {
@@ -383,15 +391,23 @@ namespace Explorer
 		}
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(2);
-		
+
+		//此按钮被悬浮
+		if (ImGui::IsItemHovered()) {
+			buttonHovereds[0] = true;	//被悬浮
+		}
+		else {
+			buttonHovereds[0] = false;
+		}
+
 		//Translation按钮------------------------------------------
 		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMin().x + 4.0f * 2 + 4.0f + buttonSize);
 		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + 4.0f);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
-		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor[1]);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColor[1].x + 0.01f, buttonColor[1].y + 0.01f, buttonColor[1].z + 0.01f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColors[1]);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColors[1].x + 0.01f, buttonColors[1].y + 0.01f, buttonColors[1].z + 0.01f, 1.0f });
 
 		//Translation按钮 按下
 		if (ImGui::ImageButton((ImTextureID)m_TranslationIcon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 1), ImVec2(1, 0))) {
@@ -400,14 +416,22 @@ namespace Explorer
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(2);
 
+		//此按钮被悬浮
+		if (ImGui::IsItemHovered()) {
+			buttonHovereds[1] = true;	//被悬浮
+		}
+		else {
+			buttonHovereds[1] = false;
+		}
+
 		//Rotation按钮------------------------------------------
 		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMin().x + 4.0f * 3 + 4.0f * 2 + buttonSize * 2);
 		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + 4.0f);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
-		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor[2]);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColor[2].x + 0.01f, buttonColor[2].y + 0.01f, buttonColor[2].z + 0.01f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColors[2]);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColors[2].x + 0.01f, buttonColors[2].y + 0.01f, buttonColors[2].z + 0.01f, 1.0f });
 
 		//Rotation按钮 按下
 		if (ImGui::ImageButton((ImTextureID)m_RotationIcon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 1), ImVec2(1, 0))) {
@@ -416,14 +440,22 @@ namespace Explorer
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(2);
 
+		//此按钮被悬浮
+		if (ImGui::IsItemHovered()) {
+			buttonHovereds[2] = true;	//被悬浮
+		}
+		else {
+			buttonHovereds[2] = false;
+		}
+
 		//Scale按钮------------------------------------------
 		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMin().x + 4.0f * 4 + 4.0f * 3 + buttonSize * 3);
 		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + 4.0f);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
-		ImGui::PushStyleColor(ImGuiCol_Button, buttonColor[3]);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColor[3].x + 0.01f, buttonColor[3].y + 0.01f, buttonColor[3].z + 0.01f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, buttonColors[3]);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { buttonColors[3].x + 0.01f, buttonColors[3].y + 0.01f, buttonColors[3].z + 0.01f, 1.0f });
 
 		//Scale按钮 按下
 		if (ImGui::ImageButton((ImTextureID)m_ScaleIcon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 1), ImVec2(1, 0))) {
@@ -431,6 +463,14 @@ namespace Explorer
 		}
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(2);
+
+		//此按钮被悬浮
+		if (ImGui::IsItemHovered()) {
+			buttonHovereds[3] = true;	//被悬浮
+		}
+		else {
+			buttonHovereds[3] = false;
+		}
 
 		//Play按钮设置-------------------------------
 		static ImVec4 playButtonColor = { 0.2f, 0.205f, 0.21f, 1.0f };	//Play按钮颜色
@@ -459,6 +499,14 @@ namespace Explorer
 		}
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(2);
+
+		//此按钮被悬浮
+		if (ImGui::IsItemHovered()) {
+			buttonHovereds[4] = true;	//被悬浮
+		}
+		else {
+			buttonHovereds[4] = false;
+		}
 	}
 
 	void EditorLayer::OnEvent(Event& event)
@@ -522,8 +570,8 @@ namespace Explorer
 	{
 		//鼠标左键按下
 		if (e.GetMouseButton() == Mouse::ButtonLeft) {
-			//鼠标在视口内 Gizmo控制没结束
-			if (m_ViewportHovered && !ImGuizmo::IsOver()) {
+			//鼠标在视口内 Gizmo控制没结束 可拾取
+			if (m_ViewportHovered && !ImGuizmo::IsOver() && m_Pickable) {
 				m_SceneHierarchyPanel.SetSelectedObject(m_PickedObject);	//设置被选中物体
 			}
 		}

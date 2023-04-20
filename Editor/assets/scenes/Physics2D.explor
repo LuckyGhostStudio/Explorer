@@ -1,26 +1,21 @@
-Scene: Untitled
+Scene: Physics2D
 Objects:
   - Object: 12837192831273
     Self Component:
-      ObjectName: BookStore
+      ObjectName: Main Camera
       ObjectEnable: true
     Transform Component:
-      Position: [0, 0, 0]
+      Position: [0, 0, 1.82185423]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    Mesh Component:
+    Camera Component:
       Enable: true
-      Type: 0
-    Material Component:
-      Enable: true
-      Shader: Standard
-      Color: [0.800000012, 0.800000012, 0.800000012, 1]
-      AlbedoTextureExist: true
-      SpecularTextureExist: false
-      AlbedoTexturePath: assets\textures\ImphenziaPalette01.png
-      Shininess: 648
-      Tiling: [1, 1]
-      Offset: [0, 0]
+      ProjectionType: 1
+      Size: 5
+      FOV: 0.785398185
+      Near: 0.00999999978
+      Far: 1000
+      Primary: true
   - Object: 12837192831273
     Self Component:
       ObjectName: Point Light
@@ -40,29 +35,35 @@ Objects:
       RenderShadow: true
   - Object: 12837192831273
     Self Component:
-      ObjectName: Main Camera
+      ObjectName: Box
       ObjectEnable: true
     Transform Component:
-      Position: [2.87400007, 2.88599992, 3.48399997]
-      Rotation: [-20.9659996, 35.5900002, 0]
-      Scale: [1, 1, 1]
-    Camera Component:
+      Position: [0, 1.90005684, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 0.999999881, 1]
+    SpriteRenderer Component:
       Enable: true
-      ProjectionType: 0
-      Size: 5
-      FOV: 0.785398185
-      Near: 0.00999999978
-      Far: 1000
-      Primary: true
+      Color: [1, 1, 1, 1]
+  - Object: 12837192831273
+    Self Component:
+      ObjectName: Ground
+      ObjectEnable: true
+    Transform Component:
+      Position: [0, -2.37700009, 0]
+      Rotation: [0, 0, 0]
+      Scale: [12.8766413, 0.847435057, 0.939999998]
+    SpriteRenderer Component:
+      Enable: true
+      Color: [1, 0.463320434, 0, 1]
 Environment:
-  SkyboxEnable: true
+  SkyboxEnable: false
   SourceType: 1
   IntensityMultiplier: 1
-  AmbientColor: [0.216214046, 0.216214776, 0.216216207]
+  AmbientColor: [0.211999997, 0.226999998, 0.259000003]
   Skybox:
     Shader: Skybox
     TintColor: [0.5, 0.5, 0.5]
-    Expose: 1.01699996
+    Expose: 1
     Rotation: 0
     CubemapRightPath: ""
     CubemapLeftPath: ""

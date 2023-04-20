@@ -20,15 +20,6 @@ namespace Explorer
 	/// </summary>
 	struct RendererData
 	{
-		static const uint32_t MaxTextureSlotCount = 32;	//最大纹理槽数
-
-		std::shared_ptr<Texture2D>	WhiteTexture;		//白色纹理 0号纹理
-
-		uint32_t IndexCount = 0;						//当前已处理总索引个数
-
-		std::array<std::shared_ptr<Texture2D>, MaxTextureSlotCount> TextureSlots;	//纹理槽列表 存储纹理
-		uint32_t TextureSlotIndex = 1;					//当前纹理槽索引 0 = white
-
 		uint32_t MaxLightCount = 24;	//最大光源数量
 		uint32_t CurrentLightCount = 1;	//当前光源数量
 
@@ -39,29 +30,68 @@ namespace Explorer
 
 	void Renderer3D::Init()
 	{
-		s_Data.WhiteTexture = std::make_shared<Texture2D>(1, 1);			//创建宽高为1的纹理
-		uint32_t whitTextureData = 0xffffffff;								//255白色
-		s_Data.WhiteTexture->SetData(&whitTextureData, sizeof(uint32_t));	//设置纹理数据size = 1 * 1 * 4 == sizeof(uint32_t)
-
-		int samplers[s_Data.MaxTextureSlotCount];		//纹理采样器 0-31
-		for (uint32_t i = 0; i < s_Data.MaxTextureSlotCount; i++) {
-			samplers[i] = i;
-		}
-
-		//s_Data.MeshShader = std::make_shared<Shader>("assets/shaders/StandardShader");	//创建默认着色器
-		//s_Data.MeshShader->Bind();														//绑定着色器
-		//s_Data.MeshShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlotCount);	//设置textures变量 所有纹理槽
-
-		s_Data.TextureSlots[0] = s_Data.WhiteTexture;	//0号纹理槽为白色纹理
-
-		//----------------------------------------------
 		ShaderLibrary::Load("Standard", "assets/shaders/StandardShader");	//加载标准着色器
 		ShaderLibrary::Load("Skybox", "assets/shaders/SkyboxShader");		//加载天空盒着色器
+		ShaderLibrary::Load("Sprite", "assets/shaders/SpriteShader");		//加载Sprite着色器
 	}
 
 	void Renderer3D::Shutdown()
 	{
 		
+	}
+
+	void Renderer3D::BeginScene(const EditorCamera& camera)
+	{
+		//-------------------Sprite-----------------------------------
+		auto& spriteShader = ShaderLibrary::Get("Sprite");	//Sprite着色器
+		spriteShader->Bind();	//绑定着色器
+
+		spriteShader->SetMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());	//设置vp矩阵
+	}
+
+	void Renderer3D::BeginScene(const Camera& camera, Transform& transform)
+	{
+		//-------------------Sprite-----------------------------------
+		auto& spriteShader = ShaderLibrary::Get("Sprite");	//Sprite着色器
+		spriteShader->Bind();	//绑定着色器
+
+		glm::mat4& viewProjectionMatrix = camera.GetProjection() * glm::inverse(transform.GetTransform());	//计算VP矩阵 vp = p * v 
+
+		spriteShader->SetMat4("u_ViewProjectionMatrix", viewProjectionMatrix);	//设置vp矩阵
+	}
+
+	void Renderer3D::DrawSprite(const Transform& transform, SpriteRenderer& spriteRenderer, int objectID)
+	{
+		Sprite& sprite = spriteRenderer.GetSprite();
+
+		auto& spriteShader = ShaderLibrary::Get("Sprite");	//Sprite着色器
+
+		spriteShader->Bind();			//绑定着色器
+		sprite.GetTexture()->Bind();	//绑定纹理
+
+		//设置uniform数据
+		spriteShader->SetFloat4("u_Color", spriteRenderer.GetColor());
+		spriteShader->SetInt("u_Texture", 0);
+
+		sprite.GetVertexBufferData().clear();	//清空上一次顶点缓冲区数据
+		//设置顶点数据
+		for (int i = 0; i < 4; i++) {
+			Vertex vertex = sprite.GetVertices()[i];
+
+			vertex.Position = transform.GetTransform() * glm::vec4(vertex.Position, 1.0f);
+			vertex.ObjectID = objectID;
+
+			sprite.GetVertexBufferData().push_back(vertex);	//添加顶点缓冲区数据
+		}
+
+		//SpriteRenderer组件已启用
+		if (spriteRenderer.GetEnable()) {
+			Processing<Sprite>(sprite);	//渲染Sprite
+		}
+
+		s_Data.Stats.TriangleCount += 2;	//三角形个数
+		s_Data.Stats.VertexCount += 4;		//累计顶点个数
+		s_Data.Stats.IndexCount += 6;		//累计顶点索引个数
 	}
 
 	void Renderer3D::BeginScene(Environment& environment, const Camera& camera, Transform& transform, std::vector<Object>& lightObjects)
@@ -85,6 +115,20 @@ namespace Explorer
 			//设置Light Uniform数据
 			light.SetShaderData(lightTransform.GetPosition(), -lightTransform.GetForwardDirection(), standardShader, i);
 		}
+
+		//-------------------Skybox-----------------------------------
+		Skybox& skybox = environment.GetSkybox();	//天空盒
+		skybox.GetCubemap()->Bind();				//绑定Cubemap纹理
+		glm::mat4& rotationMatrix = glm::rotate(glm::mat4(1.0f), skybox.GetRotation(), { 0, 1, 0 });	//Skybox旋转矩阵（绕y轴）
+
+		standardShader->SetInt("u_Environment.EnableSkybox", environment.GetSkyboxEnable());	//设置 是否启用天空盒
+		standardShader->SetInt("u_Environment.Cubemap", 0);										//设置Cubemap
+		standardShader->SetFloat3("u_Environment.TintColor", skybox.GetTintColor());			//设置Skybox色调
+		standardShader->SetFloat("u_Environment.Expose", skybox.GetExpose());					//设置Skybox曝光度
+		standardShader->SetMat4("u_Environment.SkyboxRotationMatrix", rotationMatrix);			//设置Skybox旋转矩阵（绕y轴）
+		standardShader->SetInt("u_Environment.SourceType", (int)environment.GetSourceType());	//设置环境光源类型
+		standardShader->SetFloat("u_Environment.IntensityMultiplier", environment.GetIntensityMultiplier());	//设置天空盒光强倍数
+		standardShader->SetFloat3("u_Environment.AmbientColor", environment.GetAmbientColor());	//设置环境光颜色
 	}
 
 	void Renderer3D::BeginScene(Environment& environment, const EditorCamera& camera, std::vector<Object>& lightObjects)
@@ -107,6 +151,7 @@ namespace Explorer
 			light.SetShaderData(lightTransform.GetPosition(), -lightTransform.GetForwardDirection(), standardShader, i);
 		}
 
+		//-------------------Skybox-----------------------------------
 		Skybox& skybox = environment.GetSkybox();	//天空盒
 		skybox.GetCubemap()->Bind();				//绑定Cubemap纹理
 		glm::mat4& rotationMatrix = glm::rotate(glm::mat4(1.0f), skybox.GetRotation(), { 0, 1, 0 });	//Skybox旋转矩阵（绕y轴）
@@ -213,7 +258,6 @@ namespace Explorer
 				SubMeshProcessing(subMesh);		//渲染子网格
 			}
 		}
-		s_Data.IndexCount += mesh.GetVertexIndexCount();	//累计Mesh索引个数
 
 		s_Data.Stats.TriangleCount += mesh.GetVertexIndexCount() / 3;	//三角形个数
 		s_Data.Stats.VertexCount += mesh.GetVertexCount();				//累计顶点个数（实际顶点个数）

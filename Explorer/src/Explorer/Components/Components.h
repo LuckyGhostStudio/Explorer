@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Explorer/Scene/ScriptableObject.h"
-#include "Explorer/Components/Component.h"
 
 namespace Explorer
 {
@@ -27,25 +26,6 @@ namespace Explorer
 		bool GetObjectEnable() const { return m_ObjectEnable; }
 		bool& GetObjectEnable_Ref() { return m_ObjectEnable; }
 		void SetObjectEnable(bool enable) { m_ObjectEnable = enable; }
-	};
-
-	/// <summary>
-	/// Í¼Æ¬äÖÈ¾Æ÷×é¼þ
-	/// </summary>
-	class SpriteRenderer :public Component
-	{
-	public:
-		glm::vec4 m_Color{ 1.0f, 1.0f, 1.0f, 1.0f };
-
-		SpriteRenderer() = default;
-		SpriteRenderer(const SpriteRenderer&) = default;
-		SpriteRenderer(const glm::vec4& color) :m_Color(color) {}
-
-		virtual void SetName() override { m_Name = "Camera"; }
-		virtual const std::string& GetName() override { SetName(); return m_Name; }
-
-		virtual void SetIcon() override {} //TODO:´ý°ì
-		virtual std::shared_ptr<Texture2D>& GetIcon() override { SetIcon(); return m_Icon; }
 	};
 
 	/// <summary>
