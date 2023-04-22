@@ -3,12 +3,13 @@
 #include "Scene.h"
 
 #include "entt.hpp"
-#include <vector>
+
+#include "Explorer/Components/Components.h"
 
 namespace Explorer
 {
 	/// <summary>
-	/// 实体
+	/// 物体
 	/// </summary>
 	class Object
 	{
@@ -16,8 +17,6 @@ namespace Explorer
 		entt::entity m_ObjectID{ entt::null };	//实体ID
 		Scene* m_Scene = nullptr;				//实体所属场景
 		//TODO:添加父子物体
-		//Object& m_Parent;					//父物体
-		//std::vector<Object&> m_Children;	//子物体列表
 	public:
 		Object() {}
 		Object(entt::entity objectID, Scene* scene);
@@ -35,7 +34,7 @@ namespace Explorer
 		{
 			EXP_CORE_ASSERT(!HasComponent<T>(), "Object already has component!");	//该组件已存在
 			T& component = m_Scene->m_Registry.emplace<T>(m_ObjectID, std::forward<Args>(args)...);	//向m_Scene场景的实体注册表添加T类型组件
-			m_Scene->OnComponentAdded<T>(*this, component);	//m_Scene向this物体添加T组件时调用
+			m_Scene->OnComponentAdded<T>(*this, component);											//m_Scene向this物体添加T组件时调用
 			return component;
 		}
 
@@ -78,6 +77,8 @@ namespace Explorer
 		operator bool() const { return m_ObjectID != entt::null; }
 		operator entt::entity() const { return m_ObjectID; }
 		operator uint32_t() const { return (uint32_t)m_ObjectID; }
+
+		UUID GetUUID() { return GetComponent<ID>().GetID(); }
 
 		bool operator==(const Object& other)
 		{

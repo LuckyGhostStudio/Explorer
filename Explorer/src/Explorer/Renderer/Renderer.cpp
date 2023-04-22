@@ -1,6 +1,5 @@
 #include "exppch.h"
 #include "Renderer.h"
-#include "Renderer2D.h"
 #include "Renderer3D.h"
 
 namespace Explorer
@@ -10,7 +9,6 @@ namespace Explorer
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
-		//Renderer2D::Init();
 		Renderer3D::Init();
 	}
 

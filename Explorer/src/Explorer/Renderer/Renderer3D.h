@@ -11,6 +11,8 @@
 #include "Explorer/Renderer/EditorCamera.h"
 #include "Explorer/Renderer/Environment.h"
 
+#include "Explorer/Scene/Object.h"
+
 namespace Explorer
 {
 	/// <summary>

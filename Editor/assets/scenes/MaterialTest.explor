@@ -1,60 +1,27 @@
-Scene: Untitled
+Scene: MaterialTest
 Objects:
-  - Object: 12837192831273
+  - Object: 6445765910262644915
     Self Component:
-      ObjectName: Cone
+      ObjectName: Cube W
       ObjectEnable: true
     Transform Component:
-      Position: [0.451802462, 0.547010958, 1.1536293]
+      Position: [-0.331298649, 0, 0.790211201]
       Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Scale: [1, 0.039661143, 1]
     Mesh Component:
       Enable: true
-      Type: 0
+      Type: 2
     Material Component:
       Enable: true
       Shader: Standard
       Color: [0.800000012, 0.800000012, 0.800000012, 1]
       AlbedoTextureExist: true
       SpecularTextureExist: false
-      AlbedoTexturePath: assets\textures\plane.png
+      AlbedoTexturePath: E:\C++\Explorer\Editor\assets\textures\Checkerboard.png
       Shininess: 32
       Tiling: [1, 1]
       Offset: [0, 0]
-  - Object: 12837192831273
-    Self Component:
-      ObjectName: Camera
-      ObjectEnable: true
-    Transform Component:
-      Position: [3.70000005, 2.5, 3.5]
-      Rotation: [33.3800011, -52.7900009, 172.570007]
-      Scale: [1, 1, 1]
-    Camera Component:
-      Enable: true
-      ProjectionType: 0
-      Size: 5
-      FOV: 0.785398185
-      Near: 0.00999999978
-      Far: 1000
-      Primary: true
-  - Object: 12837192831273
-    Self Component:
-      ObjectName: Point Light
-      ObjectEnable: true
-    Transform Component:
-      Position: [2, 2.95000005, -1.5]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    Light Component:
-      Enable: true
-      Type: 1
-      Range: 100
-      SpotOuterAngle: 0.34906584
-      SpotInnerAngle: 0.319395244
-      Color: [1, 1, 1]
-      Intensity: 1
-      RenderShadow: true
-  - Object: 12837192831273
+  - Object: 12557220943504688112
     Self Component:
       ObjectName: Cube C
       ObjectEnable: true
@@ -76,24 +43,57 @@ Objects:
       Shininess: 76.052002
       Tiling: [-2.02999997, 1.32000005]
       Offset: [0.449999988, 0]
-  - Object: 12837192831273
+  - Object: 1797613326047707322
     Self Component:
-      ObjectName: Cube W
+      ObjectName: Point Light
       ObjectEnable: true
     Transform Component:
-      Position: [-0.331298649, 0, 0.790211201]
+      Position: [2, 2.95000005, -1.5]
       Rotation: [0, 0, 0]
-      Scale: [1, 0.039661143, 1]
+      Scale: [1, 1, 1]
+    Light Component:
+      Enable: true
+      Type: 1
+      Range: 100
+      SpotOuterAngle: 0.34906584
+      SpotInnerAngle: 0.319395244
+      Color: [1, 1, 1]
+      Intensity: 1
+      RenderShadow: true
+  - Object: 13998299995776504197
+    Self Component:
+      ObjectName: Camera
+      ObjectEnable: true
+    Transform Component:
+      Position: [3.70000005, 2.5, 3.5]
+      Rotation: [33.3800011, -52.7900009, 172.570007]
+      Scale: [1, 1, 1]
+    Camera Component:
+      Enable: true
+      ProjectionType: 0
+      Size: 5
+      FOV: 0.785398185
+      Near: 0.00999999978
+      Far: 1000
+      Primary: true
+  - Object: 7088777669078467686
+    Self Component:
+      ObjectName: Cone
+      ObjectEnable: true
+    Transform Component:
+      Position: [0.451802462, 0.547010958, 1.1536293]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
     Mesh Component:
       Enable: true
-      Type: 2
+      Type: 0
     Material Component:
       Enable: true
       Shader: Standard
       Color: [0.800000012, 0.800000012, 0.800000012, 1]
       AlbedoTextureExist: true
       SpecularTextureExist: false
-      AlbedoTexturePath: E:\C++\Explorer\Editor\assets\textures\Checkerboard.png
+      AlbedoTexturePath: assets\textures\plane.png
       Shininess: 32
       Tiling: [1, 1]
       Offset: [0, 0]

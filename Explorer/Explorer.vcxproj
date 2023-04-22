@@ -150,6 +150,9 @@
     <ClInclude Include="src\Explorer\Components\Light.h" />
     <ClInclude Include="src\Explorer\Components\Material.h" />
     <ClInclude Include="src\Explorer\Components\Mesh.h" />
+    <ClInclude Include="src\Explorer\Components\NativeScript.h" />
+    <ClInclude Include="src\Explorer\Components\Rigidbody\BoxCollider2D.h" />
+    <ClInclude Include="src\Explorer\Components\Rigidbody\Rigidbody2D.h" />
     <ClInclude Include="src\Explorer\Components\Skybox.h" />
     <ClInclude Include="src\Explorer\Components\Sprite.h" />
     <ClInclude Include="src\Explorer\Components\SpriteRenderer.h" />
@@ -166,6 +169,7 @@
     <ClInclude Include="src\Explorer\Core\LayerStack.h" />
     <ClInclude Include="src\Explorer\Core\Log.h" />
     <ClInclude Include="src\Explorer\Core\MouseButtonCodes.h" />
+    <ClInclude Include="src\Explorer\Core\UUID.h" />
     <ClInclude Include="src\Explorer\Core\Window.h" />
     <ClInclude Include="src\Explorer\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Explorer\Events\Event.h" />
@@ -627,6 +631,7 @@
     <ClCompile Include="src\Explorer\Core\Layer.cpp" />
     <ClCompile Include="src\Explorer\Core\LayerStack.cpp" />
     <ClCompile Include="src\Explorer\Core\Log.cpp" />
+    <ClCompile Include="src\Explorer\Core\UUID.cpp" />
     <ClCompile Include="src\Explorer\Core\Window.cpp" />
     <ClCompile Include="src\Explorer\ImGui\Gizmo.cpp" />
     <ClCompile Include="src\Explorer\ImGui\ImGuiBuild.cpp" />

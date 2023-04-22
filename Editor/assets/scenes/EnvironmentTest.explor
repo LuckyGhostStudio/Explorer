@@ -1,6 +1,6 @@
-Scene: Untitled
+Scene: EnvironmentTest
 Objects:
-  - Object: 12837192831273
+  - Object: 6755666456011118765
     Self Component:
       ObjectName: Cube
       ObjectEnable: true
@@ -20,7 +20,7 @@ Objects:
       Shininess: 32
       Tiling: [1, 1]
       Offset: [0, 0]
-  - Object: 12837192831273
+  - Object: 13839756481458047489
     Self Component:
       ObjectName: Point Light
       ObjectEnable: true
@@ -37,7 +37,7 @@ Objects:
       Color: [1, 1, 1]
       Intensity: 1
       RenderShadow: true
-  - Object: 12837192831273
+  - Object: 14999537337863777958
     Self Component:
       ObjectName: Camera
       ObjectEnable: true

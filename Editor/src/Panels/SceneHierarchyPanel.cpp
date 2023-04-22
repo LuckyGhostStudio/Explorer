@@ -11,6 +11,8 @@
 #include "Explorer/Components/Mesh.h"
 #include "Explorer/Components/Material.h"
 #include "Explorer/Components/SpriteRenderer.h"
+#include "Explorer/Components/Rigidbody/Rigidbody2D.h"
+#include "Explorer/Components/Rigidbody/BoxCollider2D.h"
 
 #include "Explorer/Utils/PlatformUtils.h"
 #include "Explorer/Utils/ModelImporter.h"
@@ -565,98 +567,69 @@ namespace Explorer
 			ImGui::OpenPopup("AddComponent");	//打开弹出框 添加组件
 		}
 		
-		//TODO:设置组件库，保存已有组件，从组件库查找组件并添加 简化UI if语句
-		bool componentExist = false;
-		const char* componentName = "";
+		//TODO:设置组件库，保存已有组件，从组件库查找组件并添加
 		if (ImGui::BeginPopup("AddComponent")) {	//渲染弹出框
-			//添加Camera组件
-			if (ImGui::MenuItem("Camera")) {
-				//Camera组件已存在
-				if (m_SelectionObject.HasComponent<Camera>()) {
-					componentName = "Camera";
-					componentExist = true;
-				}
-				else {
+			//Camera组件不存在
+			if (!m_SelectionObject.HasComponent<Camera>()) {
+				//添加Camera组件
+				if (ImGui::MenuItem("Camera")) {
 					m_SelectionObject.AddComponent<Camera>();
 					ImGui::CloseCurrentPopup();
 				}
 			}
-
-			//添加Light组件
-			if (ImGui::MenuItem("Light")) {
-				//Light组件已存在
-				if (m_SelectionObject.HasComponent<Light>()) {
-					componentExist = true;
-					componentName = "Light";
-				}
-				else {
+			//Light组件不存在
+			if (!m_SelectionObject.HasComponent<Light>()) {
+				//添加Light组件
+				if (ImGui::MenuItem("Light")) {
 					m_SelectionObject.AddComponent<Light>();
 					ImGui::CloseCurrentPopup();
 				}
 			}
-			//添加Mesh组件
-			if (ImGui::MenuItem("Mesh")) {
-				//Mesh组件已存在
-				if (m_SelectionObject.HasComponent<Mesh>()) {
-					componentExist = true;
-					componentName = "Mesh";
-				}
-				else {
+			//Mesh组件不存在
+			if (!m_SelectionObject.HasComponent<Mesh>()) {
+				//添加Mesh组件
+				if (ImGui::MenuItem("Mesh")) {
 					m_SelectionObject.AddComponent<Mesh>(Mesh::Type::None);
 					ImGui::CloseCurrentPopup();
 				}
 			}
-			//添加Material组件
-			if (ImGui::MenuItem("Material")) {
-				//Material组件已存在
-				if (m_SelectionObject.HasComponent<Material>()) {
-					componentExist = true;
-					componentName = "Material";
-				}
-				else {
+			//Material组件不存在
+			if (!m_SelectionObject.HasComponent<Material>()) {
+				//添加Material组件
+				if (ImGui::MenuItem("Material")) {
 					m_SelectionObject.AddComponent<Material>();
 					ImGui::CloseCurrentPopup();
 				}
 			}
-			//添加SpriteRenderer组件
-			if (ImGui::MenuItem("Sprite Renderer")) {
-				//SpriteRenderer组件已存在
-				if (m_SelectionObject.HasComponent<SpriteRenderer>()) {
-					componentExist = true;
-					componentName = "Sprite Renderer";
-				}
-				else {
+			//SpriteRenderer组件不存在
+			if (!m_SelectionObject.HasComponent<SpriteRenderer>()) {
+				//添加SpriteRenderer组件
+				if (ImGui::MenuItem("Sprite Renderer")) {
 					m_SelectionObject.AddComponent<SpriteRenderer>();
 					ImGui::CloseCurrentPopup();
 				}
 			}
 
-			ImGui::EndPopup();
-		}
+			//Rigidbody2D组件不存在
+			if (!m_SelectionObject.HasComponent<Rigidbody2D>()) {
+				//添加Rigidbody2D组件
+				if (ImGui::MenuItem("Rigidbody 2D")) {
+					m_SelectionObject.AddComponent<Rigidbody2D>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
 
-		//组件已存在
-		if (componentExist) {
-			ImGui::OpenPopup("Can't add the same component multiple times!");	//打开弹出窗口 不能添加相同组件多次
-		}
-
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));	//设置窗口位置
-		ImGui::SetNextWindowSize(ImVec2(320, 0));									//设置窗口大小
-		//弹出窗口 不能添加相同组件多次
-		ImVec2 windowPos = ImGui::GetCursorPos();
-		if (ImGui::BeginPopupModal("Can't add the same component multiple times!", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-			//文本内容 TODO:componentName显示异常
-			ImGui::TextWrapped("The component %s can't be added. because %s already contains the same component.", componentName, object.GetComponent<Self>().GetObjectName().c_str());
-			//设置按钮位置
-			ImGui::SetCursorPos(ImVec2(windowPos.x + 180, windowPos.y + 20));
-			//取消按钮
-			if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-				ImGui::CloseCurrentPopup();		//关闭弹出窗口
+			//Rigidbody2D组件不存在
+			if (!m_SelectionObject.HasComponent<BoxCollider2D>()) {
+				//添加BoxCollider2D组件
+				if (ImGui::MenuItem("Box Collider 2D")) {
+					m_SelectionObject.AddComponent<BoxCollider2D>();
+					ImGui::CloseCurrentPopup();
+				}
 			}
 
 			ImGui::EndPopup();
 		}
-
 
 		ImGui::Separator();	//分隔符
 
@@ -841,6 +814,33 @@ namespace Explorer
 		{
 			UI::DrawColorEditor4("Color", glm::value_ptr(spriteRenderer.GetColor()));	//Color Sprite颜色 颜色编辑器
 			//TODO 待添加Sprite
+		});
+
+		//绘制Rigidbody2D组件
+		DrawComponent<Rigidbody2D>(object, [](Rigidbody2D& rigidbody2D)
+		{
+			const char* bodyTypes[] = { "Dynamic", "Static", "Kinematic" };				//刚体类型：动态 静态 动力学 
+			const char* currentBodyType = bodyTypes[(int)rigidbody2D.GetBodyType()];	//当前刚体类型
+
+			//刚体类型选择下拉列表
+			UI::DrawDropdownList("Body Type", currentBodyType, bodyTypes, 3, [&](int index, const char* value)
+			{
+				rigidbody2D.SetBodyType((Rigidbody2D::BodyType)index);	//设置刚体类型
+			});
+
+			UI::DrawCheckBox("Freeze Rotation", &rigidbody2D.GetFreezeRotation_Ref());	//是否冻结旋转Z轴 勾选框
+		});
+
+		//绘制BoxCollider2D组件
+		DrawComponent<BoxCollider2D>(object, [](BoxCollider2D& boxCollider2D)
+		{
+			UI::DrawDrag("Offset", glm::value_ptr(boxCollider2D.GetOffset()), 0.01f, UI::ValueType::Float2);	//Offset偏移量 vec2拖动条
+			UI::DrawDrag("Size", glm::value_ptr(boxCollider2D.GetSize()), 0.01f, UI::ValueType::Float2);		//Size大小 vec2拖动条
+			//TODO设置最值
+			UI::DrawDrag("Density", &boxCollider2D.GetDensity_Ref());													//Density密度 vec1拖动条
+			UI::DrawDrag("Friction", &boxCollider2D.GetFriction_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);		//Friction摩擦力 vec1拖动条
+			UI::DrawDrag("Restitution", &boxCollider2D.GetRestitution_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);	//Restitution恢复系数 vec1拖动条
+			UI::DrawDrag("Restitution Threshold", &boxCollider2D.GetRestitutionThreshold_Ref(), 0.01f, UI::ValueType::Float, 0.0f);	//RestitutionThreshold恢复阈值 vec1拖动条
 		});
 	}
 }

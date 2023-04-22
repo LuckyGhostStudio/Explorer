@@ -1,11 +1,11 @@
-Scene: Untitled
+Scene: MeshTest
 Objects:
-  - Object: 12837192831273
+  - Object: 12592821777359471970
     Self Component:
       ObjectName: Sphere
       ObjectEnable: true
     Transform Component:
-      Position: [2.1636765, 0.958328009, 2.54658365]
+      Position: [1.85277581, 0.861350775, 0.165785074]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     Mesh Component:
@@ -20,12 +20,12 @@ Objects:
       Shininess: 32
       Tiling: [1, 1]
       Offset: [0, 0]
-  - Object: 12837192831273
+  - Object: 8736756846224991728
     Self Component:
       ObjectName: Cylinder
       ObjectEnable: true
     Transform Component:
-      Position: [2.9481678, 1.24582422, -0.92043972]
+      Position: [-0.0608990192, 1.23913491, -3.53022385]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     Mesh Component:
@@ -40,12 +40,12 @@ Objects:
       Shininess: 32
       Tiling: [1, 1]
       Offset: [0, 0]
-  - Object: 12837192831273
+  - Object: 1626139314054877785
     Self Component:
       ObjectName: Cone
       ObjectEnable: true
     Transform Component:
-      Position: [0, 1.27764916, 0]
+      Position: [0, 1.73487937, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     Mesh Component:
@@ -60,12 +60,32 @@ Objects:
       Shininess: 32
       Tiling: [1, 1]
       Offset: [0, 0]
-  - Object: 12837192831273
+  - Object: 3012231316387441977
+    Self Component:
+      ObjectName: Plane
+      ObjectEnable: true
+    Transform Component:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [28.3655987, 1, 28.3655987]
+    Mesh Component:
+      Enable: true
+      Type: 3
+    Material Component:
+      Enable: true
+      Shader: Standard
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
+      AlbedoTextureExist: false
+      SpecularTextureExist: false
+      Shininess: 32
+      Tiling: [1, 1]
+      Offset: [0, 0]
+  - Object: 1462001102433657223
     Self Component:
       ObjectName: Cube
       ObjectEnable: true
     Transform Component:
-      Position: [-1.88443828, 1.11655593, 1.80683792]
+      Position: [0, 1.35769701, 2.8303473]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     Mesh Component:
@@ -80,32 +100,12 @@ Objects:
       Shininess: 32
       Tiling: [1, 1]
       Offset: [0, 0]
-  - Object: 12837192831273
-    Self Component:
-      ObjectName: Plane
-      ObjectEnable: true
-    Transform Component:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [8.03250027, 8.03250027, 8.03250027]
-    Mesh Component:
-      Enable: true
-      Type: 3
-    Material Component:
-      Enable: true
-      Shader: Standard
-      Color: [0.800000012, 0.800000012, 0.800000012, 1]
-      AlbedoTextureExist: false
-      SpecularTextureExist: false
-      Shininess: 32
-      Tiling: [1, 1]
-      Offset: [0, 0]
-  - Object: 12837192831273
+  - Object: 2410542205615068028
     Self Component:
       ObjectName: Point Light
       ObjectEnable: true
     Transform Component:
-      Position: [2, 4.6031189, 6.13345957]
+      Position: [2, 2.95000005, -1.5]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     Light Component:
@@ -117,7 +117,7 @@ Objects:
       Color: [1, 1, 1]
       Intensity: 1
       RenderShadow: true
-  - Object: 12837192831273
+  - Object: 1471202071837043056
     Self Component:
       ObjectName: Main Camera
       ObjectEnable: true

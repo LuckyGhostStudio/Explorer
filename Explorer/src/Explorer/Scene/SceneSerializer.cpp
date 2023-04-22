@@ -8,6 +8,8 @@
 #include "Explorer/Components/Light.h"
 #include "Explorer/Components/Mesh.h"
 #include "Explorer/Components/SpriteRenderer.h"
+#include "Explorer/Components/Rigidbody/Rigidbody2D.h"
+#include "Explorer/Components/Rigidbody/BoxCollider2D.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -153,8 +155,10 @@ namespace Explorer
 	/// <param name="object">物体</param>
 	static void SerializeObject(YAML::Emitter& out, Object object)
 	{
+		EXP_CORE_ASSERT(object.HasComponent<ID>(), "ID Not Found!");	//组件ID不存在
+
 		out << YAML::BeginMap;	//开始物体Map
-		out << YAML::Key << "Object" << YAML::Value << "12837192831273"; // TODO: Object ID goes here
+		out << YAML::Key << "Object" << YAML::Value << object.GetUUID(); //物体的唯一ID
 
 		//Self组件
 		if (object.HasComponent<Self>()){
@@ -335,6 +339,40 @@ namespace Explorer
 			out << YAML::EndMap;	//结束SpriteRenderer组件Map
 		}
 
+		//Rigidbody2D组件
+		if (object.HasComponent<Rigidbody2D>())
+		{
+			out << YAML::Key << "Rigidbody2D Component";
+			out << YAML::BeginMap;	//开始Rigidbody2D组件Map
+
+			auto& rigidbody2D = object.GetComponent<Rigidbody2D>();
+
+			out << YAML::Key << "BodyType" << YAML::Value << (int)rigidbody2D.GetBodyType();
+			out << YAML::Key << "FreezeRotation" << YAML::Value << rigidbody2D.GetFreezeRotation();
+
+			out << YAML::EndMap;	//结束Rigidbody2D组件Map
+		}
+
+		//BoxCollider2D组件
+		if (object.HasComponent<BoxCollider2D>())
+		{
+			out << YAML::Key << "BoxCollider2D Component";
+			out << YAML::BeginMap;	//开始BoxCollider2D组件Map
+
+			auto& boxCollider2D = object.GetComponent<BoxCollider2D>();
+
+			out << YAML::Key << "Enable" << YAML::Value << boxCollider2D.GetEnable();
+
+			out << YAML::Key << "Offset" << YAML::Value << boxCollider2D.GetOffset();
+			out << YAML::Key << "Size" << YAML::Value << boxCollider2D.GetSize();
+			out << YAML::Key << "Density" << YAML::Value << boxCollider2D.GetDensity();
+			out << YAML::Key << "Friction" << YAML::Value << boxCollider2D.GetFriction();
+			out << YAML::Key << "Restitution" << YAML::Value << boxCollider2D.GetRestitution();
+			out << YAML::Key << "RestitutionThreshold" << YAML::Value << boxCollider2D.GetRestitutionThreshold();
+
+			out << YAML::EndMap;	//结束BoxCollider2D组件Map
+		}
+
 		out << YAML::EndMap;	//结束物体Map
 	}
 
@@ -417,7 +455,7 @@ namespace Explorer
 
 		if (objects) {	//物体结点存在
 			for (auto object : objects) {	//遍历结点下所有物体
-				uint64_t uuid = object["Object"].as<uint64_t>(); //物体uid TODO
+				uint64_t uuid = object["Object"].as<uint64_t>(); //物体的唯一ID
 
 				std::string objectName;
 				bool objectEnable;
@@ -429,7 +467,7 @@ namespace Explorer
 
 				EXP_CORE_TRACE("Deserialized object with ID = {0}, name = {1}", uuid, objectName);
 
-				Object deserializedObject = m_Scene->CreateEmptyObject(objectName, objectEnable);	//创建的空物体
+				Object deserializedObject = m_Scene->CreateEmptyObject(uuid, objectName, objectEnable);	//创建空物体
 
 				//Transform组件结点
 				auto transformNode = object["Transform Component"];
@@ -565,6 +603,32 @@ namespace Explorer
 					spriteRenderer.SetEnable(spriteRendererNode["Enable"].as<bool>());	//组件启用状态
 					spriteRenderer.SetColor(spriteRendererNode["Color"].as<glm::vec4>());
 					//TODO待添加Sprite
+				}
+
+				//Rigidbody2D组件结点
+				auto rigidbody2DNode = object["Rigidbody2D Component"];
+				if (rigidbody2DNode)
+				{
+					auto& rigidbody2D = deserializedObject.AddComponent<Rigidbody2D>();	//添加Rigidbody2D组件
+
+					rigidbody2D.SetBodyType((Rigidbody2D::BodyType)rigidbody2DNode["BodyType"].as<int>());
+					rigidbody2D.SetFreezeRotation(rigidbody2DNode["FreezeRotation"].as<bool>());
+				}
+
+				//BoxCollider2D组件结点
+				auto boxCollider2DNode = object["BoxCollider2D Component"];
+				if (boxCollider2DNode)
+				{
+					auto& boxCollider2D = deserializedObject.AddComponent<BoxCollider2D>();	//添加BoxCollider2D组件
+
+					boxCollider2D.SetEnable(boxCollider2DNode["Enable"].as<bool>());	//组件启用状态
+
+					boxCollider2D.SetOffset(boxCollider2DNode["Offset"].as<glm::vec2>());
+					boxCollider2D.SetSize(boxCollider2DNode["Size"].as<glm::vec2>());
+					boxCollider2D.SetDensity(boxCollider2DNode["Density"].as<float>());
+					boxCollider2D.SetFriction(boxCollider2DNode["Friction"].as<float>());
+					boxCollider2D.SetRestitution(boxCollider2DNode["Restitution"].as<float>());
+					boxCollider2D.SetRestitutionThreshold(boxCollider2DNode["RestitutionThreshold"].as<float>());
 				}
 			}
 		}

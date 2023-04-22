@@ -1,6 +1,6 @@
 Scene: Physics2D
 Objects:
-  - Object: 12837192831273
+  - Object: 5776073614716430920
     Self Component:
       ObjectName: Main Camera
       ObjectEnable: true
@@ -11,50 +11,55 @@ Objects:
     Camera Component:
       Enable: true
       ProjectionType: 1
-      Size: 5
+      Size: 3.47000003
       FOV: 0.785398185
       Near: 0.00999999978
       Far: 1000
       Primary: true
-  - Object: 12837192831273
-    Self Component:
-      ObjectName: Point Light
-      ObjectEnable: true
-    Transform Component:
-      Position: [2, 2.95000005, -1.5]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    Light Component:
-      Enable: true
-      Type: 1
-      Range: 100
-      SpotOuterAngle: 0.34906584
-      SpotInnerAngle: 0.319395244
-      Color: [1, 1, 1]
-      Intensity: 1
-      RenderShadow: true
-  - Object: 12837192831273
+  - Object: 1930824208825991330
     Self Component:
       ObjectName: Box
       ObjectEnable: true
     Transform Component:
-      Position: [0, 1.90005684, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 0.999999881, 1]
+      Position: [-0.204231769, 1.64976025, 0]
+      Rotation: [0, 0, -18.849556]
+      Scale: [1, 1, 1]
     SpriteRenderer Component:
       Enable: true
       Color: [1, 1, 1, 1]
-  - Object: 12837192831273
+    Rigidbody2D Component:
+      BodyType: 0
+      FreezeRotation: false
+    BoxCollider2D Component:
+      Enable: true
+      Offset: [0, 0]
+      Size: [1, 1]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  - Object: 14283686656864087174
     Self Component:
       ObjectName: Ground
       ObjectEnable: true
     Transform Component:
       Position: [0, -2.37700009, 0]
       Rotation: [0, 0, 0]
-      Scale: [12.8766413, 0.847435057, 0.939999998]
+      Scale: [12.8766413, 0.847435057, 1]
     SpriteRenderer Component:
       Enable: true
       Color: [1, 0.463320434, 0, 1]
+    Rigidbody2D Component:
+      BodyType: 1
+      FreezeRotation: false
+    BoxCollider2D Component:
+      Enable: true
+      Offset: [0, 0]
+      Size: [1, 1]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
 Environment:
   SkyboxEnable: false
   SourceType: 1

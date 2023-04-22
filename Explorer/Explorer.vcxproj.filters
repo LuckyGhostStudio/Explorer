@@ -10,6 +10,9 @@
     <Filter Include="src\Explorer\Components">
       <UniqueIdentifier>{629CEF58-CED3-37F0-D7DD-9B1343945EE9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Explorer\Components\Rigidbody">
+      <UniqueIdentifier>{4E775205-BAE5-A784-03CF-62846F7C9D20}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Explorer\Core">
       <UniqueIdentifier>{E5A54B6B-51BC-4901-9A33-D52206891A89}</UniqueIdentifier>
     </Filter>
@@ -81,13 +84,28 @@
     <ClInclude Include="src\Explorer\Components\Mesh.h">
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Rigidbody\BoxCollider2D.h">
+      <Filter>src\Explorer\Components\Rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Rigidbody\Rigidbody2D.h">
+      <Filter>src\Explorer\Components\Rigidbody</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Components\Skybox.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Sprite.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\SpriteRenderer.h">
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Components\SubMesh.h">
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Components\Transform.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Vertex.h">
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Core\Application.h">
@@ -1458,9 +1476,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Components\SpriteRenderer.h" />
-    <ClInclude Include="src\Explorer\Components\Sprite.h" />
-    <ClInclude Include="src\Explorer\Components\Vertex.h" />
+    <ClInclude Include="src\Explorer\Core\UUID.h" />
+    <ClInclude Include="src\Explorer\Components\NativeScript.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Components\Camera.cpp">
@@ -1476,6 +1493,12 @@
       <Filter>src\Explorer\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Components\Skybox.cpp">
+      <Filter>src\Explorer\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Components\Sprite.cpp">
+      <Filter>src\Explorer\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Components\SpriteRenderer.cpp">
       <Filter>src\Explorer\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Components\SubMesh.cpp">
@@ -1574,7 +1597,6 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Components\Sprite.cpp" />
-    <ClCompile Include="src\Explorer\Components\SpriteRenderer.cpp" />
+    <ClCompile Include="src\Explorer\Core\UUID.cpp" />
   </ItemGroup>
 </Project>

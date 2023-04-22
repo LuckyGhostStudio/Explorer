@@ -1,7 +1,5 @@
 #pragma once
 
-#include "entt.hpp"
-
 #include "Explorer/Core/DeltaTime.h"
 #include "Explorer/Renderer/EditorCamera.h"
 #include "Explorer/Components/Light.h"
@@ -10,6 +8,12 @@
 
 #include "Explorer/Renderer/Shader.h"
 #include "Explorer/Renderer/Environment.h"
+
+#include "entt.hpp"
+
+#include "Explorer/Core/UUID.h"
+
+class b2World;
 
 namespace Explorer
 {
@@ -32,6 +36,8 @@ namespace Explorer
 		uint32_t m_ViewportHeight = 720;	//场景视口高
 
 		Environment m_Environment;	//环境设置
+
+		b2World* m_PhysicsWorld = nullptr;	//物理世界
 	private:
 		/// <summary>
 		/// object添加T组件时调用
@@ -58,6 +64,15 @@ namespace Explorer
 		/// <param name="enable">物体启用状态</param>
 		/// <returns>物体</returns>
 		Object CreateEmptyObject(const std::string& name = "Object", bool enable = true);
+
+		/// <summary>
+		/// 创建空物体：使用已有UUID
+		/// </summary>
+		/// <param name="uuid">ID</param>
+		/// <param name="name">物体名</param>
+		/// <param name="enable">物体启用状态</param>
+		/// <returns>物体</returns>
+		Object CreateEmptyObject(UUID uuid, const std::string& name = "Object", bool enable = true);
 		
 		/// <summary>
 		/// 创建图片物体
@@ -65,7 +80,7 @@ namespace Explorer
 		/// <param name="name">物体名</param>
 		/// <param name="enable">物体启用状态</param>
 		/// <returns>物体</returns>
-		Object CreateSpriteObject(const std::string& name = "Sprite", bool enable = true);
+		Object CreateSpriteObject(const std::string& name = "Sprite");
 
 		/// <summary>
 		/// 创建网格物体
@@ -96,6 +111,16 @@ namespace Explorer
 		/// </summary>
 		/// <param name="object">物体</param>
 		void DestroyObject(Object object);
+
+		/// <summary>
+		/// 开始运行时调用：点击Play时（开始物理模拟）
+		/// </summary>
+		void OnRuntimeStart();
+
+		/// <summary>
+		/// 停止运行时调用：停止Play时（停止物理模拟）
+		/// </summary>
+		void OnRuntimeStop();
 
 		/// <summary>
 		/// 编辑器更新：每帧调用

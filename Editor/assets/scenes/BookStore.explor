@@ -1,6 +1,6 @@
 Scene: BookStore
 Objects:
-  - Object: 12837192831273
+  - Object: 794330999378490613
     Self Component:
       ObjectName: BookStore
       ObjectEnable: true
@@ -11,7 +11,7 @@ Objects:
     Mesh Component:
       Enable: true
       Type: 1
-      Name: BookStore (Mesh) (Mesh) (Mesh)
+      Name: BookStore (Mesh) (Mesh) (Mesh) (Mesh) (Mesh)
       SubMeshes:
         - SubMesh: 0
           Vertices:
@@ -99320,7 +99320,7 @@ Objects:
       Shininess: 32
       Tiling: [1, 1]
       Offset: [0, 0]
-  - Object: 12837192831273
+  - Object: 16000982877928169946
     Self Component:
       ObjectName: Point Light
       ObjectEnable: true
@@ -99337,7 +99337,7 @@ Objects:
       Color: [1, 1, 1]
       Intensity: 1
       RenderShadow: true
-  - Object: 12837192831273
+  - Object: 11639267004426281094
     Self Component:
       ObjectName: Main Camera
       ObjectEnable: true

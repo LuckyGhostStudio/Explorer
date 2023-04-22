@@ -1,15 +1,36 @@
 #include "exppch.h"
 #include "Scene.h"
 
-#include "Explorer/Renderer/Renderer2D.h"
 #include "Explorer/Renderer/Renderer3D.h"
+#include "Explorer/Components/NativeScript.h"
 #include "Explorer/Components/Components.h"
 #include "Explorer/Components/SpriteRenderer.h"
+#include "Explorer/Components/Rigidbody/Rigidbody2D.h"
+#include "Explorer/Components/Rigidbody/BoxCollider2D.h"
 
 #include "Object.h"
 
+#include "box2d/b2_world.h"
+#include "box2d/b2_body.h"
+#include "box2d/b2_fixture.h"
+#include "box2d/b2_polygon_shape.h"
+
 namespace Explorer
 {
+	static b2BodyType RigidbodyTypeToB2BodyType(Rigidbody2D::BodyType bodyType)
+	{
+		switch (bodyType)
+		{
+			case Rigidbody2D::BodyType::Dynamic: return b2BodyType::b2_dynamicBody;
+			case Rigidbody2D::BodyType::Static: return b2BodyType::b2_staticBody;
+			case Rigidbody2D::BodyType::Kinematic: return b2BodyType::b2_kinematicBody;
+		}
+
+		EXP_CORE_ASSERT(false, "BodyType Not Found!");
+
+		return b2_staticBody;
+	}
+
 	Scene::Scene(const std::string& name) :m_Name(name)
 	{
 		
@@ -22,19 +43,22 @@ namespace Explorer
 
 	Object Scene::CreateEmptyObject(const std::string& name, bool enable)
 	{
+		return CreateEmptyObject(UUID(), name, enable);
+	}
+
+	Object Scene::CreateEmptyObject(UUID uuid, const std::string& name, bool enable)
+	{
 		Object object = { m_Registry.create(), this };	//创建空物体
+		object.AddComponent<ID>(uuid);					//添加ID组件（默认组件）
 		object.AddComponent<Self>(name, enable);		//添加Self组件（默认组件）
 		object.AddComponent<Transform>();				//添加Transform组件（默认组件）
 
 		return object;
 	}
 
-	Object Scene::CreateSpriteObject(const std::string& name, bool enable)
+	Object Scene::CreateSpriteObject(const std::string& name)
 	{
-		Object sprite = { m_Registry.create(), this };	//创建Sprite
-		
-		sprite.AddComponent<Self>(name);
-		sprite.AddComponent<Transform>();
+		Object sprite = CreateEmptyObject(name);	//创建Sprite
 
 		sprite.AddComponent<SpriteRenderer>();
 
@@ -43,13 +67,10 @@ namespace Explorer
 
 	Object Scene::CreateMeshObject(const std::string& name, const Mesh::Type type)
 	{
-		Object cube = { m_Registry.create(), this };	//创建Cube
+		Object cube = CreateEmptyObject(name);	//创建Cube
 
-		cube.AddComponent<Self>(name);
-		cube.AddComponent<Transform>();
-
-		cube.AddComponent<Mesh>(type);	//添加Mesh组件（type类型网格）
-		cube.AddComponent<Material>();	//添加Material组件
+		cube.AddComponent<Mesh>(type);			//添加Mesh组件（type类型网格）
+		cube.AddComponent<Material>();			//添加Material组件
 
 		return cube;
 	}
@@ -61,6 +82,7 @@ namespace Explorer
 		glm::vec3 position = { 2.734f, 1.796f, 3.294f };	//初始位置
 		glm::vec3 rotation = { -20.796f, 40.670f, 0.0f };	//初始旋转
 
+		camera.AddComponent<ID>();							//添加ID组件
 		camera.AddComponent<Self>(name);					//添加Self组件
 		camera.AddComponent<Transform>(position, rotation);	//添加Transform组件
 		camera.AddComponent<Camera>().SetPrimary(primary);	//添加Camera组件：默认不是主相机
@@ -90,18 +112,65 @@ namespace Explorer
 				break;
 		}
 		 
-		Object lightObj = { m_Registry.create(), this };		//创建Light
+		Object light = { m_Registry.create(), this };		//创建Light
 
-		lightObj.AddComponent<Self>(tempName);					//添加Self组件
-		lightObj.AddComponent<Transform>(position, rotation);	//添加Transform组件
-		lightObj.AddComponent<Light>(type);						//添加Light组件：type类型光源
+		light.AddComponent<ID>();							//添加ID组件
+		light.AddComponent<Self>(tempName);					//添加Self组件
+		light.AddComponent<Transform>(position, rotation);	//添加Transform组件
+		light.AddComponent<Light>(type);					//添加Light组件：type类型光源
 
-		return lightObj;
+		return light;
 	}
 
 	void Scene::DestroyObject(Object object)
 	{
 		m_Registry.destroy(object);	//从注册表移除物体
+	}
+
+	void Scene::OnRuntimeStart()
+	{
+		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });	//创建物理世界 重力方向向量
+
+		auto view = m_Registry.view<Rigidbody2D>();	//有Rigidbody2D的所有物体
+		for (auto obj : view) {
+			Object object = { obj, this };
+
+			auto& transform = object.GetComponent<Transform>();
+			auto& rigidbody2d = object.GetComponent<Rigidbody2D>();
+
+			b2BodyDef bodyDef;	//box2d刚体定义
+			bodyDef.type = RigidbodyTypeToB2BodyType(rigidbody2d.GetBodyType());		//刚体类型
+			bodyDef.position.Set(transform.GetPosition().x, transform.GetPosition().y);	//初始位置 = transform位置
+			bodyDef.angle = transform.GetRotation().z;									//初始旋转角度 z轴
+
+			b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);		//创建刚体
+			body->SetFixedRotation(rigidbody2d.GetFreezeRotation());	//旋转冻结状态
+			rigidbody2d.SetRuntimeBody(body);							//设置运行时刚体
+
+			if (object.HasComponent<BoxCollider2D>()) {
+				auto& boxCollider2D = object.GetComponent<BoxCollider2D>();	//Box2D碰撞体
+
+				b2PolygonShape boxShape;	//Box形状
+				//Box大小
+				float sizeX = boxCollider2D.GetSize().x * 0.5f * transform.GetScale().x;
+				float sizeY = boxCollider2D.GetSize().y * 0.5f * transform.GetScale().y;
+				boxShape.SetAsBox(sizeX, sizeY);	//设置为Box
+
+				b2FixtureDef fixtureDef;			//碰撞体定义
+				fixtureDef.shape = &boxShape;												//形状
+				fixtureDef.density = boxCollider2D.GetDensity();							//密度
+				fixtureDef.friction = boxCollider2D.GetFriction();							//摩擦力
+				fixtureDef.restitution = boxCollider2D.GetRestitution();					//恢复系数
+				fixtureDef.restitutionThreshold = boxCollider2D.GetRestitutionThreshold();	//恢复阈值
+				body->CreateFixture(&fixtureDef);	//创建碰撞体
+			}
+		}
+	}
+
+	void Scene::OnRuntimeStop()
+	{
+		delete m_PhysicsWorld;		//销毁物理世界
+		m_PhysicsWorld = nullptr;
 	}
 
 	void Scene::OnUpdateEditor(DeltaTime dt, EditorCamera& camera)
@@ -162,6 +231,36 @@ namespace Explorer
 			script.Instance->OnUpdate(dt);		//调用脚本的OnOpdate函数
 		});
 
+		//-------------Physics----------------------
+		{
+			const uint32_t velocityIterations = 6;	//速度迭代次数
+			const uint32_t positionIterations = 2;	//位置迭代次数
+			m_PhysicsWorld->Step(dt, velocityIterations, positionIterations);	//设置时间步 速度和位置迭代次数
+
+			auto view = m_Registry.view<Rigidbody2D>();	//有Rigidbody2D的所有物体
+			for (auto obj : view) {
+				Object object = { obj, this };
+
+				auto& transform = object.GetComponent<Transform>();		//Transform组件
+				auto& rigidbody2d = object.GetComponent<Rigidbody2D>();	//Rigidbody2D组件
+
+				b2Body* body = (b2Body*)rigidbody2d.GetRuntimeBody();	//运行时刚体
+				//根据刚体数据更新Transform数据
+				const auto& position = body->GetPosition();
+				//transform.SetRotation({ transform.GetRotation().x, transform.GetRotation().y, body->GetAngle() });
+				//transform.SetPosition({ position.x, position.y, transform.GetPosition().z });
+
+				//EXP_CORE_TRACE("Transform Rotation z: {0}, Body Rotation z: {1}", transform.GetRotation().z, body->GetAngle());
+
+				transform.GetPosition().x = position.x;
+				transform.GetPosition().y = position.y;
+				transform.GetRotation().z = body->GetAngle();
+
+				//TODO 旋转有bug
+			}
+		}
+
+		//-------------Renderer---------------------
 		auto lights = m_Registry.view<Light>();	//所有拥有Light组件的物体
 		std::vector<Object> lightObjects;		//场景所有Light对象
 		lightObjects.reserve(lights.size());	//预留空间
@@ -298,7 +397,25 @@ namespace Explorer
 	}
 
 	template<>
-	void Scene::OnComponentAdded<Self>(Object object, Self& name)
+	void Scene::OnComponentAdded<Rigidbody2D>(Object object, Rigidbody2D& rigidbody2D)
+	{
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<BoxCollider2D>(Object object, BoxCollider2D& boxCollider2D)
+	{
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<ID>(Object object, ID& id)
+	{
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<Self>(Object object, Self& self)
 	{
 
 	}

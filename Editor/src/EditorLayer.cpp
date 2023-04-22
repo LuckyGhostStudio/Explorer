@@ -151,7 +151,7 @@ namespace Explorer
 			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);	//读取1号颜色缓冲区像素
 			//被鼠标拾取的物体
 			m_PickedObject = pixelData == -1 ? Object() : Object((entt::entity)pixelData, m_ActiveScene.get());
-			EXP_CORE_WARN("pixelData:{0}", pixelData);
+			//EXP_CORE_WARN("pixelData:{0}", pixelData);
 			//EXP_CORE_WARN("mx:{0}, my:{1}", mouseX, mouseY);
 		}
 
@@ -275,10 +275,6 @@ namespace Explorer
 
 		//批渲染数据统计
 		ImGui::Begin("Renderer Stats");
-		if (ImGui::BeginMenuBar()) {
-
-			ImGui::EndMenuBar();
-		}
 		//std::string name = m_PickedObject ? m_PickedObject.GetComponent<Self>().GetObjectName() : "None";
 		//ImGui::Text("Hovered Object: %s", name.c_str());
 
@@ -296,9 +292,8 @@ namespace Explorer
 		ImGui::Begin("Scene");
 		
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();	//视口可用区域最小值（视口左上角相对于视口左上角位置）
-		//viewportMinRegion.y += 34;	//TODO:向下偏移工具栏的高度
 		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();	//视口可用区域最大值（视口右下角相对于视口左上角位置）
-		auto viewportOffset = ImGui::GetWindowPos();	//视口偏移量：视口面板左上角位置（相对于屏幕左上角）
+		auto viewportOffset = ImGui::GetWindowPos();					//视口偏移量：视口面板左上角位置（相对于屏幕左上角）
 
 		m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
 		m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
@@ -653,10 +648,12 @@ namespace Explorer
 	void EditorLayer::OnScenePlay()
 	{
 		m_SceneState = SceneState::Play;	//开始运行
+		m_ActiveScene->OnRuntimeStart();
 	}
 
 	void EditorLayer::OnSceneStop()
 	{
 		m_SceneState = SceneState::Edit;	//停止运行
+		m_ActiveScene->OnRuntimeStop();
 	}
 }
