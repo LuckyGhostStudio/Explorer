@@ -40,12 +40,12 @@ namespace Explorer
 		fbSpec.Height = 720;
 		m_Framebuffer = std::make_shared<Framebuffer>(fbSpec);	//创建帧缓冲区
 
-		m_ActiveScene = std::make_shared<Scene>();								//创建场景
+		m_EditorScene = std::make_shared<Scene>("New Scene");					//创建场景
 		m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f);	//创建编辑器相机
 
-		m_MainCamera = m_ActiveScene->CreateCameraObject("Main Camera", true);	//创建默认Camera对象：主相机
-		m_Light = m_ActiveScene->CreateLightObject();							//创建默认Light对象（Point）
-		m_Cube = m_ActiveScene->CreateMeshObject("Cube", Mesh::Type::Cube);		//创建默认Cube对象
+		m_MainCamera = m_EditorScene->CreateCameraObject("Main Camera", true);	//创建默认Camera对象：主相机
+		m_Light = m_EditorScene->CreateLightObject();							//创建默认Light对象（Point）
+		m_Cube = m_EditorScene->CreateMeshObject("Cube", Mesh::Type::Cube);		//创建默认Cube对象
 
 #if 0
 
@@ -84,7 +84,9 @@ namespace Explorer
 
 		m_CameraObject.AddComponent<NativeScript>().Bind<CameraController>();	//添加脚本组件 并 绑定CameraController脚本
 #endif
-		m_SceneHierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy面板的场景
+		m_SceneHierarchyPanel.SetScene(m_EditorScene);	//设置Hierarchy面板的场景
+
+		m_ActiveScene = m_EditorScene;
 	}
 
 	void EditorLayer::OnDetach()
@@ -226,17 +228,22 @@ namespace Explorer
 			if (ImGui::BeginMenu("File"))
 			{
 				//创建新场景
-				if (ImGui::MenuItem("New", "Ctrl+N")) {
+				if (ImGui::MenuItem("New", "Ctrl N")) {
 					NewScene();
 				}
 
 				//打开文件：加载场景
-				if (ImGui::MenuItem("Open...", "Ctrl+O")) {
+				if (ImGui::MenuItem("Open...", "Ctrl O")) {
 					OpenScene();
 				}
 
+				//保存场景
+				if (ImGui::MenuItem("Save", "Ctrl S")) {
+					SaveScene();
+				}
+				
 				//另存为：保存场景
-				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
+				if (ImGui::MenuItem("Save As...", "Ctrl Shift S")) {
 					SaveSceneAs();
 				}
 
@@ -313,14 +320,12 @@ namespace Explorer
 		//将从拖拽源（Project面板）复制的数据拖放到目标（场景）	：场景路径
 		ContentBrowserPanel::DragDropToTarget({ ".explor", ".obj", ".mesh" }, [&](const std::filesystem::path& filepath)
 		{
-			const std::string filename = filepath.filename().string();	//文件名
-			uint32_t dotIndex = filename.find_last_of('.');
-			std::string suffixname = filename.substr(dotIndex, filename.length() - dotIndex);	//文件后缀名
+			const std::string extension = filepath.extension().string();	//扩展名
 
-			if (suffixname == ".explor") {	//场景文件
+			if (extension == ".explor") {	//场景文件
 				OpenScene(filepath);		//打开场景
 			}
-			else if (suffixname == ".obj" || suffixname == ".mesh") {	//.obj模型文件 or .mesh文件（实际也是.obj）
+			else if (extension == ".obj" || extension == ".mesh") {	//.obj模型文件 or .mesh文件（实际也是.obj）
 				ImportModelFile(filepath);		//导入模型文件
 			}
 		});
@@ -523,9 +528,9 @@ namespace Explorer
 		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);	//Ctrl键按下
 		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);		//Shift键按下
 
-		//菜单快捷键
 		switch (e.GetKeyCode()) 
 		{
+			//菜单快捷键
 			case Key::N:
 				if (control) {
 					NewScene();		//创建新场景：Ctrl+N
@@ -537,10 +542,18 @@ namespace Explorer
 				}
 				break;
 			case Key::S:
-				if (control && shift) {
-					SaveSceneAs();	//场景另存为：Ctrl+Shift+S
+				if (control) {
+					if (shift) SaveSceneAs();	//场景另存为：Ctrl+Shift+S
+					else SaveScene();			//保存场景：Ctrl+S
 				}
 				break;
+			//复制物体 ctrl+D
+			case Key::D:
+				if (control) {
+					OnCopyObject();	//复制物体
+				}
+				break;
+			//TODO:添加删除物体
 		}
 
 		//设置Transform Gizmo类型
@@ -576,14 +589,23 @@ namespace Explorer
 
 	void EditorLayer::NewScene()
 	{
-		m_ActiveScene = std::make_shared<Scene>("New Scene");			//创建新场景
+		//不是编辑状态 停止场景
+		if (m_SceneState != SceneState::Edit) {
+			OnSceneStop();
+		}
 
-		m_MainCamera = m_ActiveScene->CreateCameraObject("Main Camera", true);	//创建默认Camera对象：主相机
-		m_Light = m_ActiveScene->CreateLightObject();							//创建默认Light对象
-		m_Cube = m_ActiveScene->CreateMeshObject("Cube", Mesh::Type::Cube);		//创建默认Cube对象
+		m_EditorScene = std::make_shared<Scene>("New Scene");			//创建新场景
 
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
-		m_SceneHierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
+		m_MainCamera = m_EditorScene->CreateCameraObject("Main Camera", true);	//创建默认Camera对象：主相机
+		m_Light = m_EditorScene->CreateLightObject();							//创建默认Light对象
+		m_Cube = m_EditorScene->CreateMeshObject("Cube", Mesh::Type::Cube);		//创建默认Cube对象
+
+		m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
+		m_SceneHierarchyPanel.SetScene(m_EditorScene);	//设置Hierarchy的场景
+
+		m_ActiveScene = m_EditorScene;
+
+		m_EditorScenePath = std::filesystem::path();	//设置当前场景路径
 	}
 
 	void EditorLayer::OpenScene()
@@ -597,12 +619,23 @@ namespace Explorer
 
 	void EditorLayer::OpenScene(const std::filesystem::path& path)
 	{
-		m_ActiveScene = std::make_shared<Scene>();		//创建新场景
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
-		m_SceneHierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
+		//不是编辑状态 停止场景
+		if (m_SceneState != SceneState::Edit) {
+			OnSceneStop();
+		}
 
-		SceneSerializer serializer(m_ActiveScene);	//场景序列化器
-		serializer.Deserialize(path.string());		//反序列化：加载文件场景到新场景
+		std::shared_ptr<Scene> newScene = std::make_shared<Scene>();	//创建新场景
+		SceneSerializer serializer(newScene);							//场景序列化器
+
+		//反序列化：加载文件场景到新场景
+		if (serializer.Deserialize(path.string())) {
+			m_EditorScene = newScene;	//设置编辑器场景
+			m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
+			m_SceneHierarchyPanel.SetScene(m_EditorScene);	//设置Hierarchy的场景
+
+			m_ActiveScene = m_EditorScene;	//设置活动场景
+			m_EditorScenePath = path;		//当前场景路径
+		}
 	}
 
 	void EditorLayer::SaveSceneAs()
@@ -614,10 +647,30 @@ namespace Explorer
 			std::string sceneName = std::filesystem::path(filepath).stem().string();	//场景名（场景文件名）
 			m_ActiveScene->SetName(sceneName);
 
-			SceneSerializer serializer(m_ActiveScene);	//场景序列化器
-			serializer.Serialize(filepath);				//序列化：保存场景
+			SerializeScene(m_ActiveScene, filepath);	//序列化场景
+
+			m_EditorScenePath = filepath;				//当前场景路径
 		}
 	}
+
+	void EditorLayer::SaveScene()
+	{
+		//当前场景路径不为空
+		if (!m_EditorScenePath.empty()) {
+			SerializeScene(m_ActiveScene, m_EditorScenePath);	//序列化场景
+		}
+		else {
+			SaveSceneAs();
+		}
+	}
+
+
+	void EditorLayer::SerializeScene(std::shared_ptr<Scene> scene, const std::filesystem::path& path)
+	{
+		SceneSerializer serializer(scene);		//场景序列化器
+		serializer.Serialize(path.string());	//序列化：保存场景
+	}
+
 
 	void EditorLayer::ImportModelFile()
 	{
@@ -648,12 +701,31 @@ namespace Explorer
 	void EditorLayer::OnScenePlay()
 	{
 		m_SceneState = SceneState::Play;	//开始运行
+
+		m_ActiveScene = Scene::Copy(m_EditorScene);	//复制编辑器场景
 		m_ActiveScene->OnRuntimeStart();
+
+		m_SceneHierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
 	}
 
 	void EditorLayer::OnSceneStop()
 	{
 		m_SceneState = SceneState::Edit;	//停止运行
+
 		m_ActiveScene->OnRuntimeStop();
+		m_ActiveScene = m_EditorScene;		//设置活动场景为编辑器场景
+
+		m_SceneHierarchyPanel.SetScene(m_ActiveScene);	//设置Hierarchy的场景
+	}
+
+	void EditorLayer::OnCopyObject()
+	{
+		if (m_SceneState != SceneState::Edit) return;
+
+		Object object = m_SceneHierarchyPanel.GetSelectedObject();	//被选中物体
+
+		if (object) {
+			m_ActiveScene->CopyObject(object);	//复制选中物体
+		}
 	}
 }

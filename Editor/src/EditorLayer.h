@@ -16,6 +16,10 @@ namespace Explorer
 		std::shared_ptr<Framebuffer> m_Framebuffer;	//帧缓冲区
 
 		std::shared_ptr<Scene> m_ActiveScene;		//活动场景
+		std::shared_ptr<Scene> m_EditorScene;		//编辑器场景
+
+		std::filesystem::path m_EditorScenePath;	//当前编辑器场景文件路径
+
 		EditorCamera m_EditorCamera;				//编辑器相机
 
 		Object m_MainCamera;						//场景默认相机：主相机
@@ -111,9 +115,21 @@ namespace Explorer
 		void OpenScene(const std::filesystem::path& path);
 
 		/// <summary>
+		/// 保存场景
+		/// </summary>
+		void SaveScene();
+
+		/// <summary>
 		/// 场景另存为
 		/// </summary>
 		void SaveSceneAs();
+
+		/// <summary>
+		/// 序列化场景
+		/// </summary>
+		/// <param name="scene">场景</param>
+		/// <param name="path">场景路径</param>
+		void SerializeScene(std::shared_ptr<Scene> scene, const std::filesystem::path& path);
 
 		/// <summary>
 		/// 导入模型文件
@@ -135,6 +151,11 @@ namespace Explorer
 		/// Stop按钮按下时调用
 		/// </summary>
 		void OnSceneStop();
+
+		/// <summary>
+		/// 复制物体时调用
+		/// </summary>
+		void OnCopyObject();
 
 		/// <summary>
 		/// 工具栏

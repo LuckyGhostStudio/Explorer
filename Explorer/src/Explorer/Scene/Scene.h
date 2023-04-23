@@ -58,6 +58,19 @@ namespace Explorer
 		void SetEnvironment(const Environment& environment) { m_Environment = environment; }
 
 		/// <summary>
+		/// 复制物体
+		/// </summary>
+		/// <param name="object">源物体</param>
+		void CopyObject(Object object);
+
+		/// <summary>
+		/// 复制场景
+		/// </summary>
+		/// <param name="scene">待复制场景</param>
+		/// <returns>复制体</returns>
+		static std::shared_ptr<Scene> Copy(std::shared_ptr<Scene> scene);
+
+		/// <summary>
 		/// 创建空物体
 		/// </summary>
 		/// <param name="name">物体名</param>

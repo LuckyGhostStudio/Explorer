@@ -1,5 +1,27 @@
 Scene: Physics2D
 Objects:
+  - Object: 9941015534126111555
+    Self Component:
+      ObjectName: Box
+      ObjectEnable: true
+    Transform Component:
+      Position: [0.0689788088, 2.52086067, 1.68262265e-10]
+      Rotation: [2.43647436e-09, 0, 0.000311025215]
+      Scale: [1, 1, 1]
+    SpriteRenderer Component:
+      Enable: true
+      Color: [1, 1, 1, 1]
+    Rigidbody2D Component:
+      BodyType: 0
+      FreezeRotation: false
+    BoxCollider2D Component:
+      Enable: true
+      Offset: [0, 0]
+      Size: [1, 1]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.349999994
+      RestitutionThreshold: 0.5
   - Object: 5776073614716430920
     Self Component:
       ObjectName: Main Camera
@@ -21,12 +43,12 @@ Objects:
       ObjectName: Box
       ObjectEnable: true
     Transform Component:
-      Position: [-0.204231769, 1.64976025, 0]
-      Rotation: [0, 0, -18.849556]
+      Position: [-2.72099471, 1.40398419, 1.20767715e-10]
+      Rotation: [2.43647436e-09, 0, 0.000311025215]
       Scale: [1, 1, 1]
     SpriteRenderer Component:
       Enable: true
-      Color: [1, 1, 1, 1]
+      Color: [0.926640928, 0.171732679, 0.171732679, 1]
     Rigidbody2D Component:
       BodyType: 0
       FreezeRotation: false
@@ -36,7 +58,7 @@ Objects:
       Size: [1, 1]
       Density: 1
       Friction: 0.5
-      Restitution: 0
+      Restitution: 0.349999994
       RestitutionThreshold: 0.5
   - Object: 14283686656864087174
     Self Component:

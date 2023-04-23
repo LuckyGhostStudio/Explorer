@@ -39,6 +39,21 @@ namespace Explorer
 		}
 
 		/// <summary>
+		/// 添加或替换T类型组件
+		/// </summary>
+		/// <typeparam name="T">组件类型</typeparam>
+		/// <typeparam name="...Args">组件参数类型</typeparam>
+		/// <param name="...args">组件参数</param>
+		/// <returns>组件</returns>
+		template<typename T, typename... Args>
+		T& AddOrReplaceComponent(Args&&... args)
+		{
+			T& component = m_Scene->m_Registry.emplace_or_replace<T>(m_ObjectID, std::forward<Args>(args)...);	//向m_Scene场景的实体注册表添加或替换T类型组件
+			m_Scene->OnComponentAdded<T>(*this, component);											//m_Scene向this物体添加T组件时调用
+			return component;
+		}
+
+		/// <summary>
 		/// 返回T类型组件
 		/// </summary>
 		/// <typeparam name="T">组件类型</typeparam>
@@ -79,6 +94,8 @@ namespace Explorer
 		operator uint32_t() const { return (uint32_t)m_ObjectID; }
 
 		UUID GetUUID() { return GetComponent<ID>().GetID(); }
+		const std::string& GetName() { return GetComponent<Self>().GetObjectName(); }
+		bool GetEnable() { return GetComponent<Self>().GetObjectEnable(); }
 
 		bool operator==(const Object& other)
 		{

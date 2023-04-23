@@ -41,6 +41,94 @@ namespace Explorer
 
 	}
 
+	/// <summary>
+	/// 复制组件：复制源注册表中Component类型的所有组件到目的注册表
+	/// </summary>
+	/// <typeparam name="Component">组件类型</typeparam>
+	/// <param name="dst">目的注册表</param>
+	/// <param name="src">源注册表</param>
+	/// <param name="objectMap">UUID-物体 Map</param>
+	template<typename Component>
+	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity> objectMap)
+	{
+		auto view = src.view<Component>();	//源注册表 有Component类型组件的所有实体
+
+		for (auto object : view) {
+			UUID uuid = src.get<ID>(object).GetID();		//源uuid
+			EXP_CORE_ASSERT(objectMap.find(uuid) != objectMap.end(), "UUID Not Found in Map!");
+			entt::entity dstObjectID = objectMap.at(uuid);	//对应uuid的目的物体ID
+
+			auto& component = src.get<Component>(object);	//待复制组件
+			dst.emplace_or_replace<Component>(dstObjectID, component);	//添加或替换 目的注册表 的dstObjectID的component组件
+		}
+	}
+
+	/// <summary>
+	/// 复制组件：复制源物体组件到目的物体
+	/// </summary>
+	/// <typeparam name="Component">组件类型</typeparam>
+	/// <param name="dst">目的物体</param>
+	/// <param name="src">源物体</param>
+	template<typename Component>
+	static void CopyComponent(Object dst, Object src)
+	{
+		if (src.HasComponent<Component>()) dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+	}
+
+	void Scene::CopyObject(Object object)
+	{
+		std::string name = object.GetName();
+		Object newObject = CreateEmptyObject(name, object.GetEnable());	//创建空物体
+
+		//复制组件 新物体<-源物体
+		CopyComponent<Transform>(newObject, object);
+		CopyComponent<Camera>(newObject, object);
+		CopyComponent<Light>(newObject, object);
+		CopyComponent<Mesh>(newObject, object);
+		CopyComponent<Material>(newObject, object);
+		CopyComponent<SpriteRenderer>(newObject, object);
+		CopyComponent<NativeScript>(newObject, object);
+		CopyComponent<Rigidbody2D>(newObject, object);
+		CopyComponent<BoxCollider2D>(newObject, object);
+	}
+
+	std::shared_ptr<Scene> Scene::Copy(std::shared_ptr<Scene> scene)
+	{
+		std::shared_ptr<Scene> newScene = std::make_shared<Scene>(scene->GetName());	//创建新场景
+		//TODO复制场景环境
+		//复制视口大小
+		newScene->m_ViewportHeight = scene->m_ViewportHeight;
+		newScene->m_ViewportWidth = scene->m_ViewportWidth;
+
+		auto& srcSceneRegistry = scene->m_Registry;		//源场景注册表
+		auto& dstSceneRegistry = newScene->m_Registry;	//目的场景注册表
+
+		std::unordered_map<UUID, entt::entity> objectMap;	//UUID-object Map
+
+		//在新场景中创建物体
+		auto idView = srcSceneRegistry.view<ID>();		//源场景 有ID组件的所有实体
+		for (auto object : idView) {
+			UUID uuid = srcSceneRegistry.get<ID>(object).GetID();					//物体UUID
+			const auto& name = srcSceneRegistry.get<Self>(object).GetObjectName();	//物体名
+			bool enable = srcSceneRegistry.get<Self>(object).GetObjectEnable();		//物体启用状态
+			
+			objectMap[uuid] = newScene->CreateEmptyObject(uuid, name, enable);	//新场景内创建空物体 添加 uuid-新物体 到Map
+		}
+
+		//复制组件 目的注册<-表源注册表
+		CopyComponent<Transform>(dstSceneRegistry, srcSceneRegistry, objectMap);
+		CopyComponent<Camera>(dstSceneRegistry, srcSceneRegistry, objectMap);
+		CopyComponent<Light>(dstSceneRegistry, srcSceneRegistry, objectMap);
+		CopyComponent<Mesh>(dstSceneRegistry, srcSceneRegistry, objectMap);
+		CopyComponent<Material>(dstSceneRegistry, srcSceneRegistry, objectMap);
+		CopyComponent<SpriteRenderer>(dstSceneRegistry, srcSceneRegistry, objectMap);
+		CopyComponent<NativeScript>(dstSceneRegistry, srcSceneRegistry, objectMap);
+		CopyComponent<Rigidbody2D>(dstSceneRegistry, srcSceneRegistry, objectMap);
+		CopyComponent<BoxCollider2D>(dstSceneRegistry, srcSceneRegistry, objectMap);
+
+		return newScene;
+	}
+
 	Object Scene::CreateEmptyObject(const std::string& name, bool enable)
 	{
 		return CreateEmptyObject(UUID(), name, enable);
@@ -192,7 +280,7 @@ namespace Explorer
 		for (auto object : meshes) {
 			Object obj = Object{ object, this };
 			//object启用时渲染此Obj
-			if (obj.GetComponent<Self>().GetObjectEnable()) {
+			if (obj.GetEnable()) {
 				auto [transform, mesh, material] = meshes.get<Transform, Mesh, Material>(object);
 
 				Renderer3D::DrawMesh(transform, mesh, material, (int)object);	//绘制网格
@@ -207,7 +295,7 @@ namespace Explorer
 		for (auto object : sprites) {
 			Object obj = Object{ object, this };
 			//object启用时渲染此Obj
-			if (obj.GetComponent<Self>().GetObjectEnable()) {
+			if (obj.GetEnable()) {
 				auto [transform, sprite] = sprites.get<Transform, SpriteRenderer>(object);
 
 				Renderer3D::DrawSprite(transform, sprite, (int)object);	//绘制Sprite
@@ -296,7 +384,7 @@ namespace Explorer
 			for (auto object : meshes) {
 				Object obj = Object{ object, this };
 				//object启用时渲染此Obj
-				if (obj.GetComponent<Self>().GetObjectEnable()) {
+				if (obj.GetEnable()) {
 					auto [transform, mesh, material] = meshes.get<Transform, Mesh, Material>(object);
 
 					Renderer3D::DrawMesh(transform, mesh, material, (int)object);	//绘制网格
@@ -312,7 +400,7 @@ namespace Explorer
 			for (auto object : sprites) {
 				Object obj = Object{ object, this };
 				//object启用时渲染此Obj
-				if (obj.GetComponent<Self>().GetObjectEnable()) {
+				if (obj.GetEnable()) {
 					auto [transform, sprite] = sprites.get<Transform, SpriteRenderer>(object);
 
 					Renderer3D::DrawSprite(transform, sprite, (int)object);	//绘制Sprite

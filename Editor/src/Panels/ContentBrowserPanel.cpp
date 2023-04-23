@@ -205,8 +205,8 @@ namespace Explorer
 				icon = m_DirectoryClosedIcon;	//文件夹关闭图标
 			}
 			else {
-				std::string fileTypeString = GeneralUtils::GetFileType(filenameString);	//文件后缀名
-				AssetType assetType = FileTypeToAssetType(fileTypeString);				//资产类型
+				const std::string extension = relativePath.extension().string();	//扩展名
+				AssetType assetType = FileTypeToAssetType(extension);				//资产类型
 
 				icon = SetAssetFileIcon(assetType, path);	//设置资产文件图标
 			}

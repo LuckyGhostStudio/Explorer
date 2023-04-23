@@ -44,77 +44,80 @@ namespace Explorer
 		//Hierarchy面板
 		ImGui::Begin("Hierarchy");
 
-		//Scene场景根节点
-		UI::DrawTreeNode<Scene>(m_Scene->GetName(), true, [&](float lineHeight)
-		{
-			//遍历场景所有实体，并调用each内的函数
-			m_Scene->m_Registry.each([&](auto objectID)
+		//场景存在
+		if (m_Scene) {
+			//Scene场景根节点
+			UI::DrawTreeNode<Scene>(m_Scene->GetName(), true, [&](float lineHeight)
 			{
-				Object object{ objectID, m_Scene.get() };
-				DrawObjectNode(object);		//绘制物体结点
+				//遍历场景所有实体，并调用each内的函数
+				m_Scene->m_Registry.each([&](auto objectID)
+					{
+						Object object{ objectID, m_Scene.get() };
+						DrawObjectNode(object);		//绘制物体结点
+					});
 			});
-		});
 
-		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {	//鼠标悬停在该窗口 && 点击鼠标 （点击空白位置）
-			m_SelectionObject = {};	//取消选中：置空选中物体
-		}
-
-		//创建物体
-		if (ImGui::BeginPopupContextWindow(0, 1, false)) {	//右键点击窗口白区域弹出菜单：- 右键 不在物体项上
-			Object object;
-			
-			if (ImGui::MenuItem("Create Empty")) {		//菜单项：创建空物体
-				object = m_Scene->CreateEmptyObject("Object");	//创建空物体
+			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {	//鼠标悬停在该窗口 && 点击鼠标 （点击空白位置）
+				m_SelectionObject = {};	//取消选中：置空选中物体
 			}
 
-			if (ImGui::MenuItem("Sprite")) {
-				object = m_Scene->CreateSpriteObject();	//创建Sprite
+			//创建物体
+			if (ImGui::BeginPopupContextWindow(0, 1, false)) {	//右键点击窗口白区域弹出菜单：- 右键 不在物体项上
+				Object object;
+
+				if (ImGui::MenuItem("Create Empty")) {		//菜单项：创建空物体
+					object = m_Scene->CreateEmptyObject("Object");	//创建空物体
+				}
+
+				if (ImGui::MenuItem("Sprite")) {
+					object = m_Scene->CreateSpriteObject();	//创建Sprite
+				}
+
+				//父菜单项：3D物体
+				if (ImGui::BeginMenu("3D Object"))
+				{
+					if (ImGui::MenuItem("Cube")) {		//子菜单项：创建Cube
+						object = m_Scene->CreateMeshObject("Cube", Mesh::Type::Cube);
+					}
+					if (ImGui::MenuItem("Plane")) {		//子菜单项：创建Plane
+						object = m_Scene->CreateMeshObject("Plane", Mesh::Type::Plane);
+					}
+					if (ImGui::MenuItem("Cone")) {		//子菜单项：创建Cone
+						object = m_Scene->CreateMeshObject("Cone", Mesh::Type::Cone);
+					}
+					if (ImGui::MenuItem("Cylinder")) {	//子菜单项：创建Cylinder
+						object = m_Scene->CreateMeshObject("Cylinder", Mesh::Type::Cylinder);
+					}
+					if (ImGui::MenuItem("Sphere")) {	//子菜单项：创建Sphere
+						object = m_Scene->CreateMeshObject("Sphere", Mesh::Type::Sphere);
+					}
+					ImGui::EndMenu();
+				}
+
+				//父菜单项：光源
+				if (ImGui::BeginMenu("Light"))
+				{
+					if (ImGui::MenuItem("Directional Light")) {		//子菜单项：创建平行光源
+						object = m_Scene->CreateLightObject(Light::Type::Directional);
+					}
+					if (ImGui::MenuItem("Point Light")) {			//子菜单项：创建点光源
+						object = m_Scene->CreateLightObject(Light::Type::Point);
+					}
+					if (ImGui::MenuItem("Spot Light")) {			//子菜单项：创建聚光源
+						object = m_Scene->CreateLightObject(Light::Type::Spot);
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::MenuItem("Camera")) {		//菜单项：创建相机
+					object = m_Scene->CreateCameraObject();
+				}
+
+				m_SelectionObject = object;	//选中物体设为新创建物体
+
+				ImGui::EndPopup();	//结束弹出菜单
 			}
-
-			//父菜单项：3D物体
-			if (ImGui::BeginMenu("3D Object"))
-			{
-				if (ImGui::MenuItem("Cube")) {		//子菜单项：创建Cube
-					object = m_Scene->CreateMeshObject("Cube", Mesh::Type::Cube);
-				}
-				if (ImGui::MenuItem("Plane")) {		//子菜单项：创建Plane
-					object = m_Scene->CreateMeshObject("Plane", Mesh::Type::Plane);
-				}
-				if (ImGui::MenuItem("Cone")) {		//子菜单项：创建Cone
-					object = m_Scene->CreateMeshObject("Cone", Mesh::Type::Cone);
-				}
-				if (ImGui::MenuItem("Cylinder")) {	//子菜单项：创建Cylinder
-					object = m_Scene->CreateMeshObject("Cylinder", Mesh::Type::Cylinder);
-				}
-				if (ImGui::MenuItem("Sphere")) {	//子菜单项：创建Sphere
-					object = m_Scene->CreateMeshObject("Sphere", Mesh::Type::Sphere);
-				}
-				ImGui::EndMenu();
-			}
-
-			//父菜单项：光源
-			if (ImGui::BeginMenu("Light"))
-			{
-				if (ImGui::MenuItem("Directional Light")) {		//子菜单项：创建平行光源
-					object = m_Scene->CreateLightObject(Light::Type::Directional);
-				}
-				if (ImGui::MenuItem("Point Light")) {			//子菜单项：创建点光源
-					object = m_Scene->CreateLightObject(Light::Type::Point);
-				}
-				if (ImGui::MenuItem("Spot Light")) {			//子菜单项：创建聚光源
-					object = m_Scene->CreateLightObject(Light::Type::Spot);
-				}
-
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::MenuItem("Camera")) {		//菜单项：创建相机
-				object = m_Scene->CreateCameraObject();
-			}
-
-			m_SelectionObject = object;	//选中物体设为新创建物体
-
-			ImGui::EndPopup();	//结束弹出菜单
 		}
 
 		ImGui::End();	//Hierarchy
