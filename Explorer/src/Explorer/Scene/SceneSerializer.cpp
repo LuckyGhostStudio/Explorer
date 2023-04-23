@@ -8,6 +8,7 @@
 #include "Explorer/Components/Light.h"
 #include "Explorer/Components/Mesh.h"
 #include "Explorer/Components/SpriteRenderer.h"
+#include "Explorer/Components/CircleRenderer.h"
 #include "Explorer/Components/Rigidbody/Rigidbody2D.h"
 #include "Explorer/Components/Rigidbody/BoxCollider2D.h"
 
@@ -334,9 +335,27 @@ namespace Explorer
 
 			out << YAML::Key << "Enable" << YAML::Value << spriteRenderer.GetEnable();
 			out << YAML::Key << "Color" << YAML::Value << spriteRenderer.GetColor();
-			//TODO:待添加Sprite
+			out << YAML::Key << "TextureExist" << YAML::Value << spriteRenderer.GetSprite().GetTextureExist();		//Texture是否存在
+			out << YAML::Key << "SpritePath" << YAML::Value << spriteRenderer.GetSprite().GetTexture()->GetPath();	//Sprite纹理路径
 
 			out << YAML::EndMap;	//结束SpriteRenderer组件Map
+		}
+
+		//CircleRenderer组件
+		if (object.HasComponent<CircleRenderer>())
+		{
+			out << YAML::Key << "CircleRenderer Component";
+			out << YAML::BeginMap;	//开始CircleRenderer组件Map
+
+			auto& circleRenderer = object.GetComponent<CircleRenderer>();
+
+			out << YAML::Key << "Enable" << YAML::Value << circleRenderer.GetEnable();
+			Circle& circle = circleRenderer.GetCircle();
+			out << YAML::Key << "Color" << YAML::Value << circle.GetColor();
+			out << YAML::Key << "Thickness" << YAML::Value << circle.GetThickness();
+			out << YAML::Key << "Fade" << YAML::Value << circle.GetFade();
+
+			out << YAML::EndMap;	//结束CircleRenderer组件Map
 		}
 
 		//Rigidbody2D组件
@@ -602,7 +621,23 @@ namespace Explorer
 
 					spriteRenderer.SetEnable(spriteRendererNode["Enable"].as<bool>());	//组件启用状态
 					spriteRenderer.SetColor(spriteRendererNode["Color"].as<glm::vec4>());
-					//TODO待添加Sprite
+					spriteRenderer.GetSprite().SetTextureExist(spriteRendererNode["TextureExist"].as<bool>());
+					
+					std::string spritePath = spriteRendererNode["SpritePath"].as<std::string>();	//Sprite纹理路径
+					if(!spritePath.empty()) spriteRenderer.GetSprite().SetTexture(spritePath);
+				}
+
+				//CircleRenderer组件结点
+				auto circleRendererNode = object["CircleRenderer Component"];
+				if (circleRendererNode)
+				{
+					auto& circleRenderer = deserializedObject.AddComponent<CircleRenderer>();	//添加CircleRenderer组件
+
+					circleRenderer.SetEnable(circleRendererNode["Enable"].as<bool>());	//组件启用状态
+					Circle& circle = circleRenderer.GetCircle();
+					circle.SetColor(circleRendererNode["Color"].as<glm::vec4>());
+					circle.SetThickness(circleRendererNode["Thickness"].as<float>());
+					circle.SetFade(circleRendererNode["Fade"].as<float>());
 				}
 
 				//Rigidbody2D组件结点

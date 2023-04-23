@@ -37,16 +37,12 @@ namespace Explorer
 
     void Material::SetAlbedoTexture(const std::string& filepath)
     {
-        m_AlbedoTexture = std::make_shared<Texture2D>(filepath);    //创建Albedo贴图
-        m_AlbedoTexture->Bind((int)TextureType::Albedo);            //绑定Albedo贴图
-        m_AlbedoTextureExist = true;
+        SetAlbedoTexture(std::make_shared<Texture2D>(filepath));
     }
 
     void Material::SetSpecularTexture(const std::string& filepath)
     {
-        m_SpecularTexture = std::make_shared<Texture2D>(filepath);  //创建Specular贴图
-        m_SpecularTexture->Bind((int)TextureType::Specular);        //绑定Specular贴图
-        m_SpecularTextureExist = true;
+        SetSpecularTexture(std::make_shared<Texture2D>(filepath));
     }
 
     void Material::SetAlbedoTexture(const std::shared_ptr<Texture2D>& texture)

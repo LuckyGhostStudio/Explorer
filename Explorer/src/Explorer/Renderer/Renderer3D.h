@@ -6,6 +6,7 @@
 #include "Explorer/Components/Mesh.h"
 #include "Explorer/Components/Material.h"
 #include "Explorer/Components/SpriteRenderer.h"
+#include "Explorer/Components/CircleRenderer.h"
 #include "Explorer/Components/Components.h"
 
 #include "Explorer/Renderer/EditorCamera.h"
@@ -42,8 +43,15 @@ namespace Explorer
 		static void BeginScene(const EditorCamera& camera);
 		static void BeginScene(const Camera& camera, Transform& transform);
 		static void DrawSprite(const Transform& transform, SpriteRenderer& spriteRenderer, /*Material& material,*/ int objectID = -1);
+		static void DrawCircle(const Transform& transform, CircleRenderer& circleRenderer, int objectID = -1);
 		
-		template<typename T>
+		/// <summary>
+		/// 渲染处理
+		/// </summary>
+		/// <typeparam name="T">渲染对象类型</typeparam>
+		/// <typeparam name="V">顶点类型</typeparam>
+		/// <param name="t">渲染对象</param>
+		template<typename T, typename V>
 		static void Processing(T& t);
 
 		/// <summary>
@@ -95,10 +103,10 @@ namespace Explorer
 		static void ResetStats();
 	};
 	
-	template<typename T>
+	template<typename T, typename V>
 	inline void Renderer3D::Processing(T& t)
 	{
-		uint32_t dataSize = (uint32_t)sizeof(Vertex) * t.GetVertexBufferData().size();	//计算顶点缓冲区数据大小（字节）
+		uint32_t dataSize = (uint32_t)sizeof(V) * t.GetVertexBufferData().size();	//计算顶点缓冲区数据大小（字节）
 
 		t.GetVertexBuffer()->SetData(t.GetVertexBufferData().data(), dataSize);	//设置顶点缓冲区数据
 

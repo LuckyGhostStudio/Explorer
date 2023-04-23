@@ -14,16 +14,16 @@ namespace Explorer
 	private:
 		Vertex m_Vertices[4];
 		uint32_t m_VertexIndices[6];
-		std::shared_ptr<Texture2D> m_Texture;
+		std::shared_ptr<Texture2D> m_Texture;			//纹理
+		bool m_TextureExist = false;
 
 		std::vector<Vertex> m_VertexBufferData;			//顶点缓冲区数据：最终要渲染的顶点数据
 
 		std::shared_ptr<VertexArray> m_VertexArray;		//顶点数组 VAO
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;	//顶点缓冲区 VBO
 	public:
-		Sprite() = default;
+		Sprite();
 		Sprite(const Sprite&) = default;
-		Sprite(const Vertex* vertices, const uint32_t* indices);
 		~Sprite();
 
 		Vertex* GetVertices() { return m_Vertices; }
@@ -33,7 +33,12 @@ namespace Explorer
 		void SetVertices(const uint32_t* indices) { for (int i = 0; i < 6; i++) m_VertexIndices[i] = indices[i]; }
 
 		std::shared_ptr<Texture2D>& GetTexture() { return m_Texture; }
-		void SetTexture(const std::shared_ptr<Texture2D>& texture) { m_Texture = texture; }
+		void SetTexture(const std::shared_ptr<Texture2D>& texture);
+		void SetTexture(const std::string& filepath);
+
+		bool GetTextureExist() const { return m_TextureExist; }
+		bool& GetTextureExist_Ref() { return m_TextureExist; }
+		void SetTextureExist(bool exist) { m_TextureExist = exist; }
 
 		std::vector<Vertex>& GetVertexBufferData() { return m_VertexBufferData; }
 

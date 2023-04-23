@@ -41,6 +41,7 @@
 #include "Explorer/Components/Mesh.h"
 #include "Explorer/Components/Material.h"
 #include "Explorer/Components/SpriteRenderer.h"
+#include "Explorer/Components/CircleRenderer.h"
 #include "Explorer/Components/Rigidbody/Rigidbody2D.h"
 #include "Explorer/Components/Rigidbody/BoxCollider2D.h"
 //---------------------------------

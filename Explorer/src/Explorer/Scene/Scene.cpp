@@ -5,6 +5,7 @@
 #include "Explorer/Components/NativeScript.h"
 #include "Explorer/Components/Components.h"
 #include "Explorer/Components/SpriteRenderer.h"
+#include "Explorer/Components/CircleRenderer.h"
 #include "Explorer/Components/Rigidbody/Rigidbody2D.h"
 #include "Explorer/Components/Rigidbody/BoxCollider2D.h"
 
@@ -87,6 +88,7 @@ namespace Explorer
 		CopyComponent<Mesh>(newObject, object);
 		CopyComponent<Material>(newObject, object);
 		CopyComponent<SpriteRenderer>(newObject, object);
+		CopyComponent<CircleRenderer>(newObject, object);
 		CopyComponent<NativeScript>(newObject, object);
 		CopyComponent<Rigidbody2D>(newObject, object);
 		CopyComponent<BoxCollider2D>(newObject, object);
@@ -122,6 +124,7 @@ namespace Explorer
 		CopyComponent<Mesh>(dstSceneRegistry, srcSceneRegistry, objectMap);
 		CopyComponent<Material>(dstSceneRegistry, srcSceneRegistry, objectMap);
 		CopyComponent<SpriteRenderer>(dstSceneRegistry, srcSceneRegistry, objectMap);
+		CopyComponent<CircleRenderer>(dstSceneRegistry, srcSceneRegistry, objectMap);
 		CopyComponent<NativeScript>(dstSceneRegistry, srcSceneRegistry, objectMap);
 		CopyComponent<Rigidbody2D>(dstSceneRegistry, srcSceneRegistry, objectMap);
 		CopyComponent<BoxCollider2D>(dstSceneRegistry, srcSceneRegistry, objectMap);
@@ -151,6 +154,15 @@ namespace Explorer
 		sprite.AddComponent<SpriteRenderer>();
 
 		return sprite;
+	}
+
+	Object Scene::CreateCircleObject(const std::string& name)
+	{
+		Object circle = CreateEmptyObject(name);	//创建circle
+
+		circle.AddComponent<CircleRenderer>();
+
+		return circle;
 	}
 
 	Object Scene::CreateMeshObject(const std::string& name, const Mesh::Type type)
@@ -229,7 +241,8 @@ namespace Explorer
 			b2BodyDef bodyDef;	//box2d刚体定义
 			bodyDef.type = RigidbodyTypeToB2BodyType(rigidbody2d.GetBodyType());		//刚体类型
 			bodyDef.position.Set(transform.GetPosition().x, transform.GetPosition().y);	//初始位置 = transform位置
-			bodyDef.angle = transform.GetRotation().z;									//初始旋转角度 z轴
+			float angle = transform.GetRotation().z;
+			bodyDef.angle = glm::radians(transform.GetRotation().z);					//初始旋转 弧度 z轴
 
 			b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);		//创建刚体
 			body->SetFixedRotation(rigidbody2d.GetFreezeRotation());	//旋转冻结状态
@@ -288,17 +301,33 @@ namespace Explorer
 		}
 		Renderer3D::EndScene(m_Environment, camera);	//结束渲染场景
 
-		//-----------------Sprite--------------------------
+		//=================2D Renderer======================
 		Renderer3D::BeginScene(camera);									//开始渲染场景
-		auto sprites = m_Registry.view<Transform, SpriteRenderer>();	//返回有Transform SpriteRenderer的所有物体 TODO 待添加Material
-		
-		for (auto object : sprites) {
-			Object obj = Object{ object, this };
-			//object启用时渲染此Obj
-			if (obj.GetEnable()) {
-				auto [transform, sprite] = sprites.get<Transform, SpriteRenderer>(object);
+		{
+			//-----------------Sprite--------------------------
+			auto sprites = m_Registry.view<Transform, SpriteRenderer>();	//返回有Transform SpriteRenderer的所有物体 TODO 待添加Material
 
-				Renderer3D::DrawSprite(transform, sprite, (int)object);	//绘制Sprite
+			for (auto object : sprites) {
+				Object obj = Object{ object, this };
+				//object启用时渲染此Obj
+				if (obj.GetEnable()) {
+					auto [transform, sprite] = sprites.get<Transform, SpriteRenderer>(object);
+
+					Renderer3D::DrawSprite(transform, sprite, (int)object);	//绘制Sprite
+				}
+			}
+
+			//-----------------Circle--------------------------
+			auto circles = m_Registry.view<Transform, CircleRenderer>();	//返回有Transform CircleRenderer的所有物体
+
+			for (auto object : circles) {
+				Object obj = Object{ object, this };
+				//object启用时渲染此Obj
+				if (obj.GetEnable()) {
+					auto [transform, circle] = circles.get<Transform, CircleRenderer>(object);
+
+					Renderer3D::DrawCircle(transform, circle, (int)object);	//绘制Circle
+				}
 			}
 		}
 		Renderer3D::EndScene();
@@ -335,18 +364,12 @@ namespace Explorer
 				b2Body* body = (b2Body*)rigidbody2d.GetRuntimeBody();	//运行时刚体
 				//根据刚体数据更新Transform数据
 				const auto& position = body->GetPosition();
-				//transform.SetRotation({ transform.GetRotation().x, transform.GetRotation().y, body->GetAngle() });
-				//transform.SetPosition({ position.x, position.y, transform.GetPosition().z });
-
-				//EXP_CORE_TRACE("Transform Rotation z: {0}, Body Rotation z: {1}", transform.GetRotation().z, body->GetAngle());
 
 				transform.GetPosition().x = position.x;
 				transform.GetPosition().y = position.y;
-				transform.GetRotation().z = body->GetAngle();
-
-				//TODO 旋转有bug
+				transform.GetRotation().z = glm::degrees(body->GetAngle());
 			}
-		}
+		}//TODO 刚体 碰撞体组件启用状态
 
 		//-------------Renderer---------------------
 		auto lights = m_Registry.view<Light>();	//所有拥有Light组件的物体
@@ -392,18 +415,32 @@ namespace Explorer
 			}
 
 			Renderer3D::EndScene(m_Environment, *mainCamera, *cameraTransform);	//结束渲染场景
-
-			//-----------------Sprite--------------------------
+			
+			//=====================2D Renderer===========================
 			Renderer3D::BeginScene(*mainCamera, *cameraTransform);			//开始渲染场景
-			auto sprites = m_Registry.view<Transform, SpriteRenderer>();	//返回有Transform SpriteRenderer的所有物体 TODO 待添加Material
+			{
+				//-----------------Sprite--------------------------
+				auto sprites = m_Registry.view<Transform, SpriteRenderer>();	//返回有Transform SpriteRenderer的所有物体 TODO 待添加Material
+				for (auto object : sprites) {
+					Object obj = Object{ object, this };
+					//object启用时渲染此Obj
+					if (obj.GetEnable()) {
+						auto [transform, sprite] = sprites.get<Transform, SpriteRenderer>(object);
 
-			for (auto object : sprites) {
-				Object obj = Object{ object, this };
-				//object启用时渲染此Obj
-				if (obj.GetEnable()) {
-					auto [transform, sprite] = sprites.get<Transform, SpriteRenderer>(object);
+						Renderer3D::DrawSprite(transform, sprite, (int)object);	//绘制Sprite
+					}
+				}
 
-					Renderer3D::DrawSprite(transform, sprite, (int)object);	//绘制Sprite
+				//-----------------Circle--------------------------
+				auto circles = m_Registry.view<Transform, CircleRenderer>();	//返回有Transform CircleRenderer的所有物体
+				for (auto object : circles) {
+					Object obj = Object{ object, this };
+					//object启用时渲染此Obj
+					if (obj.GetEnable()) {
+						auto [transform, circle] = circles.get<Transform, CircleRenderer>(object);
+
+						Renderer3D::DrawCircle(transform, circle, (int)object);	//绘制Circle
+					}
 				}
 			}
 			Renderer3D::EndScene();
@@ -441,6 +478,18 @@ namespace Explorer
 	void Scene::OnComponentAdded(Object object, T& component)
 	{
 		static_assert(false);
+	}
+
+	template<>
+	void Scene::OnComponentAdded<ID>(Object object, ID& id)
+	{
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<Self>(Object object, Self& self)
+	{
+
 	}
 
 	template<>
@@ -485,6 +534,12 @@ namespace Explorer
 	}
 
 	template<>
+	void Scene::OnComponentAdded<CircleRenderer>(Object object, CircleRenderer& circleRenderer)
+	{
+
+	}
+
+	template<>
 	void Scene::OnComponentAdded<Rigidbody2D>(Object object, Rigidbody2D& rigidbody2D)
 	{
 
@@ -492,18 +547,6 @@ namespace Explorer
 
 	template<>
 	void Scene::OnComponentAdded<BoxCollider2D>(Object object, BoxCollider2D& boxCollider2D)
-	{
-
-	}
-
-	template<>
-	void Scene::OnComponentAdded<ID>(Object object, ID& id)
-	{
-
-	}
-
-	template<>
-	void Scene::OnComponentAdded<Self>(Object object, Self& self)
 	{
 
 	}

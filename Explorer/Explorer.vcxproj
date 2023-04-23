@@ -145,6 +145,8 @@
   <ItemGroup>
     <ClInclude Include="src\Explorer.h" />
     <ClInclude Include="src\Explorer\Components\Camera.h" />
+    <ClInclude Include="src\Explorer\Components\Circle.h" />
+    <ClInclude Include="src\Explorer\Components\CircleRenderer.h" />
     <ClInclude Include="src\Explorer\Components\Component.h" />
     <ClInclude Include="src\Explorer\Components\Components.h" />
     <ClInclude Include="src\Explorer\Components\Light.h" />
@@ -619,12 +621,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Components\Camera.cpp" />
+    <ClCompile Include="src\Explorer\Components\Circle.cpp" />
     <ClCompile Include="src\Explorer\Components\Light.cpp" />
     <ClCompile Include="src\Explorer\Components\Material.cpp" />
     <ClCompile Include="src\Explorer\Components\Mesh.cpp" />
     <ClCompile Include="src\Explorer\Components\Skybox.cpp" />
     <ClCompile Include="src\Explorer\Components\Sprite.cpp" />
-    <ClCompile Include="src\Explorer\Components\SpriteRenderer.cpp" />
     <ClCompile Include="src\Explorer\Components\SubMesh.cpp" />
     <ClCompile Include="src\Explorer\Core\Application.cpp" />
     <ClCompile Include="src\Explorer\Core\Input.cpp" />

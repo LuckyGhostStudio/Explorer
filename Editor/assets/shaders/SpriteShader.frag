@@ -9,12 +9,16 @@ in vec2 v_TexCoord;
 in flat int v_ID;
 in flat int v_ObjectID;
 
-uniform vec4 u_Color;			//Sprite—’…´
 uniform sampler2D u_Texture;	//SpriteŒ∆¿Ì
+uniform bool u_TextureExist;
 			
 void main()
 {
-	color = texture(u_Texture, v_TexCoord) * u_Color;
+	color = v_Color;
 
+	if(u_TextureExist){
+		color *= texture(u_Texture, v_TexCoord);
+	}
+	
 	objectID = v_ObjectID;
 }

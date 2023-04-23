@@ -91,9 +91,15 @@ namespace Explorer
 		/// 创建图片物体
 		/// </summary>
 		/// <param name="name">物体名</param>
-		/// <param name="enable">物体启用状态</param>
 		/// <returns>物体</returns>
 		Object CreateSpriteObject(const std::string& name = "Sprite");
+
+		/// <summary>
+		/// 创建Circle
+		/// </summary>
+		/// <param name="name">物体名</param>
+		/// <returns>物体</returns>
+		Object CreateCircleObject(const std::string& name = "Circle");
 
 		/// <summary>
 		/// 创建网格物体

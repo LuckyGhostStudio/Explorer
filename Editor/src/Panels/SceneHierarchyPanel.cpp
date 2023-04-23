@@ -11,6 +11,7 @@
 #include "Explorer/Components/Mesh.h"
 #include "Explorer/Components/Material.h"
 #include "Explorer/Components/SpriteRenderer.h"
+#include "Explorer/Components/CircleRenderer.h"
 #include "Explorer/Components/Rigidbody/Rigidbody2D.h"
 #include "Explorer/Components/Rigidbody/BoxCollider2D.h"
 
@@ -69,8 +70,17 @@ namespace Explorer
 					object = m_Scene->CreateEmptyObject("Object");	//创建空物体
 				}
 
-				if (ImGui::MenuItem("Sprite")) {
-					object = m_Scene->CreateSpriteObject();	//创建Sprite
+				//父菜单项：2D物体
+				if (ImGui::BeginMenu("2D Object"))
+				{
+					if (ImGui::MenuItem("Sprite")) {
+						object = m_Scene->CreateSpriteObject();	//创建Sprite
+					}
+					if (ImGui::MenuItem("Circle")) {
+						object = m_Scene->CreateCircleObject();	//创建Circle
+					}
+
+					ImGui::EndMenu();
 				}
 
 				//父菜单项：3D物体
@@ -612,7 +622,14 @@ namespace Explorer
 					ImGui::CloseCurrentPopup();
 				}
 			}
-
+			//CircleRenderer组件不存在
+			if (!m_SelectionObject.HasComponent<CircleRenderer>()) {
+				//添加CircleRenderer组件
+				if (ImGui::MenuItem("Circle Renderer")) {
+					m_SelectionObject.AddComponent<CircleRenderer>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
 			//Rigidbody2D组件不存在
 			if (!m_SelectionObject.HasComponent<Rigidbody2D>()) {
 				//添加Rigidbody2D组件
@@ -621,7 +638,6 @@ namespace Explorer
 					ImGui::CloseCurrentPopup();
 				}
 			}
-
 			//Rigidbody2D组件不存在
 			if (!m_SelectionObject.HasComponent<BoxCollider2D>()) {
 				//添加BoxCollider2D组件
@@ -753,7 +769,7 @@ namespace Explorer
 		{
 			uint32_t count = ShaderLibrary::GetSize();
 
-			const char* shaderNames[3];
+			const char* shaderNames[4];
 			const char* currentShaderName = "";
 			int i = 0;
 			//遍历着色器库
@@ -816,7 +832,32 @@ namespace Explorer
 		DrawComponent<SpriteRenderer>(object, [](SpriteRenderer& spriteRenderer)
 		{
 			UI::DrawColorEditor4("Color", glm::value_ptr(spriteRenderer.GetColor()));	//Color Sprite颜色 颜色编辑器
-			//TODO 待添加Sprite
+
+			//Sprite贴图 选择&预览按钮
+			uint32_t spriteID = spriteRenderer.GetSprite().GetTexture()->GetRendererID();
+			UI::DrawImageButton("Sprite", spriteID, { 100,100 }, [&]()
+			{
+				std::string filepath = FileDialogs::OpenFile("Sprite Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+				if (!filepath.empty()) {
+					spriteRenderer.GetSprite().SetTexture(filepath);	//设置Sprite的Texture
+				}
+			});
+
+			//将从拖拽源（Project面板）复制的数据拖放到目标（Sprite）	：文件路径
+			ContentBrowserPanel::DragDropToTarget({ ".png", ".jpg" }, [&](const std::filesystem::path& filepath)
+			{
+				spriteRenderer.GetSprite().SetTexture(filepath.string());	//设置Sprite的Texture
+			});
+		});
+
+		//绘制CircleRenderer组件
+		DrawComponent<CircleRenderer>(object, [](CircleRenderer& circleRenderer)
+		{
+			Circle& circle = circleRenderer.GetCircle();
+
+			UI::DrawColorEditor4("Color", glm::value_ptr(circle.GetColor()));								//Color颜色 颜色编辑器
+			UI::DrawDrag("Thickness", &circle.GetThickness_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);	//Thickness厚度 vec1拖动条
+			UI::DrawDrag("Fade", &circle.GetFade_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);			//Fade模糊度 vec1拖动条
 		});
 
 		//绘制Rigidbody2D组件
@@ -843,7 +884,7 @@ namespace Explorer
 			UI::DrawDrag("Density", &boxCollider2D.GetDensity_Ref());													//Density密度 vec1拖动条
 			UI::DrawDrag("Friction", &boxCollider2D.GetFriction_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);		//Friction摩擦力 vec1拖动条
 			UI::DrawDrag("Restitution", &boxCollider2D.GetRestitution_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);	//Restitution恢复系数 vec1拖动条
-			UI::DrawDrag("Restitution Threshold", &boxCollider2D.GetRestitutionThreshold_Ref(), 0.01f, UI::ValueType::Float, 0.0f);	//RestitutionThreshold恢复阈值 vec1拖动条
+			UI::DrawDrag("Restitution Threshold", &boxCollider2D.GetRestitutionThreshold_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);	//RestitutionThreshold恢复阈值 vec1拖动条
 		});
 	}
 }

@@ -33,6 +33,7 @@ namespace Explorer
 		ShaderLibrary::Load("Standard", "assets/shaders/StandardShader");	//加载标准着色器
 		ShaderLibrary::Load("Skybox", "assets/shaders/SkyboxShader");		//加载天空盒着色器
 		ShaderLibrary::Load("Sprite", "assets/shaders/SpriteShader");		//加载Sprite着色器
+		ShaderLibrary::Load("Circle", "assets/shaders/CircleShader");		//加载Circle着色器
 	}
 
 	void Renderer3D::Shutdown()
@@ -44,9 +45,15 @@ namespace Explorer
 	{
 		//-------------------Sprite-----------------------------------
 		auto& spriteShader = ShaderLibrary::Get("Sprite");	//Sprite着色器
-		spriteShader->Bind();	//绑定着色器
+		spriteShader->Bind();								//绑定着色器
 
 		spriteShader->SetMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());	//设置vp矩阵
+
+		//-------------------Circle-----------------------------------
+		auto& circleShader = ShaderLibrary::Get("Circle");	//Circle着色器
+		circleShader->Bind();								//绑定着色器
+
+		circleShader->SetMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());	//设置vp矩阵
 	}
 
 	void Renderer3D::BeginScene(const Camera& camera, Transform& transform)
@@ -58,6 +65,12 @@ namespace Explorer
 		glm::mat4& viewProjectionMatrix = camera.GetProjection() * glm::inverse(transform.GetTransform());	//计算VP矩阵 vp = p * v 
 
 		spriteShader->SetMat4("u_ViewProjectionMatrix", viewProjectionMatrix);	//设置vp矩阵
+
+		//-------------------Circle-----------------------------------
+		auto& circleShader = ShaderLibrary::Get("Circle");	//Circle着色器
+		circleShader->Bind();								//绑定着色器
+
+		circleShader->SetMat4("u_ViewProjectionMatrix", viewProjectionMatrix);	//设置vp矩阵
 	}
 
 	void Renderer3D::DrawSprite(const Transform& transform, SpriteRenderer& spriteRenderer, int objectID)
@@ -67,10 +80,11 @@ namespace Explorer
 		auto& spriteShader = ShaderLibrary::Get("Sprite");	//Sprite着色器
 
 		spriteShader->Bind();			//绑定着色器
+
 		sprite.GetTexture()->Bind();	//绑定纹理
 
 		//设置uniform数据
-		spriteShader->SetFloat4("u_Color", spriteRenderer.GetColor());
+		spriteShader->SetInt("u_TextureExist", sprite.GetTextureExist());
 		spriteShader->SetInt("u_Texture", 0);
 
 		sprite.GetVertexBufferData().clear();	//清空上一次顶点缓冲区数据
@@ -79,6 +93,7 @@ namespace Explorer
 			Vertex vertex = sprite.GetVertices()[i];
 
 			vertex.Position = transform.GetTransform() * glm::vec4(vertex.Position, 1.0f);
+			vertex.Color = spriteRenderer.GetColor();
 			vertex.ObjectID = objectID;
 
 			sprite.GetVertexBufferData().push_back(vertex);	//添加顶点缓冲区数据
@@ -86,7 +101,38 @@ namespace Explorer
 
 		//SpriteRenderer组件已启用
 		if (spriteRenderer.GetEnable()) {
-			Processing<Sprite>(sprite);	//渲染Sprite
+			Processing<Sprite, Vertex>(sprite);	//渲染Sprite
+		}
+
+		s_Data.Stats.TriangleCount += 2;	//三角形个数
+		s_Data.Stats.VertexCount += 4;		//累计顶点个数
+		s_Data.Stats.IndexCount += 6;		//累计顶点索引个数
+	}
+
+	void Renderer3D::DrawCircle(const Transform& transform, CircleRenderer& circleRenderer, int objectID)
+	{
+		Circle& circle = circleRenderer.GetCircle();
+
+		auto& circleShader = ShaderLibrary::Get("Circle");	//Circle着色器
+		circleShader->Bind();								//绑定着色器
+
+		circle.GetVertexBufferData().clear();	//清空上一次顶点缓冲区数据
+		//设置顶点数据
+		for (int i = 0; i < 4; i++) {
+			CircleVertex vertex = circle.GetVertices()[i];
+
+			vertex.WorldPosition = transform.GetTransform() * glm::vec4(vertex.WorldPosition, 1.0f);
+			vertex.Color = circle.GetColor();
+			vertex.Thickness = circle.GetThickness();
+			vertex.Fade = circle.GetFade();
+			vertex.ObjectID = objectID;
+
+			circle.GetVertexBufferData().push_back(vertex);	//添加顶点缓冲区数据
+		}
+
+		//CircleRenderer组件已启用
+		if (circleRenderer.GetEnable()) {
+			Processing<Circle, CircleVertex>(circle);		//渲染Circle
 		}
 
 		s_Data.Stats.TriangleCount += 2;	//三角形个数
@@ -255,7 +301,7 @@ namespace Explorer
 
 			//Mesh组件启用
 			if (mesh.GetEnable()) {
-				SubMeshProcessing(subMesh);		//渲染子网格
+				Processing<SubMesh, Vertex>(subMesh);	//渲染子网格
 			}
 		}
 

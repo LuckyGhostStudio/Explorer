@@ -270,6 +270,7 @@ namespace Explorer
 				//退出
 				if (ImGui::MenuItem("Quit")) {
 					Application::GetInstance().Close();	//退出程序
+					//TODO:退出时询问是否保存该场景
 				}
 				ImGui::EndMenu();
 			}
