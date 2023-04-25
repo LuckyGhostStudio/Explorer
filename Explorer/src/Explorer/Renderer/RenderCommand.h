@@ -50,5 +50,10 @@ namespace Explorer
 		static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, uint32_t indexCount);
 		
 		static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray);
+
+		static void DrawLines(const std::shared_ptr<VertexArray>& vertexArray, uint32_t vertexCount);
+		static void DrawLoopLine(const std::shared_ptr<VertexArray>& vertexArray, uint32_t vertexCount);
+
+		static void SetLineWidth(float width);
 	};
 }

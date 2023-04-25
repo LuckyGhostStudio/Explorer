@@ -11,6 +11,7 @@ namespace Explorer
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	//最终颜色 = src * alpha + des * (1 - alpha)
 
 		glEnable(GL_DEPTH_TEST);							//启用深度测试
+		//glEnable(GL_LINE_SMOOTH);							//启用直线反走样
 	}
 
 	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -50,5 +51,24 @@ namespace Explorer
 
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);	//顶点数组索引绘制三角形
 		glBindTexture(GL_TEXTURE_2D, 0);	//清空纹理槽
+	}
+
+	void RenderCommand::DrawLines(const std::shared_ptr<VertexArray>& vertexArray, uint32_t vertexCount)
+	{
+		vertexArray->Bind();
+
+		glDrawArrays(GL_LINES, 0, vertexCount);	//顶点数组绘制直线
+	}
+
+	void RenderCommand::DrawLoopLine(const std::shared_ptr<VertexArray>& vertexArray, uint32_t vertexCount)
+	{
+		vertexArray->Bind();
+
+		glDrawArrays(GL_LINE_LOOP, 0, vertexCount);	//顶点数组绘制循环直线
+	}
+	
+	void RenderCommand::SetLineWidth(float width)
+	{
+		glLineWidth(width);	//设置线宽
 	}
 }

@@ -157,15 +157,7 @@ namespace Explorer
 			//EXP_CORE_WARN("mx:{0}, my:{1}", mouseX, mouseY);
 		}
 
-		//Delete键按下
-		if (Input::IsKeyPressed(Key::Delete)) {
-			//选中物体存在
-			if (m_SceneHierarchyPanel.GetSelectedObject()) {
-				Object& object = m_SceneHierarchyPanel.GetSelectedObject();
-				m_ActiveScene->DestroyObject(object);			//删除选中物体
-				m_SceneHierarchyPanel.SetSelectedObject({});	//选中物体设置为空
-			}
-		}
+		OnOverlayRender();	//渲染覆盖层：Gizmo
 
 		m_Framebuffer->Unbind();	//解除绑定帧缓冲区
 	}
@@ -554,6 +546,9 @@ namespace Explorer
 					OnCopyObject();	//复制物体
 				}
 				break;
+			case Key::Delete:
+				OnDeleteObject();	//复制物体
+				break;
 			//TODO:添加删除物体
 		}
 
@@ -586,6 +581,80 @@ namespace Explorer
 		}
 
 		return false;
+	}
+
+	void EditorLayer::OnOverlayRender()
+	{
+		if (m_SceneState == SceneState::Play) {
+			Object camera = m_ActiveScene->GetPrimaryCameraObject();
+			Renderer3D::BeginScene(camera.GetComponent<Camera>(), camera.GetComponent<Transform>());
+		}
+		else {
+			Renderer3D::BeginScene(m_EditorCamera);
+		}
+
+		//========================Physic==================================
+		//绘制CircleCollider2D
+		{
+			auto view = m_ActiveScene->GetAllObjectsWith<Transform, CircleCollider2D>();
+			for (auto object : view) {
+				auto [transform, circleCollider] = view.get<Transform, CircleCollider2D>(object);
+				Object obj = { object, m_ActiveScene.get() };
+				//object启用
+				if (obj.GetEnable()) {
+					//CircleCollider2D组件启用
+					if (circleCollider.GetEnable()) {
+						//渲染Circle
+						if (circleCollider.GetRenderCircle()) {
+							Circle& circle = circleCollider.GetCircle();
+							circle.SetColor({ 0.59f, 0.99f, 0.35f, 1.0f });
+							circle.SetThickness(0.01f);
+
+							//设置Transform
+							glm::vec3 translation = transform.GetPosition() + glm::vec3(circleCollider.GetOffset(), 0.001f);	//位置 + 偏移量：z坐标向摄像机方向偏移
+							glm::vec3 scale = glm::max(transform.GetScale().x, transform.GetScale().y) * glm::vec3(circleCollider.GetRadius() * 2.0f);	//缩放值 * 直径
+
+							glm::mat4 trans = glm::translate(glm::mat4(1.0f), translation)
+								* glm::scale(glm::mat4(1.0f), scale);
+
+							Renderer3D::DrawCircle(trans, circle);	//绘制Circle碰撞体
+						}
+					}
+				}
+			}
+		}
+
+		//绘制BoxCollider2D
+		{
+			auto view = m_ActiveScene->GetAllObjectsWith<Transform, BoxCollider2D>();
+			for (auto object : view) {
+				Object obj = { object, m_ActiveScene.get() };
+				//object启用
+				if (obj.GetEnable()) {
+					auto [transform, boxCollider] = view.get<Transform, BoxCollider2D>(object);
+					//BoxCollider2D组件启用
+					if (boxCollider.GetEnable()) {
+						//渲染Box
+						if (boxCollider.GetRenderBox()) {
+							Rectangle& rectangle = boxCollider.GetRectangle();
+							rectangle.SetColor({ 0.59f, 0.99f, 0.35f, 1.0f });
+
+							//设置Transform
+							glm::vec3 translation = transform.GetPosition() + glm::vec3(boxCollider.GetOffset(), 0.001f);	//位置 + 偏移量：z坐标向摄像机方向偏移
+							glm::vec3 scale = transform.GetScale() * glm::vec3(boxCollider.GetSize(), 1.0f);				//缩放值 * 大小
+
+							glm::mat4 trans = glm::translate(glm::mat4(1.0f), translation)
+								* glm::rotate(glm::mat4(1.0f), glm::radians(transform.GetRotation().z), { 0.0f, 0.0f, 1.0f })
+								* glm::scale(glm::mat4(1.0f), scale);
+
+							Renderer3D::DrawRect(trans, rectangle);	//绘制Rectangle碰撞体
+						}
+					}
+				}
+			}
+		}
+
+		Renderer3D::EndScene();
 	}
 
 	void EditorLayer::NewScene()
@@ -727,6 +796,18 @@ namespace Explorer
 
 		if (object) {
 			m_ActiveScene->CopyObject(object);	//复制选中物体
+		}
+	}
+
+	void EditorLayer::OnDeleteObject()
+	{
+		if (m_SceneState != SceneState::Edit) return;
+
+		Object object = m_SceneHierarchyPanel.GetSelectedObject();
+
+		if (object) {
+			m_ActiveScene->DestroyObject(object);			//删除选中物体
+			m_SceneHierarchyPanel.SetSelectedObject({});	//选中物体设置为空
 		}
 	}
 }

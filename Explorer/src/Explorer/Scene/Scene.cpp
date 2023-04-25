@@ -8,6 +8,7 @@
 #include "Explorer/Components/CircleRenderer.h"
 #include "Explorer/Components/Rigidbody/Rigidbody2D.h"
 #include "Explorer/Components/Rigidbody/BoxCollider2D.h"
+#include "Explorer/Components/Rigidbody/CircleCollider2D.h"
 
 #include "Object.h"
 
@@ -15,6 +16,7 @@
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_circle_shape.h"
 
 namespace Explorer
 {
@@ -92,6 +94,7 @@ namespace Explorer
 		CopyComponent<NativeScript>(newObject, object);
 		CopyComponent<Rigidbody2D>(newObject, object);
 		CopyComponent<BoxCollider2D>(newObject, object);
+		CopyComponent<CircleCollider2D>(newObject, object);
 	}
 
 	std::shared_ptr<Scene> Scene::Copy(std::shared_ptr<Scene> scene)
@@ -128,6 +131,7 @@ namespace Explorer
 		CopyComponent<NativeScript>(dstSceneRegistry, srcSceneRegistry, objectMap);
 		CopyComponent<Rigidbody2D>(dstSceneRegistry, srcSceneRegistry, objectMap);
 		CopyComponent<BoxCollider2D>(dstSceneRegistry, srcSceneRegistry, objectMap);
+		CopyComponent<CircleCollider2D>(dstSceneRegistry, srcSceneRegistry, objectMap);
 
 		return newScene;
 	}
@@ -229,41 +233,65 @@ namespace Explorer
 
 	void Scene::OnRuntimeStart()
 	{
-		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });	//创建物理世界 重力方向向量
+		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });	//创建物理世界 重力方向向量 TODO:可变
 
 		auto view = m_Registry.view<Rigidbody2D>();	//有Rigidbody2D的所有物体
 		for (auto obj : view) {
 			Object object = { obj, this };
+			//object启用
+			if (object.GetEnable()) {
+				auto& transform = object.GetComponent<Transform>();
+				auto& rigidbody2d = object.GetComponent<Rigidbody2D>();
 
-			auto& transform = object.GetComponent<Transform>();
-			auto& rigidbody2d = object.GetComponent<Rigidbody2D>();
+				b2BodyDef bodyDef;	//box2d刚体定义
+				bodyDef.type = RigidbodyTypeToB2BodyType(rigidbody2d.GetBodyType());		//刚体类型
+				bodyDef.position.Set(transform.GetPosition().x, transform.GetPosition().y);	//初始位置 = transform位置
+				float angle = transform.GetRotation().z;
+				bodyDef.angle = glm::radians(transform.GetRotation().z);					//初始旋转 弧度 z轴
 
-			b2BodyDef bodyDef;	//box2d刚体定义
-			bodyDef.type = RigidbodyTypeToB2BodyType(rigidbody2d.GetBodyType());		//刚体类型
-			bodyDef.position.Set(transform.GetPosition().x, transform.GetPosition().y);	//初始位置 = transform位置
-			float angle = transform.GetRotation().z;
-			bodyDef.angle = glm::radians(transform.GetRotation().z);					//初始旋转 弧度 z轴
+				b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);		//创建刚体
+				body->SetFixedRotation(rigidbody2d.GetFreezeRotation());	//旋转冻结状态
+				rigidbody2d.SetRuntimeBody(body);							//设置运行时刚体
 
-			b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);		//创建刚体
-			body->SetFixedRotation(rigidbody2d.GetFreezeRotation());	//旋转冻结状态
-			rigidbody2d.SetRuntimeBody(body);							//设置运行时刚体
+				//BoxCollider2D
+				if (object.HasComponent<BoxCollider2D>()) {
+					auto& boxCollider2D = object.GetComponent<BoxCollider2D>();	//Box2D碰撞体
+					//BoxCollider2D组件启用
+					if (boxCollider2D.GetEnable()) {
+						b2PolygonShape boxShape;	//Box形状
+						//Box大小
+						float sizeX = transform.GetScale().x * boxCollider2D.GetSize().x * 0.5f;
+						float sizeY = transform.GetScale().y * boxCollider2D.GetSize().y * 0.5f;
+						boxShape.SetAsBox(sizeX, sizeY);	//设置为Box
 
-			if (object.HasComponent<BoxCollider2D>()) {
-				auto& boxCollider2D = object.GetComponent<BoxCollider2D>();	//Box2D碰撞体
+						b2FixtureDef fixtureDef;			//碰撞体定义
+						fixtureDef.shape = &boxShape;												//形状
+						fixtureDef.density = boxCollider2D.GetDensity();							//密度
+						fixtureDef.friction = boxCollider2D.GetFriction();							//摩擦力
+						fixtureDef.restitution = boxCollider2D.GetRestitution();					//恢复系数
+						fixtureDef.restitutionThreshold = boxCollider2D.GetRestitutionThreshold();	//恢复阈值
+						body->CreateFixture(&fixtureDef);	//创建碰撞体
+					}
+				}
 
-				b2PolygonShape boxShape;	//Box形状
-				//Box大小
-				float sizeX = boxCollider2D.GetSize().x * 0.5f * transform.GetScale().x;
-				float sizeY = boxCollider2D.GetSize().y * 0.5f * transform.GetScale().y;
-				boxShape.SetAsBox(sizeX, sizeY);	//设置为Box
+				//CircleCollider2D
+				if (object.HasComponent<CircleCollider2D>()) {
+					auto& circleCollider2D = object.GetComponent<CircleCollider2D>();	//Box2D碰撞体
+					//CircleCollider2D组件启用
+					if (circleCollider2D.GetEnable()) {
+						b2CircleShape circleShape;	//Circle形状
+						circleShape.m_p.Set(circleCollider2D.GetOffset().x, circleCollider2D.GetOffset().y);	//碰撞体位置 偏移量
+						circleShape.m_radius = glm::max(transform.GetScale().x, transform.GetScale().y) * circleCollider2D.GetRadius();	//半径 随缩放值改变
 
-				b2FixtureDef fixtureDef;			//碰撞体定义
-				fixtureDef.shape = &boxShape;												//形状
-				fixtureDef.density = boxCollider2D.GetDensity();							//密度
-				fixtureDef.friction = boxCollider2D.GetFriction();							//摩擦力
-				fixtureDef.restitution = boxCollider2D.GetRestitution();					//恢复系数
-				fixtureDef.restitutionThreshold = boxCollider2D.GetRestitutionThreshold();	//恢复阈值
-				body->CreateFixture(&fixtureDef);	//创建碰撞体
+						b2FixtureDef fixtureDef;			//碰撞体定义
+						fixtureDef.shape = &circleShape;												//形状
+						fixtureDef.density = circleCollider2D.GetDensity();								//密度
+						fixtureDef.friction = circleCollider2D.GetFriction();							//摩擦力
+						fixtureDef.restitution = circleCollider2D.GetRestitution();						//恢复系数
+						fixtureDef.restitutionThreshold = circleCollider2D.GetRestitutionThreshold();	//恢复阈值
+						body->CreateFixture(&fixtureDef);	//创建碰撞体
+					}
+				}
 			}
 		}
 	}
@@ -357,17 +385,19 @@ namespace Explorer
 			auto view = m_Registry.view<Rigidbody2D>();	//有Rigidbody2D的所有物体
 			for (auto obj : view) {
 				Object object = { obj, this };
+				//object启用时渲染此Obj
+				if (object.GetEnable()) {
+					auto& transform = object.GetComponent<Transform>();		//Transform组件
+					auto& rigidbody2d = object.GetComponent<Rigidbody2D>();	//Rigidbody2D组件
 
-				auto& transform = object.GetComponent<Transform>();		//Transform组件
-				auto& rigidbody2d = object.GetComponent<Rigidbody2D>();	//Rigidbody2D组件
+					b2Body* body = (b2Body*)rigidbody2d.GetRuntimeBody();	//运行时刚体
+					//根据刚体数据更新Transform数据
+					const auto& position = body->GetPosition();
 
-				b2Body* body = (b2Body*)rigidbody2d.GetRuntimeBody();	//运行时刚体
-				//根据刚体数据更新Transform数据
-				const auto& position = body->GetPosition();
-
-				transform.GetPosition().x = position.x;
-				transform.GetPosition().y = position.y;
-				transform.GetRotation().z = glm::degrees(body->GetAngle());
+					transform.GetPosition().x = position.x;
+					transform.GetPosition().y = position.y;
+					transform.GetRotation().z = glm::degrees(body->GetAngle());
+				}
 			}
 		}//TODO 刚体 碰撞体组件启用状态
 
@@ -547,6 +577,12 @@ namespace Explorer
 
 	template<>
 	void Scene::OnComponentAdded<BoxCollider2D>(Object object, BoxCollider2D& boxCollider2D)
+	{
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<CircleCollider2D>(Object object, CircleCollider2D& circleCollider2D)
 	{
 
 	}

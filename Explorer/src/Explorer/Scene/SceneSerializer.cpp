@@ -11,6 +11,7 @@
 #include "Explorer/Components/CircleRenderer.h"
 #include "Explorer/Components/Rigidbody/Rigidbody2D.h"
 #include "Explorer/Components/Rigidbody/BoxCollider2D.h"
+#include "Explorer/Components/Rigidbody/CircleCollider2D.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -382,6 +383,7 @@ namespace Explorer
 
 			out << YAML::Key << "Enable" << YAML::Value << boxCollider2D.GetEnable();
 
+			out << YAML::Key << "RenderBox" << YAML::Value << boxCollider2D.GetRenderBox();
 			out << YAML::Key << "Offset" << YAML::Value << boxCollider2D.GetOffset();
 			out << YAML::Key << "Size" << YAML::Value << boxCollider2D.GetSize();
 			out << YAML::Key << "Density" << YAML::Value << boxCollider2D.GetDensity();
@@ -390,6 +392,27 @@ namespace Explorer
 			out << YAML::Key << "RestitutionThreshold" << YAML::Value << boxCollider2D.GetRestitutionThreshold();
 
 			out << YAML::EndMap;	//结束BoxCollider2D组件Map
+		}
+
+		//CircleCollider2D组件
+		if (object.HasComponent<CircleCollider2D>())
+		{
+			out << YAML::Key << "CircleCollider2D Component";
+			out << YAML::BeginMap;	//开始CircleCollider2D组件Map
+
+			auto& circleCollider2D = object.GetComponent<CircleCollider2D>();
+
+			out << YAML::Key << "Enable" << YAML::Value << circleCollider2D.GetEnable();
+
+			out << YAML::Key << "RenderCircle" << YAML::Value << circleCollider2D.GetRenderCircle();
+			out << YAML::Key << "Offset" << YAML::Value << circleCollider2D.GetOffset();
+			out << YAML::Key << "Radius" << YAML::Value << circleCollider2D.GetRadius();
+			out << YAML::Key << "Density" << YAML::Value << circleCollider2D.GetDensity();
+			out << YAML::Key << "Friction" << YAML::Value << circleCollider2D.GetFriction();
+			out << YAML::Key << "Restitution" << YAML::Value << circleCollider2D.GetRestitution();
+			out << YAML::Key << "RestitutionThreshold" << YAML::Value << circleCollider2D.GetRestitutionThreshold();
+
+			out << YAML::EndMap;	//结束CircleCollider2D组件Map
 		}
 
 		out << YAML::EndMap;	//结束物体Map
@@ -658,12 +681,30 @@ namespace Explorer
 
 					boxCollider2D.SetEnable(boxCollider2DNode["Enable"].as<bool>());	//组件启用状态
 
+					boxCollider2D.SetRenderBox(boxCollider2DNode["RenderBox"].as<bool>());
 					boxCollider2D.SetOffset(boxCollider2DNode["Offset"].as<glm::vec2>());
 					boxCollider2D.SetSize(boxCollider2DNode["Size"].as<glm::vec2>());
 					boxCollider2D.SetDensity(boxCollider2DNode["Density"].as<float>());
 					boxCollider2D.SetFriction(boxCollider2DNode["Friction"].as<float>());
 					boxCollider2D.SetRestitution(boxCollider2DNode["Restitution"].as<float>());
 					boxCollider2D.SetRestitutionThreshold(boxCollider2DNode["RestitutionThreshold"].as<float>());
+				}
+
+				//CircleCollider2D组件结点
+				auto circleCollider2DNode = object["CircleCollider2D Component"];
+				if (circleCollider2DNode)
+				{
+					auto& circleCollider2D = deserializedObject.AddComponent<CircleCollider2D>();	//添加BoxCollider2D组件
+
+					circleCollider2D.SetEnable(circleCollider2DNode["Enable"].as<bool>());	//组件启用状态
+
+					circleCollider2D.SetRenderCircle(circleCollider2DNode["RenderCircle"].as<bool>());
+					circleCollider2D.SetOffset(circleCollider2DNode["Offset"].as<glm::vec2>());
+					circleCollider2D.SetRadius(circleCollider2DNode["Radius"].as<float>());
+					circleCollider2D.SetDensity(circleCollider2DNode["Density"].as<float>());
+					circleCollider2D.SetFriction(circleCollider2DNode["Friction"].as<float>());
+					circleCollider2D.SetRestitution(circleCollider2DNode["Restitution"].as<float>());
+					circleCollider2D.SetRestitutionThreshold(circleCollider2DNode["RestitutionThreshold"].as<float>());
 				}
 			}
 		}

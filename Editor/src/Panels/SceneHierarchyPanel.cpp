@@ -14,6 +14,7 @@
 #include "Explorer/Components/CircleRenderer.h"
 #include "Explorer/Components/Rigidbody/Rigidbody2D.h"
 #include "Explorer/Components/Rigidbody/BoxCollider2D.h"
+#include "Explorer/Components/Rigidbody/CircleCollider2D.h"
 
 #include "Explorer/Utils/PlatformUtils.h"
 #include "Explorer/Utils/ModelImporter.h"
@@ -638,11 +639,19 @@ namespace Explorer
 					ImGui::CloseCurrentPopup();
 				}
 			}
-			//Rigidbody2D组件不存在
+			//BoxCollider2D组件不存在
 			if (!m_SelectionObject.HasComponent<BoxCollider2D>()) {
 				//添加BoxCollider2D组件
 				if (ImGui::MenuItem("Box Collider 2D")) {
 					m_SelectionObject.AddComponent<BoxCollider2D>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			//CircleCollider2D组件不存在
+			if (!m_SelectionObject.HasComponent<CircleCollider2D>()) {
+				//添加CircleCollider2D组件
+				if (ImGui::MenuItem("Circle Collider 2D")) {
+					m_SelectionObject.AddComponent<CircleCollider2D>();
 					ImGui::CloseCurrentPopup();
 				}
 			}
@@ -769,7 +778,7 @@ namespace Explorer
 		{
 			uint32_t count = ShaderLibrary::GetSize();
 
-			const char* shaderNames[4];
+			const char* shaderNames[5]; //TODO更新shader数
 			const char* currentShaderName = "";
 			int i = 0;
 			//遍历着色器库
@@ -878,13 +887,27 @@ namespace Explorer
 		//绘制BoxCollider2D组件
 		DrawComponent<BoxCollider2D>(object, [](BoxCollider2D& boxCollider2D)
 		{
+			UI::DrawCheckBox("Render Box", &boxCollider2D.GetRenderBox_Ref());	//是否渲染Box
 			UI::DrawDrag("Offset", glm::value_ptr(boxCollider2D.GetOffset()), 0.01f, UI::ValueType::Float2);	//Offset偏移量 vec2拖动条
-			UI::DrawDrag("Size", glm::value_ptr(boxCollider2D.GetSize()), 0.01f, UI::ValueType::Float2);		//Size大小 vec2拖动条
+			UI::DrawDrag("Size", glm::value_ptr(boxCollider2D.GetSize()), 0.01f, UI::ValueType::Float2, 0.0f);	//Size大小 vec2拖动条
 			//TODO设置最值
 			UI::DrawDrag("Density", &boxCollider2D.GetDensity_Ref());													//Density密度 vec1拖动条
 			UI::DrawDrag("Friction", &boxCollider2D.GetFriction_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);		//Friction摩擦力 vec1拖动条
 			UI::DrawDrag("Restitution", &boxCollider2D.GetRestitution_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);	//Restitution恢复系数 vec1拖动条
 			UI::DrawDrag("Restitution Threshold", &boxCollider2D.GetRestitutionThreshold_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);	//RestitutionThreshold恢复阈值 vec1拖动条
+		});
+		
+		//绘制CircleCollider2D组件
+		DrawComponent<CircleCollider2D>(object, [](CircleCollider2D& circleCollider2D)
+		{
+			UI::DrawCheckBox("Render Circle", &circleCollider2D.GetRenderCircle_Ref());	//是否渲染Circle
+			UI::DrawDrag("Offset", glm::value_ptr(circleCollider2D.GetOffset()), 0.01f, UI::ValueType::Float2);	//Offset偏移量 vec2拖动条
+			UI::DrawDrag("Radius", &circleCollider2D.GetRadius_Ref(), 0.01f, UI::ValueType::Float, 0.0f);		//Radius半径 vec1拖动条
+			//TODO设置最值
+			UI::DrawDrag("Density", &circleCollider2D.GetDensity_Ref());													//Density密度 vec1拖动条
+			UI::DrawDrag("Friction", &circleCollider2D.GetFriction_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);			//Friction摩擦力 vec1拖动条
+			UI::DrawDrag("Restitution", &circleCollider2D.GetRestitution_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);	//Restitution恢复系数 vec1拖动条
+			UI::DrawDrag("Restitution Threshold", &circleCollider2D.GetRestitutionThreshold_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);	//RestitutionThreshold恢复阈值 vec1拖动条
 		});
 	}
 }

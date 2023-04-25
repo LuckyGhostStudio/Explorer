@@ -1,18 +1,71 @@
 Scene: Physics2D
 Objects:
-  - Object: 362326107159779757
+  - Object: 15873938082166169145
     Self Component:
-      ObjectName: Circle
+      ObjectName: Ground
       ObjectEnable: true
     Transform Component:
-      Position: [0, -3.9154048, 0]
-      Rotation: [0, 0, 0]
-      Scale: [4.33440018, 4.33440018, 4.33440018]
-    CircleRenderer Component:
+      Position: [2.84638405, -2.69070172, 0]
+      Rotation: [0, 0, 25.9269485]
+      Scale: [12.8930607, 1.04700005, 1]
+    SpriteRenderer Component:
       Enable: true
       Color: [1, 0.416988373, 0, 1]
-      Thickness: 0.360000014
-      Fade: 0.00499999989
+      TextureExist: false
+      SpritePath: ""
+    Rigidbody2D Component:
+      BodyType: 1
+      FreezeRotation: false
+    BoxCollider2D Component:
+      Enable: true
+      RenderBox: true
+      Offset: [0, 0]
+      Size: [1, 1]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+  - Object: 6242330235954198544
+    Self Component:
+      ObjectName: Box
+      ObjectEnable: true
+    Transform Component:
+      Position: [-1.56318521, 2.91100001, 4.65661287e-10]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRenderer Component:
+      Enable: true
+      Color: [1, 1, 1, 1]
+      TextureExist: false
+      SpritePath: ""
+    Rigidbody2D Component:
+      BodyType: 0
+      FreezeRotation: false
+    BoxCollider2D Component:
+      Enable: true
+      RenderBox: true
+      Offset: [0, 0]
+      Size: [1, 1]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.579999983
+      RestitutionThreshold: 0.5
+  - Object: 10790347956818702525
+    Self Component:
+      ObjectName: Main Camera
+      ObjectEnable: true
+    Transform Component:
+      Position: [0, -1.07000005, 1]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Camera Component:
+      Enable: true
+      ProjectionType: 1
+      Size: 3.18000007
+      FOV: 0.785398185
+      Near: 0.00999999978
+      Far: 1000
+      Primary: true
   - Object: 5703897282790583365
     Self Component:
       ObjectName: Ground
@@ -31,74 +84,36 @@ Objects:
       FreezeRotation: false
     BoxCollider2D Component:
       Enable: true
+      RenderBox: true
       Offset: [0, 0]
       Size: [1, 1]
       Density: 1
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
-  - Object: 10790347956818702525
+  - Object: 362326107159779757
     Self Component:
-      ObjectName: Main Camera
+      ObjectName: Circle
       ObjectEnable: true
     Transform Component:
-      Position: [0, -1.07000005, 1]
+      Position: [-2.98023224e-08, -0.78892833, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    Camera Component:
-      Enable: true
-      ProjectionType: 1
-      Size: 3.18000007
-      FOV: 0.785398185
-      Near: 0.00999999978
-      Far: 1000
-      Primary: true
-  - Object: 6242330235954198544
-    Self Component:
-      ObjectName: Box
-      ObjectEnable: true
-    Transform Component:
-      Position: [-1.56318521, 1.0010916, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteRenderer Component:
-      Enable: true
-      Color: [1, 1, 1, 1]
-      TextureExist: false
-      SpritePath: ""
-    Rigidbody2D Component:
-      BodyType: 0
-      FreezeRotation: false
-    BoxCollider2D Component:
-      Enable: true
-      Offset: [0, 0]
-      Size: [1, 1]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0.579999983
-      RestitutionThreshold: 0.5
-  - Object: 3535440984125465149
-    Self Component:
-      ObjectName: Ground
-      ObjectEnable: true
-    Transform Component:
-      Position: [2.84638405, -2.69070172, 0]
-      Rotation: [0, 0, 25.9269485]
-      Scale: [12.8930607, 0.666980684, 1]
-    SpriteRenderer Component:
+    CircleRenderer Component:
       Enable: true
       Color: [1, 0.416988373, 0, 1]
-      TextureExist: false
-      SpritePath: ""
+      Thickness: 1
+      Fade: 0.00499999989
     Rigidbody2D Component:
       BodyType: 1
       FreezeRotation: false
-    BoxCollider2D Component:
+    CircleCollider2D Component:
       Enable: true
+      RenderCircle: true
       Offset: [0, 0]
-      Size: [1, 1]
-      Density: 1
-      Friction: 0.5
+      Radius: 1
+      Density: 0.25
+      Friction: 0.50999999
       Restitution: 0
       RestitutionThreshold: 0.5
 Environment:

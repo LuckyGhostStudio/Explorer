@@ -1,21 +1,21 @@
 #pragma once
 
 #include "Explorer/Components/Component.h"
-#include "Explorer/Components/Rectangle.h"
+#include <glm/glm.hpp>
 
 namespace Explorer
 {
 	/// <summary>
-	/// Box2D碰撞体
+	/// Circle2D碰撞体
 	/// </summary>
-	class BoxCollider2D :public Component
+	class CircleCollider2D :public Component
 	{
 	private:
-		Rectangle m_Rectangle;		//碰撞体矩形
-		bool m_RenderBox = true;	//绘制Box
+		Circle m_Circle;		//碰撞体圆
+		bool m_RenderCircle;	//绘制Circle
 
 		glm::vec2 m_Offset = { 0.0f, 0.0f };	//偏移量：相对于物体中心
-		glm::vec2 m_Size = { 1.0f, 1.0f };		//大小
+		float m_Radius = 0.5f;					//半径
 
 		//TODO:下列属性待加入物理材质
 		float m_Density = 1.0f;					//密度	kg/m^2
@@ -25,31 +25,32 @@ namespace Explorer
 
 		void* m_RuntimeFixture = nullptr;		//运行时碰撞体：指向自己
 	private:
-		virtual void SetName() override { m_Name = "Box Collider 2D"; }
+		virtual void SetName() override { m_Name = "Circle Collider 2D"; }
 
 		/// <summary>
 		/// 设置Transform组件图标
 		/// </summary>
-		virtual void SetIcon() override { m_Icon = std::make_shared<Texture2D>("Resources/Icons/Components/BoxCollider2D_Icon.png"); }
+		virtual void SetIcon() override { m_Icon = std::make_shared<Texture2D>("Resources/Icons/Components/CircleCollider2D_Icon.png"); }
 	public:
-		BoxCollider2D() = default;
-		BoxCollider2D(const BoxCollider2D&) = default;
+		CircleCollider2D() = default;
+		CircleCollider2D(const CircleCollider2D&) = default;
 
 		virtual const std::string& GetName() override { SetName(); return m_Name; }
 		virtual std::shared_ptr<Texture2D>& GetIcon() override { SetIcon(); return m_Icon; }
 
-		Rectangle& GetRectangle() { return m_Rectangle; }
-		void SetRectangle(const Rectangle& rectangle) { m_Rectangle = rectangle; }
+		Circle& GetCircle() { return m_Circle; }
+		void SetCircle(const Circle& circle) { m_Circle = circle; }
 
-		bool GetRenderBox() const { return m_RenderBox; }
-		bool& GetRenderBox_Ref() { return m_RenderBox; }
-		void SetRenderBox(float render) { m_RenderBox = render; }
+		bool GetRenderCircle() const { return m_RenderCircle; }
+		bool& GetRenderCircle_Ref() { return m_RenderCircle; }
+		void SetRenderCircle(float render) { m_RenderCircle = render; }
 
 		glm::vec2& GetOffset() { return m_Offset; }
 		void SetOffset(const glm::vec2& offset) { m_Offset = offset; }
 
-		glm::vec2& GetSize() { return m_Size; }
-		void SetSize(const glm::vec2& size) { m_Size = size; }
+		float GetRadius() const { return m_Radius; }
+		float& GetRadius_Ref() { return m_Radius; }
+		void SetRadius(float radius) { m_Radius = radius; }
 
 		float GetDensity() const { return m_Density; }
 		float& GetDensity_Ref() { return m_Density; }

@@ -149,6 +149,8 @@
   <ItemGroup>
     <None Include="assets\shaders\CircleShader.frag" />
     <None Include="assets\shaders\CircleShader.vert" />
+    <None Include="assets\shaders\LineShader.frag" />
+    <None Include="assets\shaders\LineShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

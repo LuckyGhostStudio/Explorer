@@ -99,6 +99,11 @@ namespace Explorer
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
 		/// <summary>
+		/// 覆盖渲染层
+		/// </summary>
+		void OnOverlayRender();
+
+		/// <summary>
 		/// 创建新场景
 		/// </summary>
 		void NewScene();
@@ -156,6 +161,11 @@ namespace Explorer
 		/// 复制物体时调用
 		/// </summary>
 		void OnCopyObject();
+
+		/// <summary>
+		/// 删除物体时调用
+		/// </summary>
+		void OnDeleteObject();
 
 		/// <summary>
 		/// 工具栏

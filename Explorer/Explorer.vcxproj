@@ -150,10 +150,13 @@
     <ClInclude Include="src\Explorer\Components\Component.h" />
     <ClInclude Include="src\Explorer\Components\Components.h" />
     <ClInclude Include="src\Explorer\Components\Light.h" />
+    <ClInclude Include="src\Explorer\Components\Line.h" />
     <ClInclude Include="src\Explorer\Components\Material.h" />
     <ClInclude Include="src\Explorer\Components\Mesh.h" />
     <ClInclude Include="src\Explorer\Components\NativeScript.h" />
+    <ClInclude Include="src\Explorer\Components\Rectangle.h" />
     <ClInclude Include="src\Explorer\Components\Rigidbody\BoxCollider2D.h" />
+    <ClInclude Include="src\Explorer\Components\Rigidbody\CircleCollider2D.h" />
     <ClInclude Include="src\Explorer\Components\Rigidbody\Rigidbody2D.h" />
     <ClInclude Include="src\Explorer\Components\Skybox.h" />
     <ClInclude Include="src\Explorer\Components\Sprite.h" />
@@ -623,8 +626,10 @@
     <ClCompile Include="src\Explorer\Components\Camera.cpp" />
     <ClCompile Include="src\Explorer\Components\Circle.cpp" />
     <ClCompile Include="src\Explorer\Components\Light.cpp" />
+    <ClCompile Include="src\Explorer\Components\Line.cpp" />
     <ClCompile Include="src\Explorer\Components\Material.cpp" />
     <ClCompile Include="src\Explorer\Components\Mesh.cpp" />
+    <ClCompile Include="src\Explorer\Components\Rectangle.cpp" />
     <ClCompile Include="src\Explorer\Components\Skybox.cpp" />
     <ClCompile Include="src\Explorer\Components\Sprite.cpp" />
     <ClCompile Include="src\Explorer\Components\SubMesh.cpp" />

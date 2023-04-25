@@ -36,6 +36,7 @@ namespace Explorer
 	public:
 		Circle();
 		Circle(const Circle&) = default;
+		Circle(float radius);
 		~Circle();
 
 		glm::vec4& GetColor() { return m_Color; }

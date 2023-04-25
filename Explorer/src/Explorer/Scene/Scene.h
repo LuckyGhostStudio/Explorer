@@ -166,5 +166,16 @@ namespace Explorer
 		/// </summary>
 		/// <returns>主相机</returns>
 		Object GetPrimaryCameraObject();
+
+		/// <summary>
+		/// 返回拥有Components组件的所有物体
+		/// </summary>
+		/// <typeparam name="...Components">组件类型列表</typeparam>
+		/// <returns>物体列表</returns>
+		template<typename... Components>
+		auto GetAllObjectsWith()
+		{
+			return m_Registry.view<Components...>();
+		}
 	};
 }

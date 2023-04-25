@@ -27,5 +27,7 @@
   <ItemGroup>
     <None Include="assets\shaders\CircleShader.vert" />
     <None Include="assets\shaders\CircleShader.frag" />
+    <None Include="assets\shaders\LineShader.vert" />
+    <None Include="assets\shaders\LineShader.frag" />
   </ItemGroup>
 </Project>

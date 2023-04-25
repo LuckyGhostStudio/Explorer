@@ -34,6 +34,7 @@ namespace Explorer
 		ShaderLibrary::Load("Skybox", "assets/shaders/SkyboxShader");		//加载天空盒着色器
 		ShaderLibrary::Load("Sprite", "assets/shaders/SpriteShader");		//加载Sprite着色器
 		ShaderLibrary::Load("Circle", "assets/shaders/CircleShader");		//加载Circle着色器
+		ShaderLibrary::Load("Line", "assets/shaders/LineShader");			//加载Line着色器
 	}
 
 	void Renderer3D::Shutdown()
@@ -54,6 +55,12 @@ namespace Explorer
 		circleShader->Bind();								//绑定着色器
 
 		circleShader->SetMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());	//设置vp矩阵
+
+		//-------------------Line-----------------------------------
+		auto& lineShader = ShaderLibrary::Get("Line");	//Line着色器
+		lineShader->Bind();								//绑定着色器
+
+		lineShader->SetMat4("u_ViewProjectionMatrix", camera.GetViewProjectionMatrix());	//设置vp矩阵
 	}
 
 	void Renderer3D::BeginScene(const Camera& camera, Transform& transform)
@@ -71,6 +78,12 @@ namespace Explorer
 		circleShader->Bind();								//绑定着色器
 
 		circleShader->SetMat4("u_ViewProjectionMatrix", viewProjectionMatrix);	//设置vp矩阵
+
+		//-------------------Line-----------------------------------
+		auto& lineShader = ShaderLibrary::Get("Line");	//Line着色器
+		lineShader->Bind();								//绑定着色器
+
+		lineShader->SetMat4("u_ViewProjectionMatrix", viewProjectionMatrix);	//设置vp矩阵
 	}
 
 	void Renderer3D::DrawSprite(const Transform& transform, SpriteRenderer& spriteRenderer, int objectID)
@@ -101,7 +114,7 @@ namespace Explorer
 
 		//SpriteRenderer组件已启用
 		if (spriteRenderer.GetEnable()) {
-			Processing<Sprite, Vertex>(sprite);	//渲染Sprite
+			Processing<Sprite, Vertex>(sprite, RenderCommandType::Triangle);	//渲染Sprite
 		}
 
 		s_Data.Stats.TriangleCount += 2;	//三角形个数
@@ -132,12 +145,88 @@ namespace Explorer
 
 		//CircleRenderer组件已启用
 		if (circleRenderer.GetEnable()) {
-			Processing<Circle, CircleVertex>(circle);		//渲染Circle
+			Processing<Circle, CircleVertex>(circle, RenderCommandType::Triangle);	//渲染Circle
 		}
 
 		s_Data.Stats.TriangleCount += 2;	//三角形个数
 		s_Data.Stats.VertexCount += 4;		//累计顶点个数
 		s_Data.Stats.IndexCount += 6;		//累计顶点索引个数
+	}
+
+	void Renderer3D::DrawCircle(const glm::mat4& transform, Circle& circle, int objectID)
+	{
+		auto& circleShader = ShaderLibrary::Get("Circle");	//Circle着色器
+		circleShader->Bind();								//绑定着色器
+
+		circle.GetVertexBufferData().clear();	//清空上一次顶点缓冲区数据
+		//设置顶点数据
+		for (int i = 0; i < 4; i++) {
+			CircleVertex vertex = circle.GetVertices()[i];
+
+			vertex.WorldPosition = transform * glm::vec4(vertex.WorldPosition, 1.0f);
+			vertex.Color = circle.GetColor();
+			vertex.Thickness = circle.GetThickness();
+			vertex.Fade = circle.GetFade();
+			vertex.ObjectID = objectID;
+
+			circle.GetVertexBufferData().push_back(vertex);	//添加顶点缓冲区数据
+		}
+
+		Processing<Circle, CircleVertex>(circle, RenderCommandType::Triangle);	//渲染Circle
+
+		s_Data.Stats.TriangleCount += 2;	//三角形个数
+		s_Data.Stats.VertexCount += 4;		//累计顶点个数
+		s_Data.Stats.IndexCount += 6;		//累计顶点索引个数
+	}
+
+	void Renderer3D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int objectID)
+	{
+		Line line(p0, p1, color, objectID);	//创建直线
+
+		DrawLine(line);	//绘制直线
+	}
+
+	void Renderer3D::DrawLine(Line& line)
+	{
+		auto& lineShader = ShaderLibrary::Get("Line");	//Line着色器
+		lineShader->Bind();								//绑定着色器
+
+		RenderCommand::SetLineWidth(line.GetWidth());					//设置线宽
+		Processing<Line, LineVertex>(line, RenderCommandType::Line);	//渲染Line
+	}
+
+	void Renderer3D::DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int objectID)
+	{
+		glm::vec3 p0 = { position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z };	//左下
+		glm::vec3 p1 = { position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z };	//右下
+		glm::vec3 p2 = { position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z };	//右上
+		glm::vec3 p3 = { position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z };	//左上
+
+		DrawLine(p0, p1, color, objectID);
+		DrawLine(p1, p2, color, objectID);
+		DrawLine(p2, p3, color, objectID);
+		DrawLine(p3, p0, color, objectID);
+	}
+
+	void Renderer3D::DrawRect(const glm::mat4& transform, Rectangle& rectangle, int objectID)
+	{
+		auto& lineShader = ShaderLibrary::Get("Line");	//Line着色器
+		lineShader->Bind();								//绑定着色器
+
+		rectangle.GetVertexBufferData().clear();	//清空上一次顶点缓冲区数据
+		//设置顶点数据
+		for (int i = 0; i < 4; i++) {
+			LineVertex vertex = rectangle.GetVertices()[i];
+
+			vertex.Position = transform * glm::vec4(vertex.Position, 1.0f);
+			vertex.Color = rectangle.GetColor();
+
+			vertex.ObjectID = objectID;
+
+			rectangle.GetVertexBufferData().push_back(vertex);	//添加顶点缓冲区数据
+		}
+
+		Processing<Rectangle, LineVertex>(rectangle, RenderCommandType::Rectangle);	//渲染Rectangle
 	}
 
 	void Renderer3D::BeginScene(Environment& environment, const Camera& camera, Transform& transform, std::vector<Object>& lightObjects)
@@ -301,7 +390,7 @@ namespace Explorer
 
 			//Mesh组件启用
 			if (mesh.GetEnable()) {
-				Processing<SubMesh, Vertex>(subMesh);	//渲染子网格
+				Processing<SubMesh, Vertex>(subMesh, RenderCommandType::Triangle);	//渲染子网格
 			}
 		}
 
