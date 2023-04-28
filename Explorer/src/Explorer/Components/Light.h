@@ -26,13 +26,13 @@ namespace Explorer
 	private:
 		Type m_Type = Type::Point;					//光源类型
 
-		float m_Range = 100.0f;						//光照半径（Point和Spot）：光照强度衰减为0时的距离
+		float m_Range = 5.0f;						//光照半径（Point和Spot）：光照强度衰减为0时的距离
 		glm::vec3 m_Color = { 1.0f, 1.0f, 1.0f };	//颜色
 
 		float m_SpotOuterAngle = glm::radians(20.0f);	//Spot外张角 弧度（阴影外边缘）[1, 179]
 		float m_SpotInnerAngle = glm::radians(18.3f);	//Spot内张角 弧度（阴影内边缘）= Outer - Outer / 12
 
-		float m_Intensity = 1.0f;					//光照强度
+		float m_Intensity = 20.0f;					//光照强度
 		bool m_CastShadow = true;					//是否投射阴影
 	private:
 		virtual void SetName() override { m_Name = "Light"; }

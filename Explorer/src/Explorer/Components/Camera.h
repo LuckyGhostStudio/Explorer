@@ -32,7 +32,7 @@ namespace Explorer
 		float m_Size = 5.0f;				//正交相机尺寸：垂直方向一半长度
 		
 		float m_Near = 0.01f;				//近裁剪平面
-		float m_Far = 1000.0f;				//远裁剪平面
+		float m_Far = 20.0f;				//远裁剪平面
 
 		float m_AspectRatio = 0.0f;			//屏幕宽高比（X/Y）
 
@@ -100,6 +100,8 @@ namespace Explorer
 		float GetFarClip() const { return m_Far; }
 		float& GetFarClip_Ref() { RecalculateProjection(); return m_Far; }
 		void SetFarClip(float farClip) { m_Far = farClip; RecalculateProjection(); }
+
+		float GetAspectRatio() const { return m_AspectRatio; }
 
 		float GetSize() const { return m_Size; }
 		float& GetSize_Ref() { RecalculateProjection(); return m_Size; }

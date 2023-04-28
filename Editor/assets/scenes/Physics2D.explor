@@ -5,7 +5,7 @@ Objects:
       ObjectName: Ground
       ObjectEnable: true
     Transform Component:
-      Position: [2.84638405, -2.69070172, 0]
+      Position: [2.84638405, 1.34899998, 0]
       Rotation: [0, 0, 25.9269485]
       Scale: [12.8930607, 1.04700005, 1]
     SpriteRenderer Component:
@@ -30,7 +30,7 @@ Objects:
       ObjectName: Box
       ObjectEnable: true
     Transform Component:
-      Position: [-1.56318521, 2.91100001, 4.65661287e-10]
+      Position: [-2.39217901, 6.01263666, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteRenderer Component:
@@ -48,14 +48,14 @@ Objects:
       Size: [1, 1]
       Density: 1
       Friction: 0.5
-      Restitution: 0.579999983
+      Restitution: 0.75999999
       RestitutionThreshold: 0.5
   - Object: 10790347956818702525
     Self Component:
       ObjectName: Main Camera
       ObjectEnable: true
     Transform Component:
-      Position: [0, -1.07000005, 1]
+      Position: [0, 2.8664341, 1]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     Camera Component:
@@ -64,14 +64,14 @@ Objects:
       Size: 3.18000007
       FOV: 0.785398185
       Near: 0.00999999978
-      Far: 1000
+      Far: 20
       Primary: true
   - Object: 5703897282790583365
     Self Component:
       ObjectName: Ground
       ObjectEnable: true
     Transform Component:
-      Position: [-1.34785295, -3.48332477, 0]
+      Position: [-1.34785295, 0.746999979, 0]
       Rotation: [0, 0, -21.6956615]
       Scale: [14.8278732, 0.666980326, 1]
     SpriteRenderer Component:
@@ -96,7 +96,7 @@ Objects:
       ObjectName: Circle
       ObjectEnable: true
     Transform Component:
-      Position: [-2.98023224e-08, -0.78892833, 0]
+      Position: [-1.86264515e-08, 3.30035019, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     CircleRenderer Component:

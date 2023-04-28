@@ -34,8 +34,6 @@ namespace Explorer
 		/// <param name="maxBounds">绘制区域最大边界：右下角</param>
 		static void Init(glm::vec2 minBounds, glm::vec2 maxBounds);
 
-		static void DrawAxisGrids();
-
 		/// <summary>
 		/// 绘制Transform Gizmos
 		/// </summary>

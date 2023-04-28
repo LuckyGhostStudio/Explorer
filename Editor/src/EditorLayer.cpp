@@ -30,6 +30,22 @@ namespace Explorer
 
 		m_PlayIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/PlayButton.png");					//Play按钮图标
 
+		m_CoordinateAxis[0] = Line({ -20, 0, 0 }, { 20, 0, 0 }, { 0.815f, 0.175f, 0.216f, 1.0f });	//x轴
+		m_CoordinateAxis[1] = Line({ 0, 0, -20 }, { 0, 0, 20 }, { 0.025f, 0.275f, 0.68f, 1.0f });	//z轴
+
+		for (int i = -20; i < 0; i++) {
+			m_AxisGrids[i + 20].SetWidth(1.0f);
+			m_AxisGrids[i + 20] = Line({ i, 0, -20 }, { i, 0, 20 }, { 0.388f, 0.388f, 0.388f, 1.0f });	//x-方向
+			m_AxisGrids[i + 40].SetWidth(1.0f);
+			m_AxisGrids[i + 40] = Line({ -20, 0, i }, { 20, 0, i }, { 0.388f, 0.388f, 0.388f, 1.0f });	//z-方向
+		}
+		for (int i = 0; i < 20; i++) {
+			m_AxisGrids[i + 40].SetWidth(1.0f);
+			m_AxisGrids[i + 40] = Line({ i + 1, 0, -20 }, { i + 1, 0, 20 }, { 0.388f, 0.388f, 0.388f, 1.0f });	//x+方向
+			m_AxisGrids[i + 60].SetWidth(1.0f);
+			m_AxisGrids[i + 60] = Line({ -20, 0, i + 1 }, { 20, 0, i + 1 }, { 0.388f, 0.388f, 0.388f, 1.0f });	//z+方向
+		}
+
 		FramebufferSpecification fbSpec;	//帧缓冲区规范
 		fbSpec.Attachments = {
 			FramebufferTextureFormat::RGBA8,		//颜色缓冲区0格式
@@ -338,6 +354,8 @@ namespace Explorer
 		ImGui::End();	//Scene
 		ImGui::PopStyleVar();
 
+		//TODO 编辑器相机设置窗口
+
 		//ImGui::ShowDemoWindow();	//样例窗口
 		
 		ImGui::End();	//DockSpace
@@ -591,6 +609,136 @@ namespace Explorer
 		}
 		else {
 			Renderer3D::BeginScene(m_EditorCamera);
+
+			//================AxisGrids=========================
+			Renderer3D::DrawLine(m_CoordinateAxis[0]);	//绘制x轴
+			Renderer3D::DrawLine(m_CoordinateAxis[1]);	//绘制z轴
+			//绘制坐标格
+			for (int i = 0; i < 80; i++) {
+				Renderer3D::DrawLine(m_AxisGrids[i]);
+			}
+		}
+
+		Object selectedObject = m_SceneHierarchyPanel.GetSelectedObject();	//选中项
+
+		//========================Components==================================
+		//绘制Camera Gizmo
+		{
+			auto view = m_ActiveScene->GetAllObjectsWith<Transform, Camera>();
+			for (auto object : view) {
+				auto [transform, camera] = view.get<Transform, Camera>(object);
+				Object obj = { object, m_ActiveScene.get() };
+				//object启用 && 被选中
+				if (obj.GetEnable() && selectedObject == obj) {
+					glm::vec4 p[8];	//相机边界位置
+					float aspectRatio = camera.GetAspectRatio();
+					float nearClip = camera.GetNearClip();
+					float farClip = camera.GetFarClip();
+					glm::mat4 trans = transform.GetTransform();
+					//透视投影
+					if (camera.GetProjectionType() == Camera::ProjectionType::Orthographic) {
+						float size = camera.GetSize();
+						
+						p[0] = trans * glm::vec4(-size * aspectRatio, -size, -nearClip, 1.0f);
+						p[1] = trans * glm::vec4(size * aspectRatio, -size, -nearClip, 1.0f);
+						p[2] = trans * glm::vec4(size * aspectRatio, size, -nearClip, 1.0f);
+						p[3] = trans * glm::vec4(-size * aspectRatio, size, -nearClip, 1.0f);
+
+						p[4] = trans * glm::vec4(-size * aspectRatio, -size, - farClip, 1.0f);
+						p[5] = trans * glm::vec4(size * aspectRatio, -size, - farClip, 1.0f);
+						p[6] = trans * glm::vec4(size * aspectRatio, size, - farClip, 1.0f);
+						p[7] = trans * glm::vec4(-size * aspectRatio, size, - farClip, 1.0f);
+					}
+					else {
+						float fov = camera.GetFOV();
+						float tanHalfFOV = glm::tan(fov / 2);
+
+						p[0] = trans * glm::vec4(-nearClip * tanHalfFOV * aspectRatio, -nearClip * tanHalfFOV, -nearClip, 1.0f);
+						p[1] = trans * glm::vec4(nearClip * tanHalfFOV * aspectRatio, -nearClip * tanHalfFOV, -nearClip, 1.0f);
+						p[2] = trans * glm::vec4(nearClip * tanHalfFOV * aspectRatio, nearClip * tanHalfFOV, -nearClip, 1.0f);
+						p[3] = trans * glm::vec4(-nearClip * tanHalfFOV * aspectRatio, nearClip * tanHalfFOV, -nearClip, 1.0f);
+
+						p[4] = trans * glm::vec4(-farClip * tanHalfFOV * aspectRatio, -farClip * tanHalfFOV, -farClip, 1.0f);
+						p[5] = trans * glm::vec4(farClip * tanHalfFOV * aspectRatio, -farClip * tanHalfFOV, -farClip, 1.0f);
+						p[6] = trans * glm::vec4(farClip * tanHalfFOV * aspectRatio, farClip * tanHalfFOV, -farClip, 1.0f);
+						p[7] = trans * glm::vec4(-farClip * tanHalfFOV * aspectRatio, farClip * tanHalfFOV, -farClip, 1.0f);
+					}
+					//绘制Camera Gizmo
+					for (int i = 0; i < 4; i++) {
+						Renderer3D::DrawLine(p[i], p[(i + 1) % 4], { 1, 1, 1, 1 });			//绘制近裁剪面矩形
+						Renderer3D::DrawLine(p[i], p[i + 4], { 1, 1, 1, 1 });				//绘制中间连接线
+						Renderer3D::DrawLine(p[i + 4], p[(i + 5) % 4 + 4], { 1, 1, 1, 1 });	//绘制远裁剪面矩形
+					}
+				}
+			}
+		}
+
+		//绘制Light Gizmo
+		{
+			auto view = m_ActiveScene->GetAllObjectsWith<Transform, Light>();
+			for (auto object : view) {
+				auto [transform, light] = view.get<Transform, Light>(object);
+				Object obj = { object, m_ActiveScene.get() };
+				//object启用 && 被选中
+				if (obj.GetEnable() && selectedObject == obj) {
+					glm::vec3 position = transform.GetPosition();			//光源位置
+					glm::vec3 direction = -transform.GetForwardDirection();	//光照方向
+					float range = light.GetRange();
+					glm::mat4 trans = glm::translate(glm::mat4(1.0f), transform.GetPosition()) * glm::toMat4(glm::quat(glm::radians(transform.GetRotation())));
+
+					Circle circle(0.1f);	//光源圆
+					circle.SetColor({ 0.988f, 0.984f, 0.533f, 1 });
+					
+					switch (light.GetType())
+					{
+						case Light::Type::Directional:
+							glm::vec4 endPos = trans * glm::vec4(0, 0, -10.0f, 1);
+							Renderer3D::DrawCircle(trans, circle);									//绘制光源圆
+							Renderer3D::DrawLine(position, endPos, { 0.988f, 0.984f, 0.533f, 1 });	//绘制平行光照方向
+							break;
+						case Light::Type::Point:
+							{
+								Circle circleRange(range);	//点光源范围圆
+								circleRange.SetColor({ 0.988f, 0.984f, 0.533f, 1 });
+								circleRange.SetThickness(0.01f);
+
+								//面向相机
+								trans = glm::translate(glm::mat4(1.0f), position) * glm::toMat4(m_EditorCamera.GetOrientation());
+								
+								Renderer3D::DrawCircle(trans, circleRange);	//绘制范围圆
+								Renderer3D::DrawCircle(trans, circle);		//绘制光源圆
+							}
+							break;
+						case Light::Type::Spot:
+							{
+								Renderer3D::DrawCircle(trans, circle);		//绘制光源圆
+
+								glm::vec3 endCirclePos = trans * glm::vec4(0, 0, -range, 1);				//末端圆心位置
+								float radius = glm::tan(light.GetSpotOuterAngle() / 2.0f) * range * 2.0f;	//末端圆半径
+								Circle spotCircle(radius);	//张角圆
+								spotCircle.SetColor({ 0.988f, 0.984f, 0.533f, 1 });
+								spotCircle.SetThickness(0.015f);
+
+								glm::vec3 endLinePos[4];	//中间连线末端位置
+								endLinePos[0] = trans * glm::vec4(-radius, 0, -range, 1.0f);	//左
+								endLinePos[1] = trans * glm::vec4(radius, 0, -range, 1.0f);		//右
+								endLinePos[2] = trans * glm::vec4(0, -radius, -range, 1.0f);	//下
+								endLinePos[3] = trans * glm::vec4(0, radius, -range, 1.0f);		//上
+
+								trans = glm::translate(glm::mat4(1.0f), endCirclePos)
+										* glm::toMat4(glm::quat(glm::radians(transform.GetRotation())));
+								
+								//绘制中间连线
+								for (int i = 0; i < 4; i++) {
+									Renderer3D::DrawLine(position, endLinePos[i], { 0.988f, 0.984f, 0.533f, 1 });
+								}
+
+								Renderer3D::DrawCircle(trans, spotCircle);	//绘制张角圆
+							}
+							break;
+					}
+				}
+			}
 		}
 
 		//========================Physic==================================
@@ -601,14 +749,14 @@ namespace Explorer
 				auto [transform, circleCollider] = view.get<Transform, CircleCollider2D>(object);
 				Object obj = { object, m_ActiveScene.get() };
 				//object启用
-				if (obj.GetEnable()) {
+				if (obj.GetEnable() && selectedObject == obj) {
 					//CircleCollider2D组件启用
 					if (circleCollider.GetEnable()) {
 						//渲染Circle
 						if (circleCollider.GetRenderCircle()) {
 							Circle& circle = circleCollider.GetCircle();
 							circle.SetColor({ 0.59f, 0.99f, 0.35f, 1.0f });
-							circle.SetThickness(0.01f);
+							circle.SetThickness(0.015f);
 
 							//设置Transform
 							glm::vec3 translation = transform.GetPosition() + glm::vec3(circleCollider.GetOffset(), 0.001f);	//位置 + 偏移量：z坐标向摄像机方向偏移
@@ -630,7 +778,7 @@ namespace Explorer
 			for (auto object : view) {
 				Object obj = { object, m_ActiveScene.get() };
 				//object启用
-				if (obj.GetEnable()) {
+				if (obj.GetEnable() && selectedObject == obj) {
 					auto [transform, boxCollider] = view.get<Transform, BoxCollider2D>(object);
 					//BoxCollider2D组件启用
 					if (boxCollider.GetEnable()) {

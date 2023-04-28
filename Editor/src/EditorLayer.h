@@ -47,12 +47,13 @@ namespace Explorer
 		ContentBrowserPanel m_ContentBrowserPanel;	//项目文件目录Project浏览面板
 
 		std::shared_ptr<Texture2D> m_SelectionIcon;		//选择物体 按钮图标
-
 		std::shared_ptr<Texture2D> m_TranslationIcon;	//平移 按钮图标
 		std::shared_ptr<Texture2D> m_RotationIcon;		//选中 按钮图标
 		std::shared_ptr<Texture2D> m_ScaleIcon;			//缩放 按钮图标
+		std::shared_ptr<Texture2D> m_PlayIcon;			//Play按钮图标
 
-		std::shared_ptr<Texture2D> m_PlayIcon;	//Play按钮图标
+		Line m_CoordinateAxis[2];	//坐标轴
+		Line m_AxisGrids[80];		//坐标轴线
 	public:
 		EditorLayer();
 		virtual ~EditorLayer() = default;

@@ -14,7 +14,7 @@ namespace Explorer
 	class EditorCamera
 	{
 	private:
-		float m_FOV = 45.0f;					//相机垂直张角
+		float m_FOV = 60.0f;					//相机垂直张角
 		float m_Near = 0.01f;					//近裁剪平面
 		float m_Far = 1000.0f;					//远裁剪平面
 		float m_AspectRatio = 1280.0f / 720.0f;	//屏幕宽高比

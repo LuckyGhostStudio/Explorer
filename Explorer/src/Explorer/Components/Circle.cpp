@@ -41,10 +41,10 @@ namespace Explorer
 	Circle::Circle(float radius)
 	{
 		//顶点数据 ---------------------世界位置--------  -------本地位置-------- -----------颜色------------Thickness Fade objID
-		m_Vertices[0] = { { -radius, -radius, radius }, { -1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 1.0f, 0.005f, 0 };	//左下 0
-		m_Vertices[1] = { {  radius, -radius, radius }, {  1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 1.0f, 0.005f, 0 };	//右下 1
-		m_Vertices[2] = { {  radius,  radius, radius }, {  1.0f,  1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 1.0f, 0.005f, 0 };	//右上 2
-		m_Vertices[3] = { { -radius,  radius, radius }, { -1.0f,  1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 1.0f, 0.005f, 0 };	//左上 3
+		m_Vertices[0] = { { -radius, -radius, 0.0f }, { -1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 1.0f, 0.005f, 0 };	//左下 0
+		m_Vertices[1] = { {  radius, -radius, 0.0f }, {  1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 1.0f, 0.005f, 0 };	//右下 1
+		m_Vertices[2] = { {  radius,  radius, 0.0f }, {  1.0f,  1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 1.0f, 0.005f, 0 };	//右上 2
+		m_Vertices[3] = { { -radius,  radius, 0.0f }, { -1.0f,  1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 1.0f, 0.005f, 0 };	//左上 3
 		//顶点索引
 		m_VertexIndices[0] = 0;
 		m_VertexIndices[1] = 1;

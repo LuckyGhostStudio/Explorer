@@ -26,11 +26,6 @@ namespace Explorer
 		ImGuizmo::SetRect(minBounds.x, minBounds.y, maxBounds.x - minBounds.x, maxBounds.y - minBounds.y);	//设置绘制区域
 	}
 
-	void Gizmo::DrawAxisGrids()
-	{
-		//TODO:绘制坐标轴（直线渲染）
-	}
-
 	void Gizmo::DrawTransformation(Object& operatedObject, const glm::mat4& cameraView, const glm::mat4& cameraProjection)
 	{
 		//被操作物体存在 && Gizmo变换操作类型存在
