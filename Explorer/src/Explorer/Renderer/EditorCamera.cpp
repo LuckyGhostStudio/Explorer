@@ -21,7 +21,7 @@ namespace Explorer
 	void EditorCamera::UpdateProjection()
 	{
 		m_AspectRatio = m_ViewportWidth / m_ViewportHeight;
-		m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_Near, m_Far);	//计算透视投影矩阵
+		m_ProjectionMatrix = glm::perspective(m_FOV, m_AspectRatio, m_Near, m_Far);	//计算透视投影矩阵
 	}
 
 	void EditorCamera::UpdateView()
@@ -43,11 +43,6 @@ namespace Explorer
 		float yFactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
 
 		return { xFactor, yFactor };
-	}
-
-	float EditorCamera::RotationSpeed() const
-	{
-		return 0.8f;
 	}
 
 	float EditorCamera::ZoomSpeed() const
@@ -85,7 +80,7 @@ namespace Explorer
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)
 	{
-		float delta = e.GetYOffset() * 0.4f;	//滚轮Y偏移量 TODO:修改偏移系数（在设置中设置偏移系数）
+		float delta = e.GetYOffset() * m_ViewZoomRate;	//滚轮Y偏移量
 		ViewZoom(delta);						//视图缩放
 		UpdateView();							//更新视图
 		return false;
@@ -101,8 +96,8 @@ namespace Explorer
 	void EditorCamera::ViewRotate(const glm::vec2& delta)
 	{
 		float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
-		m_Yaw += yawSign * delta.x * RotationSpeed();
-		m_Pitch += delta.y * RotationSpeed();
+		m_Yaw += yawSign * delta.x * m_RotationSpeed;
+		m_Pitch += delta.y * m_RotationSpeed;
 	}
 
 	void EditorCamera::ViewZoom(float delta)

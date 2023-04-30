@@ -51,9 +51,15 @@ namespace Explorer
 		std::shared_ptr<Texture2D> m_RotationIcon;		//选中 按钮图标
 		std::shared_ptr<Texture2D> m_ScaleIcon;			//缩放 按钮图标
 		std::shared_ptr<Texture2D> m_PlayIcon;			//Play按钮图标
+		std::shared_ptr<Texture2D> m_GizmosIcon;		//Gizmos按钮图标
 
 		Line m_CoordinateAxis[2];	//坐标轴
 		Line m_AxisGrids[80];		//坐标轴线
+
+		bool m_ShowGizmos = true;	//是否显示Gizmos
+
+		bool m_PreferencesWindowOpened = false;	//偏好设置窗口是否打开
+		bool m_RenderingWindowOpened = false;	//Rendering窗口是否打开
 	public:
 		EditorLayer();
 		virtual ~EditorLayer() = default;
@@ -172,5 +178,9 @@ namespace Explorer
 		/// 工具栏
 		/// </summary>
 		void UI_ToolBar();
+
+		void UI_PreferencesPanel();
+
+		void UI_RenderingPanel();
 	};
 }

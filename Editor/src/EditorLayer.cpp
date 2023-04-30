@@ -1,5 +1,6 @@
 #include "EditorLayer.h"
 #include "imgui/imgui.h"
+#include "imgui/imgui_internal.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -29,6 +30,7 @@ namespace Explorer
 		m_ScaleIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/ScaleButton.png");				//Scale按钮图标
 
 		m_PlayIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/PlayButton.png");					//Play按钮图标
+		m_GizmosIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/GizmosButton.png");				//Gizmos按钮图标
 
 		m_CoordinateAxis[0] = Line({ -20, 0, 0 }, { 20, 0, 0 }, { 0.815f, 0.175f, 0.216f, 1.0f });	//x轴
 		m_CoordinateAxis[1] = Line({ 0, 0, -20 }, { 0, 0, 20 }, { 0.025f, 0.275f, 0.68f, 1.0f });	//z轴
@@ -57,49 +59,12 @@ namespace Explorer
 		m_Framebuffer = std::make_shared<Framebuffer>(fbSpec);	//创建帧缓冲区
 
 		m_EditorScene = std::make_shared<Scene>("New Scene");					//创建场景
-		m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.01f, 1000.0f);	//创建编辑器相机
+		m_EditorCamera = EditorCamera(glm::radians(60.0f), 1280.0f / 720.0f, 0.01f, 1000.0f);	//创建编辑器相机
 
 		m_MainCamera = m_EditorScene->CreateCameraObject("Main Camera", true);	//创建默认Camera对象：主相机
 		m_Light = m_EditorScene->CreateLightObject();							//创建默认Light对象（Point）
 		m_Cube = m_EditorScene->CreateMeshObject("Cube", Mesh::Type::Cube);		//创建默认Cube对象
 
-#if 0
-
-		class CameraController :public ScriptableObject
-		{
-		public:
-			void OnCreate()
-			{
-				std::cout << "OnCreate" << std::endl;
-			}
-
-			void OnUpdate(DeltaTime dt)
-			{
-				auto& transform = GetComponent<Transform>();
-				float speed = 5.0f;
-
-				if (Input::IsKeyPressed(KeyCode::W)) {		//上
-					transform.m_Position.y += speed * dt;
-				}
-				if (Input::IsKeyPressed(KeyCode::S)) {		//下
-					transform.m_Position.y -= speed * dt;
-				}
-				if (Input::IsKeyPressed(KeyCode::A)) {		//左
-					transform.m_Position.x -= speed * dt;
-				}
-				if (Input::IsKeyPressed(KeyCode::D)) {		//右
-					transform.m_Position.x += speed * dt;
-				}
-			}
-
-			void OnDestroy()
-			{
-
-			}
-		};
-
-		m_CameraObject.AddComponent<NativeScript>().Bind<CameraController>();	//添加脚本组件 并 绑定CameraController脚本
-#endif
 		m_SceneHierarchyPanel.SetScene(m_EditorScene);	//设置Hierarchy面板的场景
 
 		m_ActiveScene = m_EditorScene;
@@ -220,7 +185,7 @@ namespace Explorer
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 		}
 		style.WindowMinSize.x = minWinSizeX;
-		style.FrameRounding = 4.0f;				//控件边框圆度
+		style.FrameRounding = 3.0f;				//控件边框圆度
 		style.WindowRounding = 4.0f;			//窗口边框圆度
 		style.GrabRounding = 4.0f;				//拖动条handle圆度
 		style.PopupRounding = 4.0f;				//弹出窗口圆度
@@ -228,13 +193,11 @@ namespace Explorer
 		style.FrameBorderSize = 1.0f;			//边框尺寸
 		style.WindowMenuButtonPosition = -1;	//窗口tabbar按钮取消显示
 		style.ButtonTextAlign = { 0.5f, 0.5f };	//按钮文字居中
-
+		
 		//菜单条
-		if (ImGui::BeginMenuBar())
-		{
+		if (ImGui::BeginMenuBar()){
 			//菜单：File
-			if (ImGui::BeginMenu("File"))
-			{
+			if (ImGui::BeginMenu("File")){
 				//创建新场景
 				if (ImGui::MenuItem("New", "Ctrl N")) {
 					NewScene();
@@ -282,9 +245,26 @@ namespace Explorer
 				}
 				ImGui::EndMenu();
 			}
+			//菜单：Edit
+			if (ImGui::BeginMenu("Edit")) {
+				//偏好设置窗口
+				ImGui::MenuItem("Preferences", nullptr, &m_PreferencesWindowOpened);
+
+				ImGui::EndMenu();
+			}
+			//菜单：Window
+			if (ImGui::BeginMenu("Window")) {
+				//渲染设置窗口
+				ImGui::MenuItem("Rendering", nullptr, &m_RenderingWindowOpened);
+				
+				ImGui::EndMenu();
+			}
 
 			ImGui::EndMenuBar();
 		}
+
+		UI_PreferencesPanel();	//偏好设置面板
+		UI_RenderingPanel();	//渲染设置面板
 
 		m_SceneHierarchyPanel.OnImGuiRender();	//渲染Hierarchy面板
 		m_ContentBrowserPanel.OnImGuiRender();	//渲染Project面板
@@ -343,20 +323,19 @@ namespace Explorer
 		ImGui::SetCursorPos(ImGui::GetWindowContentRegionMin());
 		UI_ToolBar();	//工具栏
 		ImGui::SetItemAllowOverlap();
+		
+		//编辑状态
+		if (m_SceneState == SceneState::Edit) {
+			//初始化Gizmo绘制参数	
+			Gizmo::Init(m_ViewportBounds[0], m_ViewportBounds[1]);
+			//绘制Transform Gizmos
+			Gizmo::DrawTransformation(m_SceneHierarchyPanel.GetSelectedObject(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
+		}
 
-		//编辑器相机
-		const glm::mat4& cameraProjection = m_EditorCamera.GetProjectionMatrix();	//投影矩阵
-		const glm::mat4& cameraView = m_EditorCamera.GetViewMatrix();				//视图矩阵
-		
-		Gizmo::Init(m_ViewportBounds[0], m_ViewportBounds[1]);												//初始化Gizmo绘制参数	
-		Gizmo::DrawTransformation(m_SceneHierarchyPanel.GetSelectedObject(), cameraView, cameraProjection);	//绘制Transform Gizmos
-		
 		ImGui::End();	//Scene
 		ImGui::PopStyleVar();
 
-		//TODO 编辑器相机设置窗口
-
-		//ImGui::ShowDemoWindow();	//样例窗口
+		ImGui::ShowDemoWindow();	//样例窗口
 		
 		ImGui::End();	//DockSpace
 	}
@@ -365,9 +344,9 @@ namespace Explorer
 	{
 		float buttonSize = 20.0f;
 
-		static bool buttonHovereds[5] = { false, false, false, false, false };	//按钮是否被悬浮
+		static bool buttonHovereds[6] = { false, false, false, false, false, false };	//按钮是否被悬浮
 
-		m_Pickable = !(buttonHovereds[0] | buttonHovereds[1] | buttonHovereds[2] | buttonHovereds[3] | buttonHovereds[4]);	//可拾取：都没有被悬浮
+		m_Pickable = !(buttonHovereds[0] | buttonHovereds[1] | buttonHovereds[2] | buttonHovereds[3] | buttonHovereds[4] | buttonHovereds[5]);	//可拾取：都没有被悬浮
 
 		//按钮颜色
 		static ImVec4 buttonColors[4] = { 
@@ -386,8 +365,8 @@ namespace Explorer
 				buttonColors[i] = { 0.14f, 0.29f, 0.42f, 1.0f };	//蓝色
 			}
 		}
-		
 
+		//Selection按钮------------------------------------------
 		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMin().x + 4.0f);
 		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + 4.0f);
 
@@ -518,6 +497,255 @@ namespace Explorer
 		else {
 			buttonHovereds[4] = false;
 		}
+
+		//Gizmos按钮设置-------------------------------
+		static ImVec4 gizmosButtonColor = { 0.2f, 0.205f, 0.21f, 1.0f };	//Gizmos按钮颜色
+
+		if (m_ShowGizmos) gizmosButtonColor = { 0.14f, 0.29f, 0.42f, 1.0f };	//蓝色
+		else gizmosButtonColor = { 0.2f, 0.205f, 0.21f, 1.0f };
+
+		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - buttonSize * 2.0f);
+		ImGui::SetCursorPosY(ImGui::GetWindowContentRegionMin().y + 4.0f);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, gizmosButtonColor);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { gizmosButtonColor.x + 0.01f, gizmosButtonColor.y + 0.01f, gizmosButtonColor.z + 0.01f, 1.0f });
+		//Gizmos按钮 按下
+		if (ImGui::ImageButton((ImTextureID)m_GizmosIcon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 1), ImVec2(1, 0))) {
+			m_ShowGizmos = !m_ShowGizmos;	//设置Gizmos显示状态
+		}
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
+
+		//此按钮被悬浮
+		if (ImGui::IsItemHovered()) {
+			buttonHovereds[5] = true;	//被悬浮
+		}
+		else {
+			buttonHovereds[5] = false;
+		}
+	}
+
+	void EditorLayer::UI_PreferencesPanel()
+	{
+		if (!m_PreferencesWindowOpened) return;
+
+		//偏好设置面板
+		ImGui::Begin("Preferences", &m_PreferencesWindowOpened);
+
+		//EditorCamera设置 树节点
+		UI::DrawTreeNode<EditorCamera>("Editor Camera", true, [&](float lineHeight)
+		{
+			UI::DrawSlider("Vertical FOV", &m_EditorCamera.GetFOV_Ref(), 4.0f, 120.0f, UI::ValueType::Angle);	//FOV垂直张角 滑动条
+			UI::DrawDrag("Near", &m_EditorCamera.GetNearClip_Ref(), 0.01f, UI::ValueType::Float, 0.01f, m_EditorCamera.GetFarClip() - 0.01f);	//Near近裁剪平面 拖动条
+			UI::DrawDrag("Far", &m_EditorCamera.GetFarClip_Ref(), 0.01f, UI::ValueType::Float, m_EditorCamera.GetNearClip() + 0.01f, 1000.0f);	//Far远裁剪平面 拖动条
+			
+			UI::DrawDrag("Rotation Speed", &m_EditorCamera.GetRotationSpeed_Ref(), 0.01f, UI::ValueType::Float, 0.2f, 2.0f);	//旋转速度 拖动条
+			UI::DrawDrag("View Zoom Rate", &m_EditorCamera.GetViewZoomRate_Ref(), 0.01f, UI::ValueType::Float, 0.1f, 0.4f);		//视图缩放速率 拖动条
+		});
+
+		//Physics2D设置 树节点
+		UI::DrawTreeNode<glm::vec2>("Physics 2D", true, [&](float lineHeight)
+		{
+			UI::DrawDrag("Gravity", glm::value_ptr(m_ActiveScene->GetGravity()), 0.01f, UI::ValueType::Float2);	//重力加速度 拖动条
+		});
+
+		ImGui::End();	//Preferences
+	}
+
+	void EditorLayer::UI_RenderingPanel()
+	{
+		if (!m_RenderingWindowOpened) return;
+
+		//环境参数设置面板
+		ImGui::Begin("Environment", &m_RenderingWindowOpened);
+		{
+			Environment& environment = m_ActiveScene->GetEnvironment();	//场景环境
+			Skybox& skybox = environment.GetSkybox();	//天空盒
+
+			UI::DrawCheckBox("Enable Skybox", &environment.GetSkyboxEnable_Ref());	//Enable Skybox是否启用天空盒 勾选框
+
+			//Skybox天空盒设置 树节点
+			UI::DrawTreeNode<Environment>(skybox.GetShader()->GetName() + "(Skybox)", true, [&](float lineHeight)
+			{
+				UI::DrawColorEditor3("Tint Color", glm::value_ptr(skybox.GetTintColor()));					//Tint Color色调 颜色编辑器
+				UI::DrawSlider("Expose", &skybox.GetExpose_Ref(), 0.0f, 8.0f);								//Expose曝光度 滑动条
+				UI::DrawSlider("Rotation", &skybox.GetRotation_Ref(), 0.0f, 360.0f, UI::ValueType::Angle);	//Rotation旋转值z 滑动条
+
+				uint32_t rightTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Right]->GetRendererID();	//Right预览贴图ID
+				uint32_t leftTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Left]->GetRendererID();	//Left预览贴图ID
+				uint32_t upTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Up]->GetRendererID();		//Up预览贴图ID
+				uint32_t downTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Down]->GetRendererID();	//Down预览贴图ID
+				uint32_t frontTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Front]->GetRendererID();	//Front预览贴图ID
+				uint32_t backTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Back]->GetRendererID();	//Back预览贴图ID
+
+				//Cubemap贴图设置 树节点
+				UI::DrawTreeNode<Cubemap>("Cubemap Settings", false, [&](float lineHeight)
+				{
+					glm::vec2 textureButtonSize = { 50, 50 };
+
+					//Right(+x)天空盒贴图 选择&预览按钮
+					UI::DrawImageButton("Right [+X]", rightTextureID, textureButtonSize, [&]()
+					{
+						std::string filepath = FileDialogs::OpenFile("Right[+X] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+						if (!filepath.empty()) {
+							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Right);	//设置Right预览贴图
+						}
+					});
+
+					//将从拖拽源（Project面板）复制的数据拖放到目标（Right(+x)）	：文件路径
+					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+					{
+						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Right);	//设置Right预览贴图
+					});
+
+					//Left(-x)天空盒贴图 选择&预览按钮
+					UI::DrawImageButton("Left [-X]", leftTextureID, textureButtonSize, [&]()
+					{
+						std::string filepath = FileDialogs::OpenFile("Left[-X] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+						if (!filepath.empty()) {
+							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Left);	//设置Left预览贴图
+						}
+					});
+
+					//将从拖拽源（Project面板）复制的数据拖放到目标（Left(-x)）	：文件路径
+					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+					{
+						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Left);	//设置Left预览贴图
+					});
+
+					//Up(+y)天空盒贴图 选择&预览按钮
+					UI::DrawImageButton("Up [+Y]", upTextureID, textureButtonSize, [&]()
+					{
+						std::string filepath = FileDialogs::OpenFile("Up[+Y] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+						if (!filepath.empty()) {
+							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Up);	//设置Up预览贴图
+						}
+					});
+
+					//将从拖拽源（Project面板）复制的数据拖放到目标（Up(+y)）	：文件路径
+					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+					{
+						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Up);	//设置Up预览贴图
+					});
+
+					//Down(-y)天空盒贴图 选择&预览按钮
+					UI::DrawImageButton("Down [-Y]", downTextureID, textureButtonSize, [&]()
+					{
+						std::string filepath = FileDialogs::OpenFile("Down[-Y] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+						if (!filepath.empty()) {
+							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Down);	//设置Down预览贴图
+						}
+					});
+
+					//将从拖拽源（Project面板）复制的数据拖放到目标（Down(-y)）	：文件路径
+					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+					{
+						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Down);	//设置Down预览贴图
+					});
+
+					//Front(+z)天空盒贴图 选择&预览按钮
+					UI::DrawImageButton("Front [+Z]", frontTextureID, textureButtonSize, [&]()
+					{
+						std::string filepath = FileDialogs::OpenFile("Front[+Z] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+						if (!filepath.empty()) {
+							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Front);	//设置Front预览贴图
+						}
+					});
+
+					//将从拖拽源（Project面板）复制的数据拖放到目标（Front(+z)）	：文件路径
+					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+					{
+						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Front);	//设置Front预览贴图
+					});
+
+					//Back(-z)天空盒贴图 选择&预览按钮
+					UI::DrawImageButton("Back [-Z]", backTextureID, textureButtonSize, [&]()
+					{
+						std::string filepath = FileDialogs::OpenFile("Back[-Z] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+						if (!filepath.empty()) {
+							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Back);	//设置Back预览贴图
+						}
+					});
+
+					//将从拖拽源（Project面板）复制的数据拖放到目标（Back(-z)）	：文件路径
+					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+					{
+						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Back);	//设置Back预览贴图
+					});
+				}, false);
+
+				//Cubemap预览图 树节点
+				UI::DrawTreeNode<Cubemap>("Cubemap Preview", false, [&](float lineHeight)
+				{
+					ImVec2 size = ImVec2(90, 90);	//Cubemap单张大小
+					int positionX = 35;				//Cubemap X位置
+
+					//Cubemap预览图
+					ImGui::SetCursorPosX(positionX);
+					ImGui::BeginChild("Cubemap Preview", ImVec2(size.x * 4 + 40, size.y * 3 + 40), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+					//Up [+Y]
+					ImGui::SetCursorPosX(size.x);	//设置游标X位置
+					ImGui::Image((void*)upTextureID, size);
+					//Left [-X]
+					ImGui::SetCursorPosX(0);
+					ImGui::Image((void*)leftTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+					ImGui::SameLine();
+					//Back [-Z]
+					ImGui::SetCursorPosX(size.x);
+					ImGui::Image((void*)backTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+					ImGui::SameLine();
+					//Right [+X]
+					ImGui::SetCursorPosX(size.x * 2);
+					ImGui::Image((void*)rightTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+					ImGui::SameLine();
+					//Front [+Z]
+					ImGui::SetCursorPosX(size.x * 3);
+					ImGui::Image((void*)frontTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+					//Down [-Y]
+					ImGui::SetCursorPosX(size.x);
+					ImGui::Image((void*)downTextureID, size);
+
+					ImGui::PopStyleVar();
+
+					ImGui::EndChild();
+				}, false);
+			});
+
+			//Environment Lighting环境光照设置 树节点
+			UI::DrawTreeNode<Environment>("Environment Lighting", true, [&](float lineHeight)
+			{
+				const char* sourceTypes[] = { "Skybox","Color" };							//环境光源类型
+				const char* currentSource = sourceTypes[(int)environment.GetSourceType()];	//当前环境光源类型
+
+				//Source环境光源类型 选择下拉列表
+				UI::DrawDropdownList("Source", currentSource, sourceTypes, 2, [&](int index, const char* value)
+					{
+						environment.SetSourceType((Environment::SourceType)index);	//设置环境光源类型
+					});
+
+				//天空盒未启用
+				if (!environment.GetSkyboxEnable()) {
+					UI::DrawColorEditor3("Ambient Color", glm::value_ptr(environment.GetAmbientColor()));	//AmbientColor环境光颜色 颜色编辑器
+				}
+				else {
+					//环境光源 天空盒（不叠加光源为颜色的环境光）
+					if (environment.GetSourceType() == Environment::SourceType::Skybox) {
+						UI::DrawSlider("Intensity Multiplier", &environment.GetIntensityMultiplier_Ref(), 0.0f, 8.0f, UI::ValueType::Float);	//光强度倍数 滑动条
+					}
+					//环境光源为 颜色
+					if (environment.GetSourceType() == Environment::SourceType::Color) {
+						UI::DrawColorEditor3("Ambient Color", glm::value_ptr(environment.GetAmbientColor()));	//AmbientColor环境光颜色 颜色编辑器
+					}
+				}
+
+			});
+		}
+
+		ImGui::End();	//Environment
 	}
 
 	void EditorLayer::OnEvent(Event& event)
@@ -603,20 +831,18 @@ namespace Explorer
 
 	void EditorLayer::OnOverlayRender()
 	{
-		if (m_SceneState == SceneState::Play) {
-			Object camera = m_ActiveScene->GetPrimaryCameraObject();
-			Renderer3D::BeginScene(camera.GetComponent<Camera>(), camera.GetComponent<Transform>());
-		}
-		else {
-			Renderer3D::BeginScene(m_EditorCamera);
+		if (!m_ShowGizmos) return;	//不显示Gizmos
 
-			//================AxisGrids=========================
-			Renderer3D::DrawLine(m_CoordinateAxis[0]);	//绘制x轴
-			Renderer3D::DrawLine(m_CoordinateAxis[1]);	//绘制z轴
-			//绘制坐标格
-			for (int i = 0; i < 80; i++) {
-				Renderer3D::DrawLine(m_AxisGrids[i]);
-			}
+		if (m_SceneState == SceneState::Play) return;
+
+		Renderer3D::BeginScene(m_EditorCamera);
+
+		//================AxisGrids=========================
+		Renderer3D::DrawLine(m_CoordinateAxis[0]);	//绘制x轴
+		Renderer3D::DrawLine(m_CoordinateAxis[1]);	//绘制z轴
+		//绘制坐标格
+		for (int i = 0; i < 80; i++) {
+			Renderer3D::DrawLine(m_AxisGrids[i]);
 		}
 
 		Object selectedObject = m_SceneHierarchyPanel.GetSelectedObject();	//选中项

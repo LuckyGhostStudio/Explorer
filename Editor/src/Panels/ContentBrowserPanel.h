@@ -44,7 +44,6 @@ namespace Explorer
 	private:
 		std::filesystem::path m_CurrentDirectory;		//当前目录
 
-		std::shared_ptr<Texture2D> m_DirectoryIcon;		//目录图标
 		std::shared_ptr<Texture2D> m_DirectoryClosedIcon;	//文件夹关闭图标
 		std::shared_ptr<Texture2D> m_DirectoryOpenedIcon;	//文件夹打开图标
 

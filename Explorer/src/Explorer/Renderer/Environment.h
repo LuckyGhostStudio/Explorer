@@ -28,6 +28,7 @@ namespace Explorer
 		glm::vec3 m_AmbientColor = { 0.212f, 0.227f, 0.259f };				//环境光颜色：Color
 	public:
 		Environment();
+		Environment(const Environment&) = default;
 		Environment(const Skybox& skybox);
 
 		SourceType GetSourceType() const { return m_SourceType; }

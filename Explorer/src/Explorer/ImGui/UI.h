@@ -3,7 +3,6 @@
 #include <glm/glm.hpp>
 #include <string>
 //#include <imgui.h>
-//#include <imgui.h>
 //#include <imgui_internal.h>
 
 #include "Explorer/Renderer/Texture.h"
@@ -270,8 +269,9 @@ namespace Explorer
 		/// <param name="label">结点标签名</param>
 		/// <param name="bold">标签名是否是粗体</param>
 		/// <param name="function">结点打开调用函数：参数（float lineHeight行高）</param>
+		/// <param name="defaultOpen">结点默认打开</param>
 		template<typename T, typename Func>
-		static void DrawTreeNode(const std::string& label, bool bold, Func function)
+		static void DrawTreeNode(const std::string& label, bool bold, Func function, bool defaultOpen = true)
 		{
 			ImGui::PushID(label.c_str());	//设置控件ID
 
@@ -280,8 +280,9 @@ namespace Explorer
 
 			if (!bold) font = io.Fonts->Fonts[1];	//1号 默认字体
 
-			//树节点标志：打开|框架|延伸到右边|允许重叠|框架边框
-			ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+			//树节点标志：框架|延伸到右边|允许重叠|框架边框
+			ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+			if (defaultOpen) treeNodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;	//默认打开
 
 			ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();	//可用区域大小
 

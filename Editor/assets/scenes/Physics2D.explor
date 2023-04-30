@@ -132,3 +132,5 @@ Environment:
     CubemapDownPath: ""
     CubemapFrontPath: ""
     CubemapBackPath: ""
+Physics2D:
+  Gravity: [0, -9.80000019]

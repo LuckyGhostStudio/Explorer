@@ -100,10 +100,13 @@ namespace Explorer
 	std::shared_ptr<Scene> Scene::Copy(std::shared_ptr<Scene> scene)
 	{
 		std::shared_ptr<Scene> newScene = std::make_shared<Scene>(scene->GetName());	//创建新场景
-		//TODO复制场景环境
-		//复制视口大小
+		
+		//视口大小
 		newScene->m_ViewportHeight = scene->m_ViewportHeight;
 		newScene->m_ViewportWidth = scene->m_ViewportWidth;
+
+		newScene->m_Environment = newScene->m_Environment;	//环境
+		newScene->m_Gravity = scene->m_Gravity;				//重力加速度
 
 		auto& srcSceneRegistry = scene->m_Registry;		//源场景注册表
 		auto& dstSceneRegistry = newScene->m_Registry;	//目的场景注册表
@@ -233,7 +236,7 @@ namespace Explorer
 
 	void Scene::OnRuntimeStart()
 	{
-		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });	//创建物理世界 重力方向向量 TODO:可变
+		m_PhysicsWorld = new b2World({ m_Gravity.x, m_Gravity.y });	//创建物理世界
 
 		auto view = m_Registry.view<Rigidbody2D>();	//有Rigidbody2D的所有物体
 		for (auto obj : view) {

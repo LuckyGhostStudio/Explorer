@@ -56,7 +56,6 @@ namespace Explorer
 
 	ContentBrowserPanel::ContentBrowserPanel() :m_CurrentDirectory(g_AssetPath)
 	{
-		m_DirectoryIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/Directory_Icon.png");
 		m_DirectoryClosedIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/DirectoryClosed_Icon.png");
 		m_DirectoryOpenedIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/DirectoryOpened_Icon.png");
 
@@ -179,7 +178,7 @@ namespace Explorer
 	void ContentBrowserPanel::DrawFileThumbnailsPanel()
 	{
 		static float padding = 16.0f;
-		static float thumbnailSize = 128.0f;		//缩略图大小
+		static float thumbnailSize = 64.0;		//缩略图大小
 		float cellSize = thumbnailSize + padding;	//格子大小
 
 		float panelWidth = ImGui::GetContentRegionAvail().x;	//面板宽度

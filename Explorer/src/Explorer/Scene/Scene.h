@@ -13,6 +13,8 @@
 
 #include "Explorer/Core/UUID.h"
 
+#include <glm/glm.hpp>
+
 class b2World;
 
 namespace Explorer
@@ -37,7 +39,8 @@ namespace Explorer
 
 		Environment m_Environment;	//环境设置
 
-		b2World* m_PhysicsWorld = nullptr;	//物理世界
+		b2World* m_PhysicsWorld = nullptr;		//物理世界
+		glm::vec2 m_Gravity = { 0.0f, -9.8f };	//重力加速度
 	private:
 		/// <summary>
 		/// object添加T组件时调用
@@ -56,6 +59,9 @@ namespace Explorer
 
 		Environment& GetEnvironment() { return m_Environment; }
 		void SetEnvironment(const Environment& environment) { m_Environment = environment; }
+
+		glm::vec2& GetGravity() { return m_Gravity; }
+		void SetGravity(const glm::vec2& gravity) { m_Gravity = gravity; }
 
 		/// <summary>
 		/// 复制物体

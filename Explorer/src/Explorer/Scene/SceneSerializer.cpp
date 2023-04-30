@@ -465,6 +465,13 @@ namespace Explorer
 
 		out << YAML::EndMap;		//结束环境Map
 
+		out << YAML::Key << "Physics2D";	//Physics2D结点
+		out << YAML::BeginMap;		//开始Physics2D Map
+
+		out << YAML::Key << "Gravity" << YAML::Value << m_Scene->GetGravity();
+
+		out << YAML::EndMap;		//结束Physics2D Map
+
 		out << YAML::EndMap;	//结束场景Map
 
 		std::ofstream fout(filepath);	//输出流
@@ -494,6 +501,7 @@ namespace Explorer
 
 		YAML::Node objects = data["Objects"];			//物体序列结点
 		YAML::Node environment = data["Environment"];	//环境设置结点
+		YAML::Node physics2D = data["Physics2D"];		//2D物理设置结点
 
 		if (objects) {	//物体结点存在
 			for (auto object : objects) {	//遍历结点下所有物体
@@ -747,6 +755,13 @@ namespace Explorer
 				environm.SetSkybox(skybox);	//设置环境的Skybox
 			}
 			m_Scene->SetEnvironment(environm);	//设置场景环境
+		}
+
+		//2D物理结点存在
+		if (physics2D) {
+			EXP_CORE_TRACE("Deserialized Physics2D");
+
+			m_Scene->SetGravity(physics2D["Gravity"].as<glm::vec2>());	//重力加速度
 		}
 
 		return true;
