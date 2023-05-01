@@ -11,16 +11,17 @@ namespace Explorer
 	/// </summary>
 	class Renderer
 	{
-	private:
+	public:
 		/// <summary>
-		/// 场景数据
+		/// 渲染器类型
 		/// </summary>
-		struct SceneData
+		enum class Type
 		{
-			glm::mat4 ViewProjectionMatrix;	//vp矩阵
+			Rasterization = 0,	//光栅化
+			Raytracing = 1		//光线追踪
 		};
 
-		static std::unique_ptr<SceneData> m_SceneData;	//场景数据
+		static Type s_Type;	//渲染器类型（0 光栅化渲染器 1 光线追踪渲染器）
 	public:
 		/// <summary>
 		/// 初始化渲染器
@@ -46,13 +47,5 @@ namespace Explorer
 		/// 结束渲染场景
 		/// </summary>
 		static void EndScene();
-
-		/// <summary>
-		/// 提交渲染命令
-		/// </summary>
-		/// <param name="shader">着色器</param>
-		/// <param name="vertexArray">待渲染顶点数组</param>
-		/// <param name="transform">变换矩阵</param>
-		static void Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
 	};
 }

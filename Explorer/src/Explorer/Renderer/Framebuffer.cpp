@@ -114,9 +114,10 @@ namespace Explorer
 		/// <returns>GLŒ∆¿Ì∏Ò Ω</returns>
 		static GLenum FramebufferTextureFormatToGL(FramebufferTextureFormat format)
 		{
-			switch (format) {
-			case FramebufferTextureFormat::RGBA8: return GL_RGBA8;
-			case FramebufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+			switch (format) 
+			{
+				case FramebufferTextureFormat::RGBA8: return GL_RGBA8;
+				case FramebufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
 			}
 
 			EXP_CORE_ASSERT(false, "No format");

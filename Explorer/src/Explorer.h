@@ -21,8 +21,8 @@
 
 //------Renderer------
 #include "Explorer/Renderer/Renderer.h"
-#include "Explorer/Renderer/Renderer2D.h"
 #include "Explorer/Renderer/Renderer3D.h"
+#include "Explorer/Renderer/RendererRayTracing.h"
 #include "Explorer/Renderer/RenderCommand.h"
 
 #include "Explorer/Renderer/Buffer.h"

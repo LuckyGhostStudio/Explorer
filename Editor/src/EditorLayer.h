@@ -15,6 +15,8 @@ namespace Explorer
 	private:
 		std::shared_ptr<Framebuffer> m_Framebuffer;	//帧缓冲区
 
+		RendererRayTracing m_RendererRayTracing;	//光线追踪渲染器
+
 		std::shared_ptr<Scene> m_ActiveScene;		//活动场景
 		std::shared_ptr<Scene> m_EditorScene;		//编辑器场景
 
@@ -175,12 +177,28 @@ namespace Explorer
 		void OnDeleteObject();
 
 		/// <summary>
+		/// 菜单栏
+		/// </summary>
+		void UI_MenuBar();
+
+		/// <summary>
 		/// 工具栏
 		/// </summary>
 		void UI_ToolBar();
 
+		/// <summary>
+		/// 场景视口面板
+		/// </summary>
+		void UI_SceneViewportPanel();
+
+		/// <summary>
+		/// 偏好设置面板
+		/// </summary>
 		void UI_PreferencesPanel();
 
+		/// <summary>
+		/// 渲染设置面板
+		/// </summary>
 		void UI_RenderingPanel();
 	};
 }

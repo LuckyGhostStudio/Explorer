@@ -1487,6 +1487,8 @@
     <ClInclude Include="src\Explorer\Components\Line.h" />
     <ClInclude Include="src\Explorer\Components\Rectangle.h" />
     <ClInclude Include="src\Explorer\Components\Rigidbody\CircleCollider2D.h" />
+    <ClInclude Include="src\Explorer\Renderer\RendererRayTracing.h" />
+    <ClInclude Include="src\Explorer\Utils\Random.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Components\Camera.cpp">
@@ -1609,5 +1611,7 @@
     <ClCompile Include="src\Explorer\Components\Circle.cpp" />
     <ClCompile Include="src\Explorer\Components\Line.cpp" />
     <ClCompile Include="src\Explorer\Components\Rectangle.cpp" />
+    <ClCompile Include="src\Explorer\Renderer\RendererRayTracing.cpp" />
+    <ClCompile Include="src\Explorer\Utils\Random.cpp" />
   </ItemGroup>
 </Project>

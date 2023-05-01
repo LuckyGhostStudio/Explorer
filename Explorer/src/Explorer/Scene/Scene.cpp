@@ -1,6 +1,7 @@
 #include "exppch.h"
 #include "Scene.h"
 
+#include "Explorer/Renderer/Renderer.h"
 #include "Explorer/Renderer/Renderer3D.h"
 #include "Explorer/Components/NativeScript.h"
 #include "Explorer/Components/Components.h"
@@ -105,7 +106,7 @@ namespace Explorer
 		newScene->m_ViewportHeight = scene->m_ViewportHeight;
 		newScene->m_ViewportWidth = scene->m_ViewportWidth;
 
-		newScene->m_Environment = newScene->m_Environment;	//环境
+		newScene->m_Environment = scene->m_Environment;		//环境
 		newScene->m_Gravity = scene->m_Gravity;				//重力加速度
 
 		auto& srcSceneRegistry = scene->m_Registry;		//源场景注册表
@@ -316,6 +317,8 @@ namespace Explorer
 		for (auto object : lights) {
 			lightObjects.push_back(Object{ object, this });	//添加到Light列表
 		}
+
+		if (Renderer::s_Type == Renderer::Type::Raytracing) return;	//TODO
 
 		//-----------------Mesh---------------------------
 		Renderer3D::BeginScene(m_Environment, camera, lightObjects);	//开始渲染场景

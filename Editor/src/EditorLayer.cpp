@@ -193,11 +193,41 @@ namespace Explorer
 		style.FrameBorderSize = 1.0f;			//边框尺寸
 		style.WindowMenuButtonPosition = -1;	//窗口tabbar按钮取消显示
 		style.ButtonTextAlign = { 0.5f, 0.5f };	//按钮文字居中
+
+		UI_MenuBar();			//菜单栏
+		UI_PreferencesPanel();	//偏好设置面板
+		UI_RenderingPanel();	//渲染设置面板
+
+		m_SceneHierarchyPanel.OnImGuiRender();	//渲染Hierarchy面板
+		m_ContentBrowserPanel.OnImGuiRender();	//渲染Project面板
+
+		//批渲染数据统计
+		ImGui::Begin("Renderer Stats");
+		//std::string name = m_PickedObject ? m_PickedObject.GetComponent<Self>().GetObjectName() : "None";
+		//ImGui::Text("Hovered Object: %s", name.c_str());
+
+		auto stats = Renderer3D::GetStats();
+		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+		ImGui::Text("Triangle Count: %d", stats.TriangleCount);
+		ImGui::Text("Vertex Count (Real): %d", stats.VertexCount);
+		ImGui::Text("Index Count: %d", stats.IndexCount);
+		ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());	//帧率
 		
+		ImGui::End();	//Renderer Stats
+
+		UI_SceneViewportPanel();	//场景视口面板
+
+		//ImGui::ShowDemoWindow();	//样例窗口
+		
+		ImGui::End();	//DockSpace
+	}
+
+	void EditorLayer::UI_MenuBar()
+	{
 		//菜单条
-		if (ImGui::BeginMenuBar()){
+		if (ImGui::BeginMenuBar()) {
 			//菜单：File
-			if (ImGui::BeginMenu("File")){
+			if (ImGui::BeginMenu("File")) {
 				//创建新场景
 				if (ImGui::MenuItem("New", "Ctrl N")) {
 					NewScene();
@@ -212,7 +242,7 @@ namespace Explorer
 				if (ImGui::MenuItem("Save", "Ctrl S")) {
 					SaveScene();
 				}
-				
+
 				//另存为：保存场景
 				if (ImGui::MenuItem("Save As...", "Ctrl Shift S")) {
 					SaveSceneAs();
@@ -256,88 +286,12 @@ namespace Explorer
 			if (ImGui::BeginMenu("Window")) {
 				//渲染设置窗口
 				ImGui::MenuItem("Rendering", nullptr, &m_RenderingWindowOpened);
-				
+
 				ImGui::EndMenu();
 			}
 
 			ImGui::EndMenuBar();
 		}
-
-		UI_PreferencesPanel();	//偏好设置面板
-		UI_RenderingPanel();	//渲染设置面板
-
-		m_SceneHierarchyPanel.OnImGuiRender();	//渲染Hierarchy面板
-		m_ContentBrowserPanel.OnImGuiRender();	//渲染Project面板
-
-		//批渲染数据统计
-		ImGui::Begin("Renderer Stats");
-		//std::string name = m_PickedObject ? m_PickedObject.GetComponent<Self>().GetObjectName() : "None";
-		//ImGui::Text("Hovered Object: %s", name.c_str());
-
-		auto stats = Renderer3D::GetStats();
-		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-		ImGui::Text("Triangle Count: %d", stats.TriangleCount);
-		ImGui::Text("Vertex Count (Real): %d", stats.VertexCount);
-		ImGui::Text("Index Count: %d", stats.IndexCount);
-		ImGui::Text("FPS: %.3f", Application::GetInstance().GetFPS());	//帧率
-		
-		ImGui::End();	//Renderer Stats
-
-		//场景视口
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
-		ImGui::Begin("Scene");
-		
-		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();	//视口可用区域最小值（视口左上角相对于视口左上角位置）
-		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();	//视口可用区域最大值（视口右下角相对于视口左上角位置）
-		auto viewportOffset = ImGui::GetWindowPos();					//视口偏移量：视口面板左上角位置（相对于屏幕左上角）
-
-		m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
-		m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
-
-		m_ViewportFocused = ImGui::IsWindowFocused();	//当前窗口被聚焦
-		m_ViewportHovered = ImGui::IsWindowHovered();	//鼠标悬停在当前窗口
-
-		Application::GetInstance().GetImGuiLayer()->BlockEvents(/*!m_ViewportFocused && */!m_ViewportHovered);	//阻止ImGui事件
-
-		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Scene面板可用区域大小
-		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
-
-		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区0 ID
-		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
-		ImGui::SetItemAllowOverlap();	//允许覆盖
-
-		//将从拖拽源（Project面板）复制的数据拖放到目标（场景）	：场景路径
-		ContentBrowserPanel::DragDropToTarget({ ".explor", ".obj", ".mesh" }, [&](const std::filesystem::path& filepath)
-		{
-			const std::string extension = filepath.extension().string();	//扩展名
-
-			if (extension == ".explor") {	//场景文件
-				OpenScene(filepath);		//打开场景
-			}
-			else if (extension == ".obj" || extension == ".mesh") {	//.obj模型文件 or .mesh文件（实际也是.obj）
-				ImportModelFile(filepath);		//导入模型文件
-			}
-		});
-
-		//设置工具栏
-		ImGui::SetCursorPos(ImGui::GetWindowContentRegionMin());
-		UI_ToolBar();	//工具栏
-		ImGui::SetItemAllowOverlap();
-		
-		//编辑状态
-		if (m_SceneState == SceneState::Edit) {
-			//初始化Gizmo绘制参数	
-			Gizmo::Init(m_ViewportBounds[0], m_ViewportBounds[1]);
-			//绘制Transform Gizmos
-			Gizmo::DrawTransformation(m_SceneHierarchyPanel.GetSelectedObject(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
-		}
-
-		ImGui::End();	//Scene
-		ImGui::PopStyleVar();
-
-		ImGui::ShowDemoWindow();	//样例窗口
-		
-		ImGui::End();	//DockSpace
 	}
 
 	void EditorLayer::UI_ToolBar()
@@ -527,6 +481,76 @@ namespace Explorer
 		}
 	}
 
+	void EditorLayer::UI_SceneViewportPanel()
+	{
+		//场景视口
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));	//设置Gui窗口样式：边界=0
+		ImGui::Begin("Scene");
+
+		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();	//视口可用区域最小值（视口左上角相对于视口左上角位置）
+		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();	//视口可用区域最大值（视口右下角相对于视口左上角位置）
+		auto viewportOffset = ImGui::GetWindowPos();					//视口偏移量：视口面板左上角位置（相对于屏幕左上角）
+
+		m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+		m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
+		m_ViewportFocused = ImGui::IsWindowFocused();	//当前窗口被聚焦
+		m_ViewportHovered = ImGui::IsWindowHovered();	//鼠标悬停在当前窗口
+
+		Application::GetInstance().GetImGuiLayer()->BlockEvents(/*!m_ViewportFocused && */!m_ViewportHovered);	//阻止ImGui事件
+
+		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Scene面板可用区域大小
+		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
+
+		uint32_t textureID = 0;
+		switch (Renderer::s_Type)
+		{
+			//光栅化渲染器
+			case Renderer::Type::Rasterization:
+				textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区0 ID
+				break;
+			//光线追踪渲染器
+			case Renderer::Type::Raytracing:
+				m_RendererRayTracing.OnResize(m_ViewportSize.x, m_ViewportSize.y);	//重置大小
+				m_RendererRayTracing.Render();										//渲染
+
+				textureID = m_RendererRayTracing.GetFinalImage()->GetRendererID();		//渲染图像ID
+				break;
+		}
+
+		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
+		ImGui::SetItemAllowOverlap();	//允许覆盖
+
+		//将从拖拽源（Project面板）复制的数据拖放到目标（场景）	：场景路径
+		ContentBrowserPanel::DragDropToTarget({ ".explor", ".obj", ".mesh" }, [&](const std::filesystem::path& filepath)
+		{
+			const std::string extension = filepath.extension().string();	//扩展名
+
+			if (extension == ".explor") {	//场景文件
+				OpenScene(filepath);		//打开场景
+			}
+			else if (extension == ".obj" || extension == ".mesh") {	//.obj模型文件 or .mesh文件（实际也是.obj）
+				ImportModelFile(filepath);		//导入模型文件
+			}
+		});
+
+		//设置工具栏
+		ImGui::SetCursorPos(ImGui::GetWindowContentRegionMin());
+		UI_ToolBar();	//工具栏
+		ImGui::SetItemAllowOverlap();
+
+		//编辑状态
+		if (m_SceneState == SceneState::Edit) {
+			//初始化Gizmo绘制参数	
+			Gizmo::Init(m_ViewportBounds[0], m_ViewportBounds[1]);
+			//绘制Transform Gizmos
+			Gizmo::DrawTransformation(m_SceneHierarchyPanel.GetSelectedObject(), m_EditorCamera.GetViewMatrix(), m_EditorCamera.GetProjectionMatrix());
+		}
+
+		ImGui::End();	//Scene
+		ImGui::PopStyleVar();
+	}
+
 	void EditorLayer::UI_PreferencesPanel()
 	{
 		if (!m_PreferencesWindowOpened) return;
@@ -558,193 +582,217 @@ namespace Explorer
 	{
 		if (!m_RenderingWindowOpened) return;
 
-		//环境参数设置面板
-		ImGui::Begin("Environment", &m_RenderingWindowOpened);
+		//渲染器设置面板
+		ImGui::Begin("Rendering Settings", &m_RenderingWindowOpened);
 		{
-			Environment& environment = m_ActiveScene->GetEnvironment();	//场景环境
-			Skybox& skybox = environment.GetSkybox();	//天空盒
+			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None)) {
+				//渲染器设置
+				if (ImGui::BeginTabItem("Renderer")) {
+					const char* rendererTypes[] = { "Rasterization", "Ray Tracing" };	//渲染器类型
+					const char* currentRenderer = rendererTypes[(int)Renderer::s_Type];	//当前渲染器类型
 
-			UI::DrawCheckBox("Enable Skybox", &environment.GetSkyboxEnable_Ref());	//Enable Skybox是否启用天空盒 勾选框
-
-			//Skybox天空盒设置 树节点
-			UI::DrawTreeNode<Environment>(skybox.GetShader()->GetName() + "(Skybox)", true, [&](float lineHeight)
-			{
-				UI::DrawColorEditor3("Tint Color", glm::value_ptr(skybox.GetTintColor()));					//Tint Color色调 颜色编辑器
-				UI::DrawSlider("Expose", &skybox.GetExpose_Ref(), 0.0f, 8.0f);								//Expose曝光度 滑动条
-				UI::DrawSlider("Rotation", &skybox.GetRotation_Ref(), 0.0f, 360.0f, UI::ValueType::Angle);	//Rotation旋转值z 滑动条
-
-				uint32_t rightTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Right]->GetRendererID();	//Right预览贴图ID
-				uint32_t leftTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Left]->GetRendererID();	//Left预览贴图ID
-				uint32_t upTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Up]->GetRendererID();		//Up预览贴图ID
-				uint32_t downTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Down]->GetRendererID();	//Down预览贴图ID
-				uint32_t frontTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Front]->GetRendererID();	//Front预览贴图ID
-				uint32_t backTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Back]->GetRendererID();	//Back预览贴图ID
-
-				//Cubemap贴图设置 树节点
-				UI::DrawTreeNode<Cubemap>("Cubemap Settings", false, [&](float lineHeight)
-				{
-					glm::vec2 textureButtonSize = { 50, 50 };
-
-					//Right(+x)天空盒贴图 选择&预览按钮
-					UI::DrawImageButton("Right [+X]", rightTextureID, textureButtonSize, [&]()
+					//渲染器类型 选择下拉列表
+					UI::DrawDropdownList("Render Engine", currentRenderer, rendererTypes, 2, [&](int index, const char* value)
 					{
-						std::string filepath = FileDialogs::OpenFile("Right[+X] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
-						if (!filepath.empty()) {
-							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Right);	//设置Right预览贴图
-						}
+						Renderer::s_Type = (Renderer::Type)index;	//设置渲染器类型
 					});
 
-					//将从拖拽源（Project面板）复制的数据拖放到目标（Right(+x)）	：文件路径
-					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
-					{
-						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Right);	//设置Right预览贴图
-					});
-
-					//Left(-x)天空盒贴图 选择&预览按钮
-					UI::DrawImageButton("Left [-X]", leftTextureID, textureButtonSize, [&]()
-					{
-						std::string filepath = FileDialogs::OpenFile("Left[-X] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
-						if (!filepath.empty()) {
-							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Left);	//设置Left预览贴图
-						}
-					});
-
-					//将从拖拽源（Project面板）复制的数据拖放到目标（Left(-x)）	：文件路径
-					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
-					{
-						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Left);	//设置Left预览贴图
-					});
-
-					//Up(+y)天空盒贴图 选择&预览按钮
-					UI::DrawImageButton("Up [+Y]", upTextureID, textureButtonSize, [&]()
-					{
-						std::string filepath = FileDialogs::OpenFile("Up[+Y] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
-						if (!filepath.empty()) {
-							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Up);	//设置Up预览贴图
-						}
-					});
-
-					//将从拖拽源（Project面板）复制的数据拖放到目标（Up(+y)）	：文件路径
-					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
-					{
-						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Up);	//设置Up预览贴图
-					});
-
-					//Down(-y)天空盒贴图 选择&预览按钮
-					UI::DrawImageButton("Down [-Y]", downTextureID, textureButtonSize, [&]()
-					{
-						std::string filepath = FileDialogs::OpenFile("Down[-Y] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
-						if (!filepath.empty()) {
-							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Down);	//设置Down预览贴图
-						}
-					});
-
-					//将从拖拽源（Project面板）复制的数据拖放到目标（Down(-y)）	：文件路径
-					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
-					{
-						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Down);	//设置Down预览贴图
-					});
-
-					//Front(+z)天空盒贴图 选择&预览按钮
-					UI::DrawImageButton("Front [+Z]", frontTextureID, textureButtonSize, [&]()
-					{
-						std::string filepath = FileDialogs::OpenFile("Front[+Z] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
-						if (!filepath.empty()) {
-							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Front);	//设置Front预览贴图
-						}
-					});
-
-					//将从拖拽源（Project面板）复制的数据拖放到目标（Front(+z)）	：文件路径
-					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
-					{
-						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Front);	//设置Front预览贴图
-					});
-
-					//Back(-z)天空盒贴图 选择&预览按钮
-					UI::DrawImageButton("Back [-Z]", backTextureID, textureButtonSize, [&]()
-					{
-						std::string filepath = FileDialogs::OpenFile("Back[-Z] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
-						if (!filepath.empty()) {
-							skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Back);	//设置Back预览贴图
-						}
-					});
-
-					//将从拖拽源（Project面板）复制的数据拖放到目标（Back(-z)）	：文件路径
-					ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
-					{
-						skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Back);	//设置Back预览贴图
-					});
-				}, false);
-
-				//Cubemap预览图 树节点
-				UI::DrawTreeNode<Cubemap>("Cubemap Preview", false, [&](float lineHeight)
-				{
-					ImVec2 size = ImVec2(90, 90);	//Cubemap单张大小
-					int positionX = 35;				//Cubemap X位置
-
-					//Cubemap预览图
-					ImGui::SetCursorPosX(positionX);
-					ImGui::BeginChild("Cubemap Preview", ImVec2(size.x * 4 + 40, size.y * 3 + 40), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-
-					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-					//Up [+Y]
-					ImGui::SetCursorPosX(size.x);	//设置游标X位置
-					ImGui::Image((void*)upTextureID, size);
-					//Left [-X]
-					ImGui::SetCursorPosX(0);
-					ImGui::Image((void*)leftTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
-					ImGui::SameLine();
-					//Back [-Z]
-					ImGui::SetCursorPosX(size.x);
-					ImGui::Image((void*)backTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
-					ImGui::SameLine();
-					//Right [+X]
-					ImGui::SetCursorPosX(size.x * 2);
-					ImGui::Image((void*)rightTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
-					ImGui::SameLine();
-					//Front [+Z]
-					ImGui::SetCursorPosX(size.x * 3);
-					ImGui::Image((void*)frontTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
-					//Down [-Y]
-					ImGui::SetCursorPosX(size.x);
-					ImGui::Image((void*)downTextureID, size);
-
-					ImGui::PopStyleVar();
-
-					ImGui::EndChild();
-				}, false);
-			});
-
-			//Environment Lighting环境光照设置 树节点
-			UI::DrawTreeNode<Environment>("Environment Lighting", true, [&](float lineHeight)
-			{
-				const char* sourceTypes[] = { "Skybox","Color" };							//环境光源类型
-				const char* currentSource = sourceTypes[(int)environment.GetSourceType()];	//当前环境光源类型
-
-				//Source环境光源类型 选择下拉列表
-				UI::DrawDropdownList("Source", currentSource, sourceTypes, 2, [&](int index, const char* value)
-					{
-						environment.SetSourceType((Environment::SourceType)index);	//设置环境光源类型
-					});
-
-				//天空盒未启用
-				if (!environment.GetSkyboxEnable()) {
-					UI::DrawColorEditor3("Ambient Color", glm::value_ptr(environment.GetAmbientColor()));	//AmbientColor环境光颜色 颜色编辑器
-				}
-				else {
-					//环境光源 天空盒（不叠加光源为颜色的环境光）
-					if (environment.GetSourceType() == Environment::SourceType::Skybox) {
-						UI::DrawSlider("Intensity Multiplier", &environment.GetIntensityMultiplier_Ref(), 0.0f, 8.0f, UI::ValueType::Float);	//光强度倍数 滑动条
-					}
-					//环境光源为 颜色
-					if (environment.GetSourceType() == Environment::SourceType::Color) {
-						UI::DrawColorEditor3("Ambient Color", glm::value_ptr(environment.GetAmbientColor()));	//AmbientColor环境光颜色 颜色编辑器
-					}
+					ImGui::EndTabItem();
 				}
 
-			});
+				//环境设置
+				if (ImGui::BeginTabItem("Environment")) {
+					Environment& environment = m_ActiveScene->GetEnvironment();	//场景环境
+					Skybox& skybox = environment.GetSkybox();	//天空盒
+
+					UI::DrawCheckBox("Enable Skybox", &environment.GetSkyboxEnable_Ref());	//Enable Skybox是否启用天空盒 勾选框
+
+					//Skybox天空盒设置 树节点
+					UI::DrawTreeNode<Environment>(skybox.GetShader()->GetName() + "(Skybox)", true, [&](float lineHeight)
+					{
+						UI::DrawColorEditor3("Tint Color", glm::value_ptr(skybox.GetTintColor()));					//Tint Color色调 颜色编辑器
+						UI::DrawSlider("Expose", &skybox.GetExpose_Ref(), 0.0f, 8.0f);								//Expose曝光度 滑动条
+						UI::DrawSlider("Rotation", &skybox.GetRotation_Ref(), 0.0f, 360.0f, UI::ValueType::Angle);	//Rotation旋转值z 滑动条
+
+						uint32_t rightTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Right]->GetRendererID();	//Right预览贴图ID
+						uint32_t leftTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Left]->GetRendererID();	//Left预览贴图ID
+						uint32_t upTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Up]->GetRendererID();		//Up预览贴图ID
+						uint32_t downTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Down]->GetRendererID();	//Down预览贴图ID
+						uint32_t frontTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Front]->GetRendererID();	//Front预览贴图ID
+						uint32_t backTextureID = skybox.GetPreviewTextures()[(int)Cubemap::TextureDirection::Back]->GetRendererID();	//Back预览贴图ID
+
+						//Cubemap贴图设置 树节点
+						UI::DrawTreeNode<Cubemap>("Cubemap Settings", false, [&](float lineHeight)
+						{
+							glm::vec2 textureButtonSize = { 50, 50 };
+
+							//Right(+x)天空盒贴图 选择&预览按钮
+							UI::DrawImageButton("Right [+X]", rightTextureID, textureButtonSize, [&]()
+							{
+								std::string filepath = FileDialogs::OpenFile("Right[+X] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+								if (!filepath.empty()) {
+									skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Right);	//设置Right预览贴图
+								}
+							});
+
+							//将从拖拽源（Project面板）复制的数据拖放到目标（Right(+x)）	：文件路径
+							ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+							{
+								skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Right);	//设置Right预览贴图
+							});
+
+							//Left(-x)天空盒贴图 选择&预览按钮
+							UI::DrawImageButton("Left [-X]", leftTextureID, textureButtonSize, [&]()
+							{
+								std::string filepath = FileDialogs::OpenFile("Left[-X] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+								if (!filepath.empty()) {
+									skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Left);	//设置Left预览贴图
+								}
+							});
+
+							//将从拖拽源（Project面板）复制的数据拖放到目标（Left(-x)）	：文件路径
+							ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+							{
+								skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Left);	//设置Left预览贴图
+							});
+
+							//Up(+y)天空盒贴图 选择&预览按钮
+							UI::DrawImageButton("Up [+Y]", upTextureID, textureButtonSize, [&]()
+							{
+								std::string filepath = FileDialogs::OpenFile("Up[+Y] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+								if (!filepath.empty()) {
+									skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Up);	//设置Up预览贴图
+								}
+							});
+
+							//将从拖拽源（Project面板）复制的数据拖放到目标（Up(+y)）	：文件路径
+							ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+							{
+								skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Up);	//设置Up预览贴图
+							});
+
+							//Down(-y)天空盒贴图 选择&预览按钮
+							UI::DrawImageButton("Down [-Y]", downTextureID, textureButtonSize, [&]()
+							{
+								std::string filepath = FileDialogs::OpenFile("Down[-Y] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+								if (!filepath.empty()) {
+									skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Down);	//设置Down预览贴图
+								}
+							});
+
+							//将从拖拽源（Project面板）复制的数据拖放到目标（Down(-y)）	：文件路径
+							ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+							{
+								skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Down);	//设置Down预览贴图
+							});
+
+							//Front(+z)天空盒贴图 选择&预览按钮
+							UI::DrawImageButton("Front [+Z]", frontTextureID, textureButtonSize, [&]()
+							{
+								std::string filepath = FileDialogs::OpenFile("Front[+Z] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+								if (!filepath.empty()) {
+									skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Front);	//设置Front预览贴图
+								}
+							});
+
+							//将从拖拽源（Project面板）复制的数据拖放到目标（Front(+z)）	：文件路径
+							ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+							{
+								skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Front);	//设置Front预览贴图
+							});
+
+							//Back(-z)天空盒贴图 选择&预览按钮
+							UI::DrawImageButton("Back [-Z]", backTextureID, textureButtonSize, [&]()
+							{
+								std::string filepath = FileDialogs::OpenFile("Back[-Z] Texture(*.png;*.jpg)\0*.png;*.jpg\0");	//打开文件对话框.png|.jpg
+								if (!filepath.empty()) {
+									skybox.SetCubemapOneSideTexture(filepath, Cubemap::TextureDirection::Back);	//设置Back预览贴图
+								}
+							});
+
+							//将从拖拽源（Project面板）复制的数据拖放到目标（Back(-z)）	：文件路径
+							ContentBrowserPanel::DragDropToTarget({ ".jpg" }, [&](const std::filesystem::path& filepath)
+							{
+								skybox.SetCubemapOneSideTexture(filepath.string(), Cubemap::TextureDirection::Back);	//设置Back预览贴图
+							});
+						}, false);
+
+						//Cubemap预览图 树节点
+						UI::DrawTreeNode<Cubemap>("Cubemap Preview", false, [&](float lineHeight)
+						{
+							ImVec2 size = ImVec2(90, 90);	//Cubemap单张大小
+							int positionX = 35;				//Cubemap X位置
+
+							//Cubemap预览图
+							ImGui::SetCursorPosX(positionX);
+							ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0);
+							ImGui::BeginChild("Cubemap Preview", ImVec2(size.x * 4 + 40, size.y * 3 + 40), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+							ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+							//Up [+Y]
+							ImGui::SetCursorPosX(size.x);	//设置游标X位置
+							ImGui::Image((void*)upTextureID, size);
+							//Left [-X]
+							ImGui::SetCursorPosX(0);
+							ImGui::Image((void*)leftTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+							ImGui::SameLine();
+							//Back [-Z]
+							ImGui::SetCursorPosX(size.x);
+							ImGui::Image((void*)backTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+							ImGui::SameLine();
+							//Right [+X]
+							ImGui::SetCursorPosX(size.x * 2);
+							ImGui::Image((void*)rightTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+							ImGui::SameLine();
+							//Front [+Z]
+							ImGui::SetCursorPosX(size.x * 3);
+							ImGui::Image((void*)frontTextureID, size, ImVec2(1, 1), ImVec2(0, 0));
+							//Down [-Y]
+							ImGui::SetCursorPosX(size.x);
+							ImGui::Image((void*)downTextureID, size);
+
+							ImGui::PopStyleVar();
+
+							ImGui::EndChild();
+							ImGui::PopStyleVar();
+						}, false);
+					});
+
+					//Environment Lighting环境光照设置 树节点
+					UI::DrawTreeNode<Environment>("Environment Lighting", true, [&](float lineHeight)
+					{
+						const char* sourceTypes[] = { "Skybox","Color" };							//环境光源类型
+						const char* currentSource = sourceTypes[(int)environment.GetSourceType()];	//当前环境光源类型
+
+						//Source环境光源类型 选择下拉列表
+						UI::DrawDropdownList("Source", currentSource, sourceTypes, 2, [&](int index, const char* value)
+						{
+							environment.SetSourceType((Environment::SourceType)index);	//设置环境光源类型
+						});
+
+						//天空盒未启用
+						if (!environment.GetSkyboxEnable()) {
+							UI::DrawColorEditor3("Ambient Color", glm::value_ptr(environment.GetAmbientColor()));	//AmbientColor环境光颜色 颜色编辑器
+						}
+						else {
+							//环境光源 天空盒（不叠加光源为颜色的环境光）
+							if (environment.GetSourceType() == Environment::SourceType::Skybox) {
+								UI::DrawSlider("Intensity Multiplier", &environment.GetIntensityMultiplier_Ref(), 0.0f, 8.0f, UI::ValueType::Float);	//光强度倍数 滑动条
+							}
+							//环境光源为 颜色
+							if (environment.GetSourceType() == Environment::SourceType::Color) {
+								UI::DrawColorEditor3("Ambient Color", glm::value_ptr(environment.GetAmbientColor()));	//AmbientColor环境光颜色 颜色编辑器
+							}
+						}
+
+					});
+
+					ImGui::EndTabItem();
+				}
+
+				ImGui::EndTabBar();
+			}
 		}
-
 		ImGui::End();	//Environment
 	}
 

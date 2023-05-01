@@ -9,7 +9,7 @@ namespace Explorer
 {
 	Texture2D::Texture2D(uint32_t width, uint32_t height) :m_Width(width), m_Height(height)
 	{
-		m_InternalFormat = GL_RGBA8;	//内部格式
+		m_InternalFormat = GL_RGBA8;		//内部格式 TODO:RGBA8
 		m_DataFormat = GL_RGBA;			//数据格式
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);		//创建2D纹理
