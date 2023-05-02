@@ -3,6 +3,7 @@
 
 #include "Explorer/Renderer/Renderer.h"
 #include "Explorer/Renderer/Renderer3D.h"
+#include "Explorer/Renderer/RendererRayTracing.h"
 #include "Explorer/Components/NativeScript.h"
 #include "Explorer/Components/Components.h"
 #include "Explorer/Components/SpriteRenderer.h"
@@ -318,7 +319,11 @@ namespace Explorer
 			lightObjects.push_back(Object{ object, this });	//添加到Light列表
 		}
 
-		if (Renderer::s_Type == Renderer::Type::Raytracing) return;	//TODO
+		//光线追踪渲染
+		if (Renderer::s_Type == Renderer::Type::Raytracing) {
+			RendererRayTracing::Render(camera);
+			return;
+		}
 
 		//-----------------Mesh---------------------------
 		Renderer3D::BeginScene(m_Environment, camera, lightObjects);	//开始渲染场景
@@ -405,7 +410,7 @@ namespace Explorer
 					transform.GetRotation().z = glm::degrees(body->GetAngle());
 				}
 			}
-		}//TODO 刚体 碰撞体组件启用状态
+		}
 
 		//-------------Renderer---------------------
 		auto lights = m_Registry.view<Light>();	//所有拥有Light组件的物体
@@ -435,6 +440,12 @@ namespace Explorer
 
 		//主相机存在 && 主相机已启用
 		if (mainCamera && mainCamera->GetEnable()) {
+			//光线追踪渲染TODO
+			if (Renderer::s_Type == Renderer::Type::Raytracing) {
+				RendererRayTracing::Render(*mainCamera, *cameraTransform, { m_ViewportWidth, m_ViewportWidth });
+				return;
+			}
+
 			//-----------------Mesh---------------------------
 			Renderer3D::BeginScene(m_Environment, *mainCamera, *cameraTransform, lightObjects);	//开始渲染场景
 			

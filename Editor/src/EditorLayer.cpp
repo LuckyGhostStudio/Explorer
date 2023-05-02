@@ -502,21 +502,7 @@ namespace Explorer
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();			//Scene面板可用区域大小
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };		//视口大小
 
-		uint32_t textureID = 0;
-		switch (Renderer::s_Type)
-		{
-			//光栅化渲染器
-			case Renderer::Type::Rasterization:
-				textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区0 ID
-				break;
-			//光线追踪渲染器
-			case Renderer::Type::Raytracing:
-				m_RendererRayTracing.OnResize(m_ViewportSize.x, m_ViewportSize.y);	//重置大小
-				m_RendererRayTracing.Render();										//渲染
-
-				textureID = m_RendererRayTracing.GetFinalImage()->GetRendererID();		//渲染图像ID
-				break;
-		}
+		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();	//颜色缓冲区0 ID
 
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2(0, 1), ImVec2(1, 0));	//场景视口Image
 		ImGui::SetItemAllowOverlap();	//允许覆盖

@@ -56,6 +56,8 @@ namespace Explorer
 
 	void EditorCamera::OnUpdate(DeltaTime dt)
 	{
+		bool moved = false;
+
 		const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };	//当前鼠标位置
 		glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;		//鼠标移动增量 = 当前位置 - 初始位置
 		m_InitialMousePosition = mouse;										//初始鼠标位置
@@ -63,13 +65,17 @@ namespace Explorer
 		if (Input::IsKeyPressed(Key::LeftShift)){						//按下Shift键
 			if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle)) {		//按下鼠标中键
 				ViewPan(delta);	//视图移动
+				moved = true;
 			}
 		}
 		else if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle)) {	//不按Shift 按下鼠标中键
 			ViewRotate(delta);	//视图旋转
+			moved = true;
 		}
 
-		UpdateView();	//更新视图矩阵
+		if (moved) {
+			UpdateView();			//更新视图矩阵
+		}
 	}
 
 	void EditorCamera::OnEvent(Event& e)
@@ -81,8 +87,8 @@ namespace Explorer
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)
 	{
 		float delta = e.GetYOffset() * m_ViewZoomRate;	//滚轮Y偏移量
-		ViewZoom(delta);						//视图缩放
-		UpdateView();							//更新视图
+		ViewZoom(delta);		//视图缩放
+		UpdateView();			//更新视图
 		return false;
 	}
 

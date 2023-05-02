@@ -65,7 +65,7 @@ namespace Explorer
 		glm::vec3 CalculatePosition() const;
 
 		std::pair<float, float> PanSpeed() const;
-		float RotationSpeed() const;
+
 		float ZoomSpeed() const;
 	public:
 		EditorCamera() = default;
@@ -91,6 +91,7 @@ namespace Explorer
 		/// <param name="e">ÊÂ¼þ</param>
 		void OnEvent(Event& e);
 
+		const glm::vec2 GetViewportSize() const { return { m_ViewportWidth, m_ViewportHeight }; }
 		inline void SetViewportSize(float width, float height) { m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
 		
 		float GetFOV() const { return m_FOV; }

@@ -15,8 +15,6 @@ namespace Explorer
 	private:
 		std::shared_ptr<Framebuffer> m_Framebuffer;	//帧缓冲区
 
-		RendererRayTracing m_RendererRayTracing;	//光线追踪渲染器
-
 		std::shared_ptr<Scene> m_ActiveScene;		//活动场景
 		std::shared_ptr<Scene> m_EditorScene;		//编辑器场景
 

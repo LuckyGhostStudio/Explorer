@@ -2,10 +2,26 @@
 
 #include "Texture.h"
 
+#include "EditorCamera.h"
+#include "Explorer/Components/Camera.h"
+#include "Explorer/Components/Transform.h"
+
+#include "Shader.h"
+#include "VertexArray.h"
+
 #include <glm/glm.hpp>
 
 namespace Explorer
 {
+	/// <summary>
+	/// 射线
+	/// </summary>
+	struct Ray
+	{
+		glm::vec3 Origin;		//源
+		glm::vec3 Direction;	//方向
+	};
+
 	/// <summary>
 	/// 光线追踪渲染器
 	/// </summary>
@@ -15,27 +31,29 @@ namespace Explorer
 		std::shared_ptr<Texture2D> m_FinalImage;	//渲染结果图像
 		uint32_t* m_ImageData = nullptr;			//图像数据
 	public:
-		RendererRayTracing() = default;
-
 		/// <summary>
-		/// 重置图像大小
+		/// 初始化渲染器
 		/// </summary>
-		/// <param name="width">宽</param>
-		/// <param name="height">高</param>
-		void OnResize(uint32_t width, uint32_t height);
+		static void Init();
+
+		static void Shutdown();
+
+		static void Render(const EditorCamera& camera);
+		static void Render(const Camera& camera, Transform& transform, const glm::vec2& viewportSize);
 
 		/// <summary>
 		/// 渲染图像：渲染每个像素
 		/// </summary>
-		void Render();
+		/// <param name="camera">相机</param>
+		//void Render(const EditorCamera& camera);
 
 		std::shared_ptr<Texture2D> GetFinalImage() const { return m_FinalImage; }
 	private:
 		/// <summary>
-		/// 处理每个像素
+		/// 追踪射线：计算射线与物体交点及其颜色
 		/// </summary>
-		/// <param name="coord">像素坐标</param>
+		/// <param name="ray">射线</param>
 		/// <returns>输出颜色</returns>
-		glm::vec4 PerPixel(glm::vec2 coord);
+		glm::vec4 TraceRay(const Ray& ray);
 	};
 }

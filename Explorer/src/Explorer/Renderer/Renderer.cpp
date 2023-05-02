@@ -1,6 +1,7 @@
 #include "exppch.h"
 #include "Renderer.h"
 #include "Renderer3D.h"
+#include "RendererRayTracing.h"
 
 namespace Explorer
 {
@@ -10,11 +11,13 @@ namespace Explorer
 	{
 		RenderCommand::Init();
 		Renderer3D::Init();
+		RendererRayTracing::Init();
 	}
 
 	void Renderer::Shutdown()
 	{
 		Renderer3D::Shutdown();
+		RendererRayTracing::Shutdown();
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)
