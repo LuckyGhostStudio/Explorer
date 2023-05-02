@@ -13,6 +13,8 @@
 
 #include "Explorer/Core/UUID.h"
 
+#include "Explorer/Renderer/RendererRayTracing.h"
+
 #include <glm/glm.hpp>
 
 class b2World;
@@ -41,6 +43,8 @@ namespace Explorer
 
 		b2World* m_PhysicsWorld = nullptr;		//物理世界
 		glm::vec2 m_Gravity = { 0.0f, -9.8f };	//重力加速度
+
+		RayTracingScene m_RayTracingScene;	//TODO 待移除
 	private:
 		/// <summary>
 		/// object添加T组件时调用

@@ -14,6 +14,22 @@
 namespace Explorer
 {
 	/// <summary>
+	/// ÇòÌå
+	/// </summary>
+	struct Sphere
+	{
+		glm::vec3 Position{ 0.0f };
+		float Radius = 0.5f;
+
+		glm::vec3 Albedo{ 1.0f };
+	};
+
+	struct RayTracingScene
+	{
+		std::vector<Sphere> Spheres;
+	};
+
+	/// <summary>
 	/// ÉäÏß
 	/// </summary>
 	struct Ray
@@ -38,8 +54,10 @@ namespace Explorer
 
 		static void Shutdown();
 
-		static void Render(const EditorCamera& camera);
-		static void Render(const Camera& camera, Transform& transform, const glm::vec2& viewportSize);
+		static void BeginScene(const EditorCamera& camera);
+		static void BeginScene(const Camera& camera, Transform& transform, const glm::vec2& viewportSize);
+
+		static void Render(const RayTracingScene& scene);
 
 		/// <summary>
 		/// äÖÈ¾Í¼Ïñ£ºäÖÈ¾Ã¿¸öÏñËØ

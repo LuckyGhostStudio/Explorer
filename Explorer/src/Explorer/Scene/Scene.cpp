@@ -38,7 +38,8 @@ namespace Explorer
 
 	Scene::Scene(const std::string& name) :m_Name(name)
 	{
-		
+		m_RayTracingScene.Spheres.push_back({ {0,0,0}, 0.5f, {1,0,1} });	//添加球体
+		m_RayTracingScene.Spheres.push_back({ {1,0,-5}, 1.5f, {0,0,1} });	//添加球体
 	}
 
 	Scene::~Scene()
@@ -319,9 +320,10 @@ namespace Explorer
 			lightObjects.push_back(Object{ object, this });	//添加到Light列表
 		}
 
-		//光线追踪渲染
+		//光线追踪渲染 TODO
 		if (Renderer::s_Type == Renderer::Type::Raytracing) {
-			RendererRayTracing::Render(camera);
+			RendererRayTracing::BeginScene(camera);
+			RendererRayTracing::Render(m_RayTracingScene);
 			return;
 		}
 
@@ -442,7 +444,8 @@ namespace Explorer
 		if (mainCamera && mainCamera->GetEnable()) {
 			//光线追踪渲染TODO
 			if (Renderer::s_Type == Renderer::Type::Raytracing) {
-				RendererRayTracing::Render(*mainCamera, *cameraTransform, { m_ViewportWidth, m_ViewportWidth });
+				RendererRayTracing::BeginScene(*mainCamera, *cameraTransform, { m_ViewportWidth, m_ViewportWidth });
+				RendererRayTracing::Render(m_RayTracingScene);
 				return;
 			}
 

@@ -75,7 +75,7 @@ namespace Explorer
 
 	}
 
-	void RendererRayTracing::Render(const EditorCamera& camera)
+	void RendererRayTracing::BeginScene(const EditorCamera& camera)
 	{
 		s_Data.Shader->Bind();
 
@@ -83,11 +83,9 @@ namespace Explorer
 		s_Data.Shader->SetFloat2("u_Camera.ViewportSize", camera.GetViewportSize());
 		s_Data.Shader->SetMat4("u_Camera.ProjectionMatrix", camera.GetProjectionMatrix());
 		s_Data.Shader->SetMat4("u_Camera.ViewMatrix", camera.GetViewMatrix());
-
-		RenderCommand::DrawIndexed(s_Data.FinalRectVertexArray);	//绘制渲染结果矩形
 	}
 
-	void RendererRayTracing::Render(const Camera& camera, Transform& transform, const glm::vec2& viewportSize)
+	void RendererRayTracing::BeginScene(const Camera& camera, Transform& transform, const glm::vec2& viewportSize)
 	{
 		s_Data.Shader->Bind();
 
@@ -95,7 +93,20 @@ namespace Explorer
 		s_Data.Shader->SetFloat2("u_Camera.ViewportSize", viewportSize);
 		s_Data.Shader->SetMat4("u_Camera.ProjectionMatrix", camera.GetProjection());
 		s_Data.Shader->SetMat4("u_Camera.ViewMatrix", glm::inverse(transform.GetTransform()));
-		
+	}
+
+	void RendererRayTracing::Render(const RayTracingScene& scene)
+	{
+		s_Data.Shader->Bind();
+
+		s_Data.Shader->SetInt("u_Scene.ObjectCount", scene.Spheres.size());
+
+		for (int i = 0; i < scene.Spheres.size(); i++) {
+			s_Data.Shader->SetFloat3("u_Scene.Spheres[" + std::to_string(i) + "].Center", scene.Spheres[i].Position);
+			s_Data.Shader->SetFloat("u_Scene.Spheres[" + std::to_string(i) + "].Radius", scene.Spheres[i].Radius);
+			s_Data.Shader->SetFloat3("u_Scene.Spheres[" + std::to_string(i) + "].Albedo", scene.Spheres[i].Albedo);
+		}
+
 		RenderCommand::DrawIndexed(s_Data.FinalRectVertexArray);	//绘制渲染结果矩形
 	}
 
