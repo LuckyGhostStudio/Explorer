@@ -10,14 +10,6 @@ struct Ray
     vec3 Direction;
 };
 
-Ray CreateRay(vec3 origin, vec3 direction)
-{
-    Ray ray;
-    ray.Origin = origin;
-    ray.Direction = direction;
-    return ray;
-}
-
 vec3 GetRayHitPoint(Ray ray, float t)
 {
     return ray.Origin + ray.Direction * t;
@@ -32,14 +24,15 @@ struct Sphere
     vec3 Albedo;
 };
 
-Sphere CreateSphere(vec3 center, float radius, vec3 albedo)
+//相机
+struct Camera
 {
-    Sphere sphere;
-    sphere.Center = center;
-    sphere.Radius = radius;
-    sphere.Albedo = albedo;
-    return sphere;
-}
+    vec3 Position;      //位置
+    vec2 ViewportSize;  //视口大小
+
+    mat4 ProjectionMatrix;
+    mat4 ViewMatrix;
+};
 
 //源点与光线和球最近交点距离
 float GetSphereHitDistance(Sphere sphere, Ray ray)
@@ -66,17 +59,62 @@ struct Scene
     Sphere Spheres[100];
 };
 
-//追踪光线：计算光线与球面交点颜色
-vec4 TraceRay(Scene scene, Ray ray)
+//击中片元信息
+struct HitPayload
 {
-    if(scene.ObjectCount == 0) return vec4(0.15, 0.15, 0.15, 1);  //背景色 
+    float HitDistance;  //击中距离
+    vec3 WorldPosition; //位置
+    vec3 WorldNormal;   //法线
 
-    Sphere closetSphere;            //最近的球体
-    bool closetSphereEmpty = true;  //最近的球体为空
+    int ObjectIndex;    //击中物体索引
+};
+
+uniform Camera u_Camera;
+uniform Scene u_Scene;
+
+//返回射线方向：屏幕坐标 [-1, 1]
+vec3 GetRayDirection(vec2 coord)
+{
+	//屏幕空间->世界空间
+	vec4 target = inverse(u_Camera.ProjectionMatrix) * vec4(coord.x, coord.y, 1, 1);
+	vec3 rayDirection = vec3(inverse(u_Camera.ViewMatrix) * vec4(normalize(vec3(target) / target.w), 0)); //世界空间
+
+    return rayDirection;
+}
+
+//最近命中着色器：击中物体时调用 返回击中最近物体时的片元负载信息
+HitPayload ClosetHit(Ray ray, float hitDistance, int objectIndex)
+{
+    HitPayload payload; //击中片元负载信息
+    payload.HitDistance = hitDistance;
+    payload.ObjectIndex = objectIndex;
+
+    const Sphere closetSphere = u_Scene.Spheres[objectIndex]; //最近击中球体
+    
+    payload.WorldPosition = GetRayHitPoint(ray, hitDistance) - closetSphere.Center;	//最近交点坐标：偏移球心位置（变换到0,0点）
+	payload.WorldNormal = normalize(payload.WorldPosition);		//交点法线
+    
+    payload.WorldPosition += closetSphere.Center;   //恢复到相对于球心位置
+
+	return payload;
+}
+
+//未击中物体时调用
+HitPayload Miss(Ray ray)
+{
+    HitPayload payload; //未击中片元负载信息
+    payload.HitDistance = -1;   //击中距离为 -1
+    return payload;
+}
+
+//追踪光线：计算光线击中物体与否产生的信息
+HitPayload TraceRay(Ray ray)
+{
+    int closetSphereIndex = -1;     //击中的最近球体索引
     float hitDistance = 340282346638528860000000000000000000000.0;  //击中距离：最大float
 
-    for(int i = 0; i < scene.ObjectCount; i++){
-        Sphere sphere = scene.Spheres[i];
+    for(int i = 0; i < u_Scene.ObjectCount; i++){
+        Sphere sphere = u_Scene.Spheres[i];
 
         float closetT = GetSphereHitDistance(sphere, ray);    //源点与最近交点距离
 
@@ -85,49 +123,58 @@ vec4 TraceRay(Scene scene, Ray ray)
             continue;
         }
 
-        if(closetT < hitDistance){
+        if(closetT > 0.0 && closetT < hitDistance){
             hitDistance = closetT;  //更新击中距离
-            closetSphere = sphere;  //更新最近的球
-            closetSphereEmpty = false;
+            closetSphereIndex = i;  //更新最近的球索引
         }
     }
     
     //最近球体不存在
-    if(closetSphereEmpty) return vec4(0.15, 0.15, 0.15, 1);  //背景色
+    if(closetSphereIndex < 0) return Miss(ray);    //未击中物体
 
-	vec3 hitPoint = GetRayHitPoint(ray, hitDistance) - closetSphere.Center;	//最近交点坐标：偏移球心位置
-	vec3 normal = normalize(hitPoint);		//交点法线
-    
-	vec3 lightDir = normalize(vec3(-1, -1, -1));	//光照方向
-	float lightIntensity = max(dot(normal, -lightDir), 0.0f);	//光照强度[0, 1]
-    
-	vec3 sphereColor = closetSphere.Albedo;
-	sphereColor *= lightIntensity;
-	return vec4(sphereColor, 1);
+    return ClosetHit(ray, hitDistance, closetSphereIndex);  //击中球体
 }
 
-//相机
-struct Camera
+//光线发生器：根据击中物体的片元负载信息进行 片元的光照计算
+vec4 PerFrag(vec2 coord)
 {
-    vec3 Position;      //位置
-    vec2 ViewportSize;  //视口大小
+    Ray ray;    //相机指向片元的光线
+    ray.Origin = u_Camera.Position;
+    ray.Direction = GetRayDirection(coord);   
 
-    mat4 ProjectionMatrix;
-    mat4 ViewMatrix;
-};
+    vec3 color = vec3(0.0);
 
-//返回射线方向：相机, 屏幕坐标 [-1, 1]
-vec3 GetRayDirection(Camera camera, vec2 coord)
-{
-	//屏幕空间->世界空间
-	vec4 target = inverse(camera.ProjectionMatrix) * vec4(coord.x, coord.y, 1, 1);
-	vec3 rayDirection = vec3(inverse(camera.ViewMatrix) * vec4(normalize(vec3(target) / target.w), 0)); //世界空间
+    float multiplier = 1.0;
+    int bounces = 2;    //光线反射次数
+    //迭代光线反射次数
+    for(int i = 0; i < bounces; i++){
+        HitPayload payload = TraceRay(ray); //追踪光线：计算光线击中物体与否产生的信息
 
-    return rayDirection;
+        //未击中物体 计算天空颜色 停止追踪
+        if(payload.HitDistance < 0.0){
+            vec3 skyColor = vec3(0.1, 0.1, 0.1);
+            color += skyColor * multiplier;
+            break;
+        }
+
+        //计算光照
+        vec3 lightDir = normalize(vec3(-1, -1, -1));	                        //光照方向
+	    float lightIntensity = max(dot(payload.WorldNormal, -lightDir), 0.0f);	//光照强度[0, 1]
+    
+        Sphere sphere = u_Scene.Spheres[payload.ObjectIndex];   //光线击中的球体
+
+	    vec3 sphereColor = sphere.Albedo;
+	    sphereColor *= lightIntensity;  //球体颜色
+
+        color += sphereColor * multiplier;  //累加颜色
+        multiplier *= 0.7f;                 //反射光强度倍数削减
+
+        ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001;  //更新反射光线源点 当前击中片元位置：沿法线方向偏移（确保不击中当前物体）
+        ray.Direction = reflect(ray.Direction, payload.WorldNormal);        //更新反射光线方向 当前光线方向 在当前击中片元位置反射
+    }
+
+    return vec4(color, 1.0);
 }
-
-uniform Camera u_Camera;
-uniform Scene u_Scene;
 
 in vec2 v_ScreenCoord;  //屏幕坐标 [0, 1]
 
@@ -135,7 +182,5 @@ void main()
 {
     vec2 coord = v_ScreenCoord * 2.0 - 1.0; // To [-1, 1]
 
-    Ray ray = CreateRay(u_Camera.Position, GetRayDirection(u_Camera, coord));   //相机指向片元的光线
-
-    f_Color = vec4(TraceRay(u_Scene, ray));  //计算光线与球交点颜色
+    f_Color = PerFrag(coord);   //根据击中物体的片元负载信息进行 片元的光照计算
 }
