@@ -1,7 +1,16 @@
 #version 450 core
 			
 layout(location = 0) out vec4 f_Color;	    //颜色缓冲区0片元输出颜色
-//layout(location = 1) out int f_ObjectID;	//颜色缓冲区1片元输出值：物体id
+layout(location = 1) out int f_ObjectID;	//颜色缓冲区1片元输出值：物体id
+
+// Noise function
+float PHI = 1.61803398874989484820459 * 00000.1; // Golden Ratio   
+float PI  = 3.14159265358979323846264 * 00000.1; // PI
+float SQ2 = 1.41421356237309504880169 * 10000.0; // Square Root of Two
+
+float gold_noise(in vec2 coordinate, in float seed){
+    return fract(tan(distance(coordinate*(seed+PHI), vec2(PHI, PI)))*SQ2);
+}
 
 //光线
 struct Ray
@@ -15,13 +24,21 @@ vec3 GetRayHitPoint(Ray ray, float t)
     return ray.Origin + ray.Direction * t;
 }
 
+//材质：基于物理的
+struct PBRMaterial
+{
+    vec3 Albedo;        //反照率
+    float Roughness;    //粗糙度
+	float Metallic;	    //金属度
+};
+
 //球体
 struct Sphere
 {
     vec3 Center;
     float Radius;
 
-    vec3 Albedo;
+    int MaterialIndex;
 };
 
 //相机
@@ -57,6 +74,7 @@ struct Scene
 {
     int ObjectCount;
     Sphere Spheres[100];
+    PBRMaterial Materials[100];
 };
 
 //击中片元信息
@@ -122,7 +140,7 @@ HitPayload TraceRay(Ray ray)
         if (closetT < 0){
             continue;
         }
-
+        //击中
         if(closetT > 0.0 && closetT < hitDistance){
             hitDistance = closetT;  //更新击中距离
             closetSphereIndex = i;  //更新最近的球索引
@@ -145,32 +163,40 @@ vec4 PerFrag(vec2 coord)
     vec3 color = vec3(0.0);
 
     float multiplier = 1.0;
-    int bounces = 2;    //光线反射次数
+    int bounces = 5;    //光线反射次数
     //迭代光线反射次数
     for(int i = 0; i < bounces; i++){
         HitPayload payload = TraceRay(ray); //追踪光线：计算光线击中物体与否产生的信息
 
         //未击中物体 计算天空颜色 停止追踪
         if(payload.HitDistance < 0.0){
-            vec3 skyColor = vec3(0.1, 0.1, 0.1);
+            vec3 skyColor = vec3(0.6, 0.7, 0.9);
             color += skyColor * multiplier;
             break;
         }
 
         //计算光照
-        vec3 lightDir = normalize(vec3(-1, -1, -1));	                        //光照方向
+        vec3 lightDir = normalize(vec3(-1, -1, -1));	                        //光照方向（平行光） TODO 待添加不同光源
 	    float lightIntensity = max(dot(payload.WorldNormal, -lightDir), 0.0f);	//光照强度[0, 1]
     
-        Sphere sphere = u_Scene.Spheres[payload.ObjectIndex];   //光线击中的球体
+        const Sphere sphere = u_Scene.Spheres[payload.ObjectIndex];           //光线击中的球体
+        const PBRMaterial material = u_Scene.Materials[sphere.MaterialIndex]; //该球体的材质
 
-	    vec3 sphereColor = sphere.Albedo;
+	    vec3 sphereColor = material.Albedo;  //球表面颜色
 	    sphereColor *= lightIntensity;  //球体颜色
-
+        
         color += sphereColor * multiplier;  //累加颜色
-        multiplier *= 0.7f;                 //反射光强度倍数削减
+        multiplier *= 0.5f;                 //反射光强度倍数削减
 
         ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001;  //更新反射光线源点 当前击中片元位置：沿法线方向偏移（确保不击中当前物体）
-        ray.Direction = reflect(ray.Direction, payload.WorldNormal);        //更新反射光线方向 当前光线方向 在当前击中片元位置反射
+        //更新反射光线方向 当前光线方向 在当前击中片元位置反射（累加 粗糙度 * 随机方向偏移vec3）
+
+        vec3 random = normalize(vec3(
+                0.5 - gold_noise(coord, ray.Direction.x * 10000.0),
+                0.5 - gold_noise(coord, ray.Direction.y * 10000.0),
+                0.5 - gold_noise(coord, ray.Direction.z * 10000.0)));
+
+        ray.Direction = reflect(ray.Direction, payload.WorldNormal + material.Roughness * random);
     }
 
     return vec4(color, 1.0);

@@ -14,6 +14,17 @@
 namespace Explorer
 {
 	/// <summary>
+	/// 基于物理的材质：金属/非金属
+	/// </summary>
+	struct PBRMaterial
+	{
+		glm::vec3 Albedo{ 1.0f };
+
+		float Roughness = 1.0f;	//粗糙度
+		float Metallic = 0.0f;	//金属度
+	};
+
+	/// <summary>
 	/// 球体
 	/// </summary>
 	struct Sphere
@@ -21,12 +32,13 @@ namespace Explorer
 		glm::vec3 Position{ 0.0f };
 		float Radius = 0.5f;
 
-		glm::vec3 Albedo{ 1.0f };
+		int MaterialIndex = 0;
 	};
 
 	struct RayTracingScene
 	{
 		std::vector<Sphere> Spheres;
+		std::vector<PBRMaterial> Materials;
 	};
 
 	/// <summary>

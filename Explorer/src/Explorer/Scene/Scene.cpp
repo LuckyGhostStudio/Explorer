@@ -38,8 +38,36 @@ namespace Explorer
 
 	Scene::Scene(const std::string& name) :m_Name(name)
 	{
-		m_RayTracingScene.Spheres.push_back({ {0,0,0}, 0.5f, {1,0,1} });	//添加球体
-		m_RayTracingScene.Spheres.push_back({ {1,0,-5}, 1.5f, {0,0,1} });	//添加球体
+		PBRMaterial pink;
+		pink.Albedo = { 1, 0, 1 };
+		pink.Roughness = 0.0f;
+		pink.Metallic = 0.0f;
+		m_RayTracingScene.Materials.push_back(pink);
+
+		PBRMaterial blue;
+		blue.Albedo = { 0.2, 0, 1 };
+		blue.Roughness = 0.1f;
+		blue.Metallic = 0.0f;
+		m_RayTracingScene.Materials.push_back(blue);
+
+		//TODO 待移除
+		{
+			Sphere sphere;
+			sphere.Position = { 0, 0, 0 };
+			sphere.Radius = 1.0f;
+			sphere.MaterialIndex = 0;
+			
+			m_RayTracingScene.Spheres.push_back(sphere);			//添加球体
+		}
+
+		{
+			Sphere sphere;
+			sphere.Position = { 0, -101.0f, 0 };
+			sphere.Radius = 100.0f;
+			sphere.MaterialIndex = 1;
+
+			m_RayTracingScene.Spheres.push_back(sphere);			//添加球体
+		}
 	}
 
 	Scene::~Scene()

@@ -63,7 +63,7 @@ namespace Explorer
 		//设置顶点缓冲区布局
 		s_Data.FinalRectVertexBuffer->SetLayout({
 			{ShaderDataType::Float3, "a_Position"},	//位置
-			});
+		});
 		s_Data.FinalRectVertexArray->AddVertexBuffer(s_Data.FinalRectVertexBuffer);	//添加VBO到VAO
 
 		std::shared_ptr<IndexBuffer> indexBuffer = std::make_shared<IndexBuffer>(finalRectVertexIndices, 6);	//创建索引缓冲EBO
@@ -99,12 +99,20 @@ namespace Explorer
 	{
 		s_Data.Shader->Bind();
 
+		//设置场景球体uniform数据
 		s_Data.Shader->SetInt("u_Scene.ObjectCount", scene.Spheres.size());
+		s_Data.Shader->SetInt("u_Scene.MaterialCount", scene.Materials.size());
 
 		for (int i = 0; i < scene.Spheres.size(); i++) {
 			s_Data.Shader->SetFloat3("u_Scene.Spheres[" + std::to_string(i) + "].Center", scene.Spheres[i].Position);
 			s_Data.Shader->SetFloat("u_Scene.Spheres[" + std::to_string(i) + "].Radius", scene.Spheres[i].Radius);
-			s_Data.Shader->SetFloat3("u_Scene.Spheres[" + std::to_string(i) + "].Albedo", scene.Spheres[i].Albedo);
+			s_Data.Shader->SetInt("u_Scene.Spheres[" + std::to_string(i) + "].MaterialIndex", scene.Spheres[i].MaterialIndex);
+		}
+
+		for (int i = 0; i < scene.Materials.size(); i++) {
+			s_Data.Shader->SetFloat3("u_Scene.Materials[" + std::to_string(i) + "].Albedo", scene.Materials[i].Albedo);
+			s_Data.Shader->SetFloat("u_Scene.Materials[" + std::to_string(i) + "].Roughness", scene.Materials[i].Roughness);
+			s_Data.Shader->SetFloat("u_Scene.Materials[" + std::to_string(i) + "].Metallic", scene.Materials[i].Metallic);
 		}
 
 		RenderCommand::DrawIndexed(s_Data.FinalRectVertexArray);	//绘制渲染结果矩形
