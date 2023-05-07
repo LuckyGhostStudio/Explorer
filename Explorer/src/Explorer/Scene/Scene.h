@@ -43,8 +43,8 @@ namespace Explorer
 
 		b2World* m_PhysicsWorld = nullptr;		//物理世界
 		glm::vec2 m_Gravity = { 0.0f, -9.8f };	//重力加速度
-
-		RayTracingScene m_RayTracingScene;	//TODO 待移除
+	public:
+		RayTracing::Scene m_RayTracingScene;	//TODO 待移除
 	private:
 		/// <summary>
 		/// object添加T组件时调用
@@ -134,6 +134,13 @@ namespace Explorer
 		/// <param name="name">光源名</param>
 		/// <returns>光源</returns>
 		Object CreateLightObject(Light::Type type = Light::Type::Point, const std::string& name = "Light");
+
+		/// <summary>
+		/// 创建光线追踪测试球体
+		/// </summary>
+		/// <param name="name">物体名</param>
+		/// <returns>球体</returns>
+		Object CreateSphereObjectToRayTracing(const std::string& name = "Sphere");
 
 		/// <summary>
 		/// 销毁物体

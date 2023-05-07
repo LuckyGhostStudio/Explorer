@@ -31,6 +31,8 @@ namespace Explorer
 	private:
 		Type m_Type = Type::None;
 
+		std::string m_Path;	//模型网格路径
+
 		std::vector<SubMesh> m_SubMeshes;	//所有子网格
 
 		uint32_t m_SubMeshCount = 0;		//子网格数
@@ -54,6 +56,9 @@ namespace Explorer
 
 		Type GetType() const { return m_Type; }
 		void SetType(Type type);
+
+		const std::string& GetPath() const { return m_Path; }
+		void SetPath(const std::string& path) { m_Path = path; }
 
 		std::vector<SubMesh>& GetSubMeshes() { return m_SubMeshes; }
 

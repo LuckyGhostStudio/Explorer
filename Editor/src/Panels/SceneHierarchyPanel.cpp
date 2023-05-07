@@ -4,6 +4,8 @@
 #include <imgui/imgui_internal.h>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Explorer/Renderer/Renderer.h"
+
 #include "Explorer/Components/Components.h"
 #include "Explorer/Components/Transform.h"
 #include "Explorer/Components/Camera.h"
@@ -50,10 +52,10 @@ namespace Explorer
 			{
 				//遍历场景所有实体，并调用each内的函数
 				m_Scene->m_Registry.each([&](auto objectID)
-					{
-						Object object{ objectID, m_Scene.get() };
-						DrawObjectNode(object);		//绘制物体结点
-					});
+				{
+					Object object{ objectID, m_Scene.get() };
+					DrawObjectNode(object);		//绘制物体结点
+				});
 			});
 
 			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {	//鼠标悬停在该窗口 && 点击鼠标 （点击空白位置）
@@ -64,12 +66,14 @@ namespace Explorer
 			if (ImGui::BeginPopupContextWindow(0, 1, false)) {	//右键点击窗口白区域弹出菜单：- 右键 不在物体项上
 				Object object;
 
-				if (ImGui::MenuItem("Create Empty")) {		//菜单项：创建空物体
+				bool enabled = Renderer::s_Type == Renderer::Type::Rasterization;	//是否启用MenuItem
+
+				if (ImGui::MenuItem("Create Empty", nullptr, nullptr, enabled)) {		//菜单项：创建空物体
 					object = m_Scene->CreateEmptyObject("Object");	//创建空物体
 				}
 
 				//父菜单项：2D物体
-				if (ImGui::BeginMenu("2D Object"))
+				if (ImGui::BeginMenu("2D Object", enabled))
 				{
 					if (ImGui::MenuItem("Sprite")) {
 						object = m_Scene->CreateSpriteObject();	//创建Sprite
@@ -82,7 +86,7 @@ namespace Explorer
 				}
 
 				//父菜单项：3D物体
-				if (ImGui::BeginMenu("3D Object"))
+				if (ImGui::BeginMenu("3D Object", enabled))
 				{
 					if (ImGui::MenuItem("Cube")) {		//子菜单项：创建Cube
 						object = m_Scene->CreateMeshObject("Cube", Mesh::Type::Cube);
@@ -103,7 +107,7 @@ namespace Explorer
 				}
 
 				//父菜单项：光源
-				if (ImGui::BeginMenu("Light"))
+				if (ImGui::BeginMenu("Light", enabled))
 				{
 					if (ImGui::MenuItem("Directional Light")) {		//子菜单项：创建平行光源
 						object = m_Scene->CreateLightObject(Light::Type::Directional);
@@ -118,8 +122,12 @@ namespace Explorer
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem("Camera")) {		//菜单项：创建相机
+				if (ImGui::MenuItem("Camera", nullptr, nullptr, enabled)) {		//菜单项：创建相机
 					object = m_Scene->CreateCameraObject();
+				}
+
+				if (ImGui::MenuItem("Create Ray Tracing Test Sphere", nullptr, nullptr, !enabled)) {	//菜单项：创建光线追踪测试球体 TODO 待移除
+					object = m_Scene->CreateSphereObjectToRayTracing("Sphere");
 				}
 
 				m_SelectionObject = object;	//选中物体设为新创建物体
@@ -147,13 +155,19 @@ namespace Explorer
 	{
 		auto& name = object.GetComponent<Self>().GetObjectName();	//物体名
 		
+		static ImVec4 headerColor = { 0, 0, 0, 0 };	//树节点颜色
+		ImGui::PushStyleColor(ImGuiCol_Header, headerColor);
+
 		//树结点标志（绘制的节点是否被选中 ？被选中的标志 ：0 | 单击箭头时打开）
 		ImGuiTreeNodeFlags flags = (m_SelectionObject == object ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;	//水平延伸到边框
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)object, flags, name.c_str());	//树节点：结点id 结点标志 结点名（实体名）
 	
+		ImGui::PopStyleColor();
+
 		if (ImGui::IsItemClicked()) {		//树结点被点击
 			m_SelectionObject = object;		//Object被选中
+			headerColor = ImVec4(0.13f, 0.30f, 0.43f, 1.0f);	//设置选中颜色
 		}
 
 		//删除物体
@@ -298,7 +312,7 @@ namespace Explorer
 		}
 
 		ImGui::SameLine();
-		//添加组件按钮
+		//添加组件按钮TODO RayTracing disable
 		if (ImGui::Button("Add Component")) {
 			ImGui::OpenPopup("AddComponent");	//打开弹出框 添加组件
 		}
@@ -629,5 +643,26 @@ namespace Explorer
 			UI::DrawDrag("Restitution", &circleCollider2D.GetRestitution_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);	//Restitution恢复系数 vec1拖动条
 			UI::DrawDrag("Restitution Threshold", &circleCollider2D.GetRestitutionThreshold_Ref(), 0.01f, UI::ValueType::Float, 0.0f, 1.0f);	//RestitutionThreshold恢复阈值 vec1拖动条
 		});
+
+		if (Renderer::s_Type == Renderer::Type::Raytracing) {
+			//光线追踪PBR材质：TODO 待移除
+			UI::DrawTreeNode<RayTracing::PBRMaterial>("PBR Material", true, [&](float lineHeight)
+			{
+				if (m_Scene->m_RayTracingScene.Materials.size() <= 0) return;
+
+				int count = m_Scene->m_RayTracingScene.SphereObjects.size();
+				int i = 0;
+				for (i = 0; i < count; i++) {
+					if (m_SelectionObject == m_Scene->m_RayTracingScene.SphereObjects[i]) {
+						break;
+					}
+				}
+
+				RayTracing::PBRMaterial& material = m_Scene->m_RayTracingScene.Materials[i];	//PBR材质
+
+				UI::DrawColorEditor4("Color", glm::value_ptr(material.Albedo));	//Albedo反照率颜色 颜色编辑器
+				UI::DrawSlider("Roughness", &material.Roughness, 0.0f, 1.0f);	//Roughness粗糙度 滑动条
+			});
+		}
 	}
 }

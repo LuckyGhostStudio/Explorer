@@ -8,7 +8,7 @@
 namespace Explorer
 {
 	/// <summary>
-	/// 2D渲染测试层
+	/// 编辑器层
 	/// </summary>
 	class EditorLayer :public Layer
 	{
@@ -113,7 +113,9 @@ namespace Explorer
 		/// <summary>
 		/// 创建新场景
 		/// </summary>
-		void NewScene();
+		/// <param name="e">场景名</param>
+		/// <param createDefaultObject="e">是否创建默认物体</param>
+		void NewScene(const std::string& name = "New Scene", bool createDefaultObject = true);
 
 		/// <summary>
 		/// 打开场景

@@ -13,6 +13,8 @@
 #include "Explorer/Components/Rigidbody/BoxCollider2D.h"
 #include "Explorer/Components/Rigidbody/CircleCollider2D.h"
 
+#include "Explorer/Utils/ModelImporter.h"
+
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
@@ -244,55 +246,8 @@ namespace Explorer
 
 			//不是内置Mesh类型
 			if (mesh.GetType() == Mesh::Type::Other) {
+				out << YAML::Key << "Path" << YAML::Value << mesh.GetPath();	//Mesh路径
 				out << YAML::Key << "Name" << YAML::Value << mesh.GetName();
-
-				out << YAML::Key << "SubMeshes" << YAML::Value << YAML::BeginSeq;	//子网格：开始SubMesh序列
-			
-				//遍历所有子网格
-				for (int i = 0; i < mesh.GetSubMeshCount(); i++) {
-					SubMesh& subMesh = mesh.GetSubMeshes()[i];
-
-					out << YAML::BeginMap;			//开始SubMesh Map
-					out << YAML::Key << "SubMesh" << YAML::Value << i;	//SubMesh结点
-
-					out << YAML::Key << "Vertices" << YAML::Value << YAML::BeginSeq;	//顶点：开始Vertex序列
-					
-					//顶点数据
-					for (int j = 0; j < subMesh.GetVertexCount(); j++) {
-						Vertex& vertex = subMesh.GetVertices()[j];
-
-						out << YAML::BeginMap;			//开始Vertex Map
-						out << YAML::Key << "Vertex" << YAML::Value << j;	//Vertex结点
-
-						out << YAML::Key << "Position" << YAML::Value << vertex.Position;
-						out << YAML::Key << "Color" << YAML::Value << vertex.Color;
-						out << YAML::Key << "Normal" << YAML::Value << vertex.Normal;
-						out << YAML::Key << "TexCoord" << YAML::Value << vertex.TexCoord;
-						out << YAML::Key << "ID" << YAML::Value << vertex.ID;
-						out << YAML::Key << "ObjectID" << YAML::Value << vertex.ObjectID;
-
-						out << YAML::EndMap;			//结束Vertex Map
-					}
-
-					out << YAML::EndSeq;												//结束Vertex序列
-
-					out << YAML::Key << "VertexIndices" << YAML::Value << YAML::BeginSeq;	//顶点索引：开始VertexIndices序列
-
-					//顶点索引数据
-					for (int j = 0; j < subMesh.GetVertexIndexCount(); j++) {
-						out << YAML::BeginMap;									//开始VertexIndex Map
-						out << YAML::Key << "VertexIndex" << YAML::Value << j;	//VertexIndex结点
-
-						out << YAML::Key << "Index" << YAML::Value << subMesh.GetVertexIndices()[j];
-
-						out << YAML::EndMap;				//结束VertexIndex Map
-					}
-
-					out << YAML::EndSeq;												//结束VertexIndices序列
-
-					out << YAML::EndMap;			//结束SubMesh Map
-				}
-				out << YAML::EndSeq;												//结束SubMesh序列
 			}
 
 			out << YAML::EndMap;	//结束Mesh组件Map
@@ -573,50 +528,15 @@ namespace Explorer
 
 					//设置网格组件数据
 					mesh.SetEnable(meshNode["Enable"].as<bool>());	//组件启用状态
-
 					mesh.SetType((Mesh::Type)meshNode["Type"].as<int>());
 
 					//不是内置Mesh类型
 					if (mesh.GetType() == Mesh::Type::Other) {
+						ModelImporter::Load(meshNode["Path"].as<std::string>());	//加载Mesh文件
+
+						mesh = ModelImporter::GetMesh();	//已导入的Mesh
+
 						mesh.SetName(meshNode["Name"].as<std::string>());	//Mesh名
-
-						YAML::Node subMeshes = meshNode["SubMeshes"];	//SubMeshes序列结点
-
-						//SubMeshes序列结点存在
-						if (subMeshes) {
-							for (auto& subMeshNode : subMeshes) {
-								YAML::Node verticesNode = subMeshNode["Vertices"];				//Vertices序列结点
-								YAML::Node vertexIndicesNode = subMeshNode["VertexIndices"];	//VertexIndices序列结点
-
-								std::vector<Vertex> vertices;	//顶点列表
-								std::vector<uint32_t> indices;	//顶点索引列表
-
-								//Vertices序列结点存在
-								if (verticesNode) {
-									for (auto& vertexNode : verticesNode) {
-										//设置Vertex数据
-										Vertex vertex;
-										vertex.Position = vertexNode["Position"].as<glm::vec3>();
-										vertex.Color = vertexNode["Color"].as<glm::vec4>();
-										vertex.Normal = vertexNode["Normal"].as<glm::vec3>();
-										vertex.TexCoord = vertexNode["TexCoord"].as<glm::vec2>();
-										vertex.ID = vertexNode["ID"].as<int>();
-										vertex.ObjectID = vertexNode["ObjectID"].as<int>();
-
-										vertices.push_back(vertex);	//添加到顶点列表
-									}
-								}
-
-								//VertexIndices序列结点存在 
-								if (vertexIndicesNode) {
-									for (auto& indexNode : vertexIndicesNode) {
-										indices.push_back(indexNode["Index"].as<uint32_t>());	//添加顶点索引数据到列表
-									}
-								}
-
-								mesh.AddSubMesh(SubMesh(vertices, indices));	//添加SubMesh到Mesh
-							}
-						}
 					}
 				}
 

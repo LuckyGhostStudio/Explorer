@@ -12,6 +12,8 @@ namespace Explorer
 
 		glEnable(GL_DEPTH_TEST);							//启用深度测试
 		//glEnable(GL_LINE_SMOOTH);							//启用直线反走样
+		glEnable(GL_STENCIL_TEST);							//启用模板测试
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);			//在深度和模板测试都通过时 使用glStencilFunc指定的参考值
 	}
 
 	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -26,7 +28,7 @@ namespace Explorer
 	
 	void RenderCommand::Clear()
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	//清除 颜色缓冲区|深度缓冲区
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);	//清除 颜色缓冲区|深度缓冲区|模板缓冲区
 	}
 
 	void RenderCommand::SetDepthMask(bool enable)

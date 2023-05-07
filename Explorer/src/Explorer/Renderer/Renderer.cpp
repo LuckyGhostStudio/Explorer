@@ -11,13 +11,13 @@ namespace Explorer
 	{
 		RenderCommand::Init();
 		Renderer3D::Init();
-		RendererRayTracing::Init();
+		RayTracing::Renderer::Init();
 	}
 
 	void Renderer::Shutdown()
 	{
 		Renderer3D::Shutdown();
-		RendererRayTracing::Shutdown();
+		RayTracing::Renderer::Shutdown();
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)

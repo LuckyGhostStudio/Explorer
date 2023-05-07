@@ -1,17 +1,15 @@
 #pragma once
 
-#include "Texture.h"
-
 #include "EditorCamera.h"
 #include "Explorer/Components/Camera.h"
 #include "Explorer/Components/Transform.h"
 
-#include "Shader.h"
-#include "VertexArray.h"
-
-#include <glm/glm.hpp>
-
 namespace Explorer
+{
+	class Object;
+}
+
+namespace RayTracing
 {
 	/// <summary>
 	/// 基于物理的材质：金属/非金属
@@ -21,7 +19,6 @@ namespace Explorer
 		glm::vec3 Albedo{ 1.0f };
 
 		float Roughness = 1.0f;	//粗糙度
-		float Metallic = 0.0f;	//金属度
 	};
 
 	/// <summary>
@@ -35,8 +32,9 @@ namespace Explorer
 		int MaterialIndex = 0;
 	};
 
-	struct RayTracingScene
+	struct Scene
 	{
+		std::vector<Explorer::Object> SphereObjects;
 		std::vector<Sphere> Spheres;
 		std::vector<PBRMaterial> Materials;
 	};
@@ -53,11 +51,8 @@ namespace Explorer
 	/// <summary>
 	/// 光线追踪渲染器
 	/// </summary>
-	class RendererRayTracing
+	class Renderer
 	{
-	private:
-		std::shared_ptr<Texture2D> m_FinalImage;	//渲染结果图像
-		uint32_t* m_ImageData = nullptr;			//图像数据
 	public:
 		/// <summary>
 		/// 初始化渲染器
@@ -66,24 +61,9 @@ namespace Explorer
 
 		static void Shutdown();
 
-		static void BeginScene(const EditorCamera& camera);
-		static void BeginScene(const Camera& camera, Transform& transform, const glm::vec2& viewportSize);
+		static void BeginScene(const Explorer::EditorCamera& camera);
+		static void BeginScene(const Explorer::Camera& camera, Explorer::Transform& transform, const glm::vec2& viewportSize);
 
-		static void Render(const RayTracingScene& scene);
-
-		/// <summary>
-		/// 渲染图像：渲染每个像素
-		/// </summary>
-		/// <param name="camera">相机</param>
-		//void Render(const EditorCamera& camera);
-
-		std::shared_ptr<Texture2D> GetFinalImage() const { return m_FinalImage; }
-	private:
-		/// <summary>
-		/// 追踪射线：计算射线与物体交点及其颜色
-		/// </summary>
-		/// <param name="ray">射线</param>
-		/// <returns>输出颜色</returns>
-		glm::vec4 TraceRay(const Ray& ray);
+		static void Render(const Scene& scene);
 	};
 }

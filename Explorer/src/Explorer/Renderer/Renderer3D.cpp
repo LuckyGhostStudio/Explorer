@@ -359,17 +359,6 @@ namespace Explorer
 
 	}
 
-	void Renderer3D::SubMeshProcessing(SubMesh& subMesh)
-	{
-		uint32_t dataSize = (uint32_t)sizeof(Vertex) * subMesh.GetVertexBufferData().size();	//计算顶点缓冲区数据大小（字节）
-
-		subMesh.GetVertexBuffer()->SetData(subMesh.GetVertexBufferData().data(), dataSize);	//设置顶点缓冲区数据
-
-		RenderCommand::DrawIndexed(subMesh.GetVertexArray());	//绘制调用
-
-		s_Data.Stats.DrawCalls++;	//绘制调用次数++
-	}
-
 	void Renderer3D::DrawMesh(const Transform& transform, Mesh& mesh, Material& material, int objectID)
 	{
 		material.SetShaderData();	//设置Material的Shader Uniform数据

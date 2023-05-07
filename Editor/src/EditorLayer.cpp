@@ -31,21 +31,23 @@ namespace Explorer
 
 		m_PlayIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/PlayButton.png");					//Play按钮图标
 		m_GizmosIcon = std::make_shared<Texture2D>("Resources/Icons/Buttons/ToolBar/GizmosButton.png");				//Gizmos按钮图标
-
+		//0.886f, 0.376f, 0.357f, 0.702f
 		m_CoordinateAxis[0] = Line({ -20, 0, 0 }, { 20, 0, 0 }, { 0.815f, 0.175f, 0.216f, 1.0f });	//x轴
 		m_CoordinateAxis[1] = Line({ 0, 0, -20 }, { 0, 0, 20 }, { 0.025f, 0.275f, 0.68f, 1.0f });	//z轴
 
+		glm::vec4 gridColor = { 0.4f, 0.4f, 0.4f, 0.302f };
+
 		for (int i = -20; i < 0; i++) {
 			m_AxisGrids[i + 20].SetWidth(1.0f);
-			m_AxisGrids[i + 20] = Line({ i, 0, -20 }, { i, 0, 20 }, { 0.388f, 0.388f, 0.388f, 1.0f });	//x-方向
+			m_AxisGrids[i + 20] = Line({ i, 0, -20 }, { i, 0, 20 }, gridColor);	//x-方向
 			m_AxisGrids[i + 40].SetWidth(1.0f);
-			m_AxisGrids[i + 40] = Line({ -20, 0, i }, { 20, 0, i }, { 0.388f, 0.388f, 0.388f, 1.0f });	//z-方向
+			m_AxisGrids[i + 40] = Line({ -20, 0, i }, { 20, 0, i }, gridColor);	//z-方向
 		}
 		for (int i = 0; i < 20; i++) {
 			m_AxisGrids[i + 40].SetWidth(1.0f);
-			m_AxisGrids[i + 40] = Line({ i + 1, 0, -20 }, { i + 1, 0, 20 }, { 0.388f, 0.388f, 0.388f, 1.0f });	//x+方向
+			m_AxisGrids[i + 40] = Line({ i + 1, 0, -20 }, { i + 1, 0, 20 }, gridColor);	//x+方向
 			m_AxisGrids[i + 60].SetWidth(1.0f);
-			m_AxisGrids[i + 60] = Line({ -20, 0, i + 1 }, { 20, 0, i + 1 }, { 0.388f, 0.388f, 0.388f, 1.0f });	//z+方向
+			m_AxisGrids[i + 60] = Line({ -20, 0, i + 1 }, { 20, 0, i + 1 }, gridColor);	//z+方向
 		}
 
 		FramebufferSpecification fbSpec;	//帧缓冲区规范
@@ -259,7 +261,7 @@ namespace Explorer
 				}
 
 				//导出场景物体
-				if (ImGui::BeginMenu("Export")) {
+				if (ImGui::BeginMenu("Export", false)) {
 					//.obj文件
 					if (ImGui::MenuItem("Wavefront(.obj)")) {
 						//TODO:导出为.obj文件
@@ -581,6 +583,16 @@ namespace Explorer
 					UI::DrawDropdownList("Render Engine", currentRenderer, rendererTypes, 2, [&](int index, const char* value)
 					{
 						Renderer::s_Type = (Renderer::Type)index;	//设置渲染器类型
+						if (Renderer::s_Type == Renderer::Type::Raytracing) {
+							NewScene("Ray Tracing Test Scene", false);	//创建RayTracing测试场景
+
+							Object ground = m_ActiveScene->CreateSphereObjectToRayTracing("Ground");
+							ground.GetComponent<Transform>().SetScale({ 100, 100, 100 });
+							ground.GetComponent<Transform>().SetPosition({ 0, -50, 0 });
+						}
+						else {
+							m_EditorScenePath.empty() ? NewScene() : OpenScene(m_EditorScenePath);	//创建新场景或打开已存在场景
+						}
 					});
 
 					ImGui::EndTabItem();
@@ -829,7 +841,6 @@ namespace Explorer
 			case Key::Delete:
 				OnDeleteObject();	//复制物体
 				break;
-			//TODO:添加删除物体
 		}
 
 		//设置Transform Gizmo类型
@@ -865,6 +876,8 @@ namespace Explorer
 
 	void EditorLayer::OnOverlayRender()
 	{
+		if (Renderer::s_Type == Renderer::Type::Raytracing) return;
+
 		if (!m_ShowGizmos) return;	//不显示Gizmos
 
 		if (m_SceneState == SceneState::Play) return;
@@ -1065,25 +1078,28 @@ namespace Explorer
 		Renderer3D::EndScene();
 	}
 
-	void EditorLayer::NewScene()
+	void EditorLayer::NewScene(const std::string& name, bool createDefaultObject)
 	{
 		//不是编辑状态 停止场景
 		if (m_SceneState != SceneState::Edit) {
 			OnSceneStop();
 		}
 
-		m_EditorScene = std::make_shared<Scene>("New Scene");			//创建新场景
+		m_EditorScene = std::make_shared<Scene>(name);	//创建新场景
 
-		m_MainCamera = m_EditorScene->CreateCameraObject("Main Camera", true);	//创建默认Camera对象：主相机
-		m_Light = m_EditorScene->CreateLightObject();							//创建默认Light对象
-		m_Cube = m_EditorScene->CreateMeshObject("Cube", Mesh::Type::Cube);		//创建默认Cube对象
+		//创建默认物体
+		if (createDefaultObject) {
+			m_MainCamera = m_EditorScene->CreateCameraObject("Main Camera", true);	//创建默认Camera对象：主相机
+			m_Light = m_EditorScene->CreateLightObject();							//创建默认Light对象
+			m_Cube = m_EditorScene->CreateMeshObject("Cube", Mesh::Type::Cube);		//创建默认Cube对象
+		}
 
 		m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);	//重置视口大小
 		m_SceneHierarchyPanel.SetScene(m_EditorScene);	//设置Hierarchy的场景
 
 		m_ActiveScene = m_EditorScene;
 
-		m_EditorScenePath = std::filesystem::path();	//设置当前场景路径
+		//m_EditorScenePath = std::filesystem::path();	//设置当前场景路径
 	}
 
 	void EditorLayer::OpenScene()
@@ -1171,6 +1187,7 @@ namespace Explorer
 			
 		mesh.SetType(Mesh::Type::Other);	//Mesh类型：其他网格
 		mesh.SetName(name);					//设置Mesh名
+		mesh.SetPath(path.string());		//设置Mesh路径
 
 		object.AddComponent<Mesh>(mesh);	//添加Mesh组件
 		object.AddComponent<Material>();	//添加Material组件

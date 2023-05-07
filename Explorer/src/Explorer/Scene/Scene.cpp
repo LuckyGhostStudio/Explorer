@@ -38,36 +38,7 @@ namespace Explorer
 
 	Scene::Scene(const std::string& name) :m_Name(name)
 	{
-		PBRMaterial pink;
-		pink.Albedo = { 1, 0, 1 };
-		pink.Roughness = 0.0f;
-		pink.Metallic = 0.0f;
-		m_RayTracingScene.Materials.push_back(pink);
-
-		PBRMaterial blue;
-		blue.Albedo = { 0.2, 0, 1 };
-		blue.Roughness = 0.1f;
-		blue.Metallic = 0.0f;
-		m_RayTracingScene.Materials.push_back(blue);
-
-		//TODO 待移除
-		{
-			Sphere sphere;
-			sphere.Position = { 0, 0, 0 };
-			sphere.Radius = 1.0f;
-			sphere.MaterialIndex = 0;
-			
-			m_RayTracingScene.Spheres.push_back(sphere);			//添加球体
-		}
-
-		{
-			Sphere sphere;
-			sphere.Position = { 0, -101.0f, 0 };
-			sphere.Radius = 100.0f;
-			sphere.MaterialIndex = 1;
-
-			m_RayTracingScene.Spheres.push_back(sphere);			//添加球体
-		}
+		
 	}
 
 	Scene::~Scene()
@@ -260,6 +231,25 @@ namespace Explorer
 		return light;
 	}
 
+	Object Scene::CreateSphereObjectToRayTracing(const std::string& name)
+	{
+		Object sphere = CreateEmptyObject(name);	//创建Sphere
+
+		RayTracing::PBRMaterial material;
+		material.Albedo = { 0.8, 0.8, 0.8 };
+		material.Roughness = 1.0f;
+		m_RayTracingScene.Materials.push_back(material);	//添加材质
+
+		RayTracing::Sphere s;
+		s.Position = sphere.GetComponent<Transform>().GetPosition();
+		s.MaterialIndex = m_RayTracingScene.Materials.size() - 1;
+		m_RayTracingScene.Spheres.push_back(s);		//添加球体
+
+		m_RayTracingScene.SphereObjects.push_back(sphere);	//添加物体
+
+		return sphere;
+	}
+
 	void Scene::DestroyObject(Object object)
 	{
 		m_Registry.destroy(object);	//从注册表移除物体
@@ -350,8 +340,8 @@ namespace Explorer
 
 		//光线追踪渲染 TODO
 		if (Renderer::s_Type == Renderer::Type::Raytracing) {
-			RendererRayTracing::BeginScene(camera);
-			RendererRayTracing::Render(m_RayTracingScene);
+			RayTracing::Renderer::BeginScene(camera);
+			RayTracing::Renderer::Render(m_RayTracingScene);
 			return;
 		}
 
@@ -472,8 +462,8 @@ namespace Explorer
 		if (mainCamera && mainCamera->GetEnable()) {
 			//光线追踪渲染TODO
 			if (Renderer::s_Type == Renderer::Type::Raytracing) {
-				RendererRayTracing::BeginScene(*mainCamera, *cameraTransform, { m_ViewportWidth, m_ViewportWidth });
-				RendererRayTracing::Render(m_RayTracingScene);
+				RayTracing::Renderer::BeginScene(*mainCamera, *cameraTransform, { m_ViewportWidth, m_ViewportWidth });
+				RayTracing::Renderer::Render(m_RayTracingScene);
 				return;
 			}
 
