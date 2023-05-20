@@ -14,7 +14,6 @@ namespace Explorer
 		KeyCode m_KeyCode;	//°´¼ü´úÂë
 
 		KeyEvent(const KeyCode keycode) :m_KeyCode(keycode) {}
-
 	public:
 		inline KeyCode GetKeyCode() const { return m_KeyCode; }
 

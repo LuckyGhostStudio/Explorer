@@ -124,20 +124,6 @@ namespace Explorer
 			}
 		}
 
-		//uint32_t index = 0;
-		//for (const auto& element : layout) {
-		//	glEnableVertexAttribArray(index);					//启用顶点属性
-		//
-		//	glVertexAttribPointer(index,						//顶点属性位置编号
-		//		element.GetComponentCount(),					//顶点属性数据个数
-		//		ShaderDataTypeToOpenGLBaseType(element.Type), 	//数据类型
-		//		element.Normalized ? GL_TRUE : GL_FALSE, 		//是否标准化
-		//		layout.GetStride(), 							//顶点大小（字节）
-		//		(const void*)element.Offset);					//顶点属性偏移量（字节）
-		//
-		//	index++;
-		//}
-
 		m_VertexBuffers.push_back(vertexBuffer);	//添加VBO到列表
 	}
 	

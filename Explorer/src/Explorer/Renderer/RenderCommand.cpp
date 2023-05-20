@@ -14,6 +14,7 @@ namespace Explorer
 		//glEnable(GL_LINE_SMOOTH);							//启用直线反走样
 		glEnable(GL_STENCIL_TEST);							//启用模板测试
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);			//在深度和模板测试都通过时 使用glStencilFunc指定的参考值
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);			//线框模式
 	}
 
 	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

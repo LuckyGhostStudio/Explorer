@@ -126,60 +126,6 @@ project "Explorer"		--项目
 		runtime "Release"
         optimize "on"
 
-project "Sandbox"		--项目
-	location "Sandbox"	--相对路径
-	kind "ConsoleApp"	--控制台应用
-	language "C++"		--语言
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	files				
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
-	}
-
-	includedirs			
-	{
-		"Explorer/vendor/spdlog/include",
-		"Explorer/src",
-		"Explorer/vendor",
-		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
-	}
-
-	links
-	{
-		"Explorer"			
-	}
-
-	filter "system:windows"	--windows
-        systemversion "latest"	
-
-		defines			
-		{
-			--"EXP_PLATFORM_WINDOWS"
-		}
-
-	filter "configurations:Debug"	
-        defines "EXP_DEBUG"
-		runtime "Debug"
-        symbols "on"
-
-    filter "configurations:Release"
-        defines "EXP_RELEASE"
-		runtime "Release"
-        optimize "on"
-
-    filter "configurations:Dist"
-        defines "EXP_DIST"
-		runtime "Release"
-        optimize "on"
-
 project "Editor"		--项目
 	location "Editor"	--相对路径
 	kind "ConsoleApp"	--控制台应用

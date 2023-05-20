@@ -69,6 +69,12 @@
     <ClInclude Include="src\Explorer\Components\Camera.h">
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Circle.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\CircleRenderer.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Components\Component.h">
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
@@ -76,6 +82,9 @@
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Components\Light.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Line.h">
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Components\Material.h">
@@ -87,7 +96,13 @@
     <ClInclude Include="src\Explorer\Components\NativeScript.h">
       <Filter>src\Explorer\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Rectangle.h">
+      <Filter>src\Explorer\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Components\Rigidbody\BoxCollider2D.h">
+      <Filter>src\Explorer\Components\Rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Components\Rigidbody\CircleCollider2D.h">
       <Filter>src\Explorer\Components\Rigidbody</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Components\Rigidbody\Rigidbody2D.h">
@@ -195,6 +210,9 @@
     <ClInclude Include="src\Explorer\Renderer\Renderer3D.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Explorer\Renderer\RendererRayTracing.h">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Explorer\Renderer\Shader.h">
       <Filter>src\Explorer\Renderer</Filter>
     </ClInclude>
@@ -216,13 +234,13 @@
     <ClInclude Include="src\Explorer\Scene\ScriptableObject.h">
       <Filter>src\Explorer\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Utils\GeneralUtils.h">
-      <Filter>src\Explorer\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\Explorer\Utils\ModelImporter.h">
       <Filter>src\Explorer\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Explorer\Utils\PlatformUtils.h">
+      <Filter>src\Explorer\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Explorer\Utils\Random.h">
       <Filter>src\Explorer\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\exppch.h">
@@ -1482,25 +1500,27 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Explorer\Components\CircleRenderer.h" />
-    <ClInclude Include="src\Explorer\Components\Circle.h" />
-    <ClInclude Include="src\Explorer\Components\Line.h" />
-    <ClInclude Include="src\Explorer\Components\Rectangle.h" />
-    <ClInclude Include="src\Explorer\Components\Rigidbody\CircleCollider2D.h" />
-    <ClInclude Include="src\Explorer\Renderer\RendererRayTracing.h" />
-    <ClInclude Include="src\Explorer\Utils\Random.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Explorer\Components\Camera.cpp">
       <Filter>src\Explorer\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\Explorer\Components\Circle.cpp">
+      <Filter>src\Explorer\Components</Filter>
+    </ClCompile>
     <ClCompile Include="src\Explorer\Components\Light.cpp">
+      <Filter>src\Explorer\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Components\Line.cpp">
       <Filter>src\Explorer\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Components\Material.cpp">
       <Filter>src\Explorer\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Components\Mesh.cpp">
+      <Filter>src\Explorer\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Components\Rectangle.cpp">
       <Filter>src\Explorer\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Components\Skybox.cpp">
@@ -1572,6 +1592,9 @@
     <ClCompile Include="src\Explorer\Renderer\Renderer3D.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Explorer\Renderer\RendererRayTracing.cpp">
+      <Filter>src\Explorer\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Explorer\Renderer\Shader.cpp">
       <Filter>src\Explorer\Renderer</Filter>
     </ClCompile>
@@ -1590,13 +1613,13 @@
     <ClCompile Include="src\Explorer\Scene\SceneSerializer.cpp">
       <Filter>src\Explorer\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Utils\GeneralUtils.cpp">
-      <Filter>src\Explorer\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="src\Explorer\Utils\ModelImporter.cpp">
       <Filter>src\Explorer\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\Explorer\Utils\PlatformUtils.cpp">
+      <Filter>src\Explorer\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Explorer\Utils\Random.cpp">
       <Filter>src\Explorer\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\exppch.cpp">
@@ -1608,10 +1631,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Explorer\Components\Circle.cpp" />
-    <ClCompile Include="src\Explorer\Components\Line.cpp" />
-    <ClCompile Include="src\Explorer\Components\Rectangle.cpp" />
-    <ClCompile Include="src\Explorer\Renderer\RendererRayTracing.cpp" />
-    <ClCompile Include="src\Explorer\Utils\Random.cpp" />
   </ItemGroup>
 </Project>

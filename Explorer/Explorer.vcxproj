@@ -200,7 +200,6 @@
     <ClInclude Include="src\Explorer\Scene\Scene.h" />
     <ClInclude Include="src\Explorer\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Explorer\Scene\ScriptableObject.h" />
-    <ClInclude Include="src\Explorer\Utils\GeneralUtils.h" />
     <ClInclude Include="src\Explorer\Utils\ModelImporter.h" />
     <ClInclude Include="src\Explorer\Utils\PlatformUtils.h" />
     <ClInclude Include="src\Explorer\Utils\Random.h" />
@@ -662,7 +661,6 @@
     <ClCompile Include="src\Explorer\Scene\Object.cpp" />
     <ClCompile Include="src\Explorer\Scene\Scene.cpp" />
     <ClCompile Include="src\Explorer\Scene\SceneSerializer.cpp" />
-    <ClCompile Include="src\Explorer\Utils\GeneralUtils.cpp" />
     <ClCompile Include="src\Explorer\Utils\ModelImporter.cpp" />
     <ClCompile Include="src\Explorer\Utils\PlatformUtils.cpp" />
     <ClCompile Include="src\Explorer\Utils\Random.cpp" />
@@ -694,4 +692,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project>
+</Project> 

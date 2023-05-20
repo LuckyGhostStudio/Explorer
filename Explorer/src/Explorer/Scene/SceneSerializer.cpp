@@ -433,11 +433,6 @@ namespace Explorer
 		fout << out.c_str();			//输出序列化结果到输出流文件
 	}
 	
-	void SceneSerializer::SerializeRuntime(const std::string& filepath)
-	{
-		EXP_CORE_ASSERT(false, "Not implemented!");	//未实现
-	}
-	
 	bool SceneSerializer::Deserialize(const std::string& filepath)
 	{
 		std::ifstream stream(filepath);	//文件输入流
@@ -685,11 +680,5 @@ namespace Explorer
 		}
 
 		return true;
-	}
-	
-	bool SceneSerializer::DeserializeRuntime(const std::string& filepath)
-	{
-		EXP_CORE_ASSERT(false, "Not implemented!");	//未实现
-		return false;
 	}
 }

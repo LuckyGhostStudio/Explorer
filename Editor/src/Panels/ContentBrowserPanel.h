@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Explorer/Renderer/Texture.h"
-#include "Explorer/Utils/GeneralUtils.h"
 
 #include <filesystem>
 
@@ -106,12 +105,12 @@ namespace Explorer
 				const wchar_t* path = (const wchar_t*)payload->Data;	//负载数据
 				std::filesystem::path filepath = std::filesystem::path(g_AssetPath) / path;	//文件路径
 
-				std::string suffixname = GeneralUtils::GetFileType(filepath.filename().string());	//文件后缀名
+				std::string extension = filepath.extension().string();	//扩展名
 
 				bool findType = false;
 				for (auto& fileType : fileTypes) {
 					//找到后缀名匹配的文件类型
-					if (suffixname == fileType) {
+					if (extension == fileType) {
 						findType = true;
 						function(filepath);	//处理文件（文件名）
 						break;
@@ -119,7 +118,7 @@ namespace Explorer
 				}
 
 				if (!findType) {
-					EXP_ERROR("File type {0} not found!", suffixname);	//文件类型不匹配
+					EXP_ERROR("File type {0} not found!", extension);	//文件类型不匹配
 				}
 			}
 

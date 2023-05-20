@@ -26,25 +26,21 @@ namespace Explorer
 
 	void ImGuiLayer::OnAttach()
 	{
-		// Setup Dear ImGui context
+		//设置ImGui上下文
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
-		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       //启用键盘控制
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           //启用停靠空间
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         //启用多视口/平台窗口
 
 		float fontSize = 18.0f;
 		io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/OpenSans-Bold.ttf", fontSize);	//添加粗体（0号）
 		//默认字体 添加TTF字体 大小18
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/opensans/OpenSans-Regular.ttf", fontSize);	//1号
 
-		// Setup Dear ImGui style
+		//设置ImGui样式
 		ImGui::StyleColorsDark();
-		//ImGui::StyleColorsClassic();
 
 		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -59,7 +55,7 @@ namespace Explorer
 		Application& app = Application::GetInstance();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
-		// Setup Platform/Renderer bindings
+		//设置平台/渲染器绑定
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 410");
 	}
@@ -97,7 +93,7 @@ namespace Explorer
 		Application& app = Application::GetInstance();
 		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());	//设置窗口大小
 
-		// Rendering
+		//渲染ImGui
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

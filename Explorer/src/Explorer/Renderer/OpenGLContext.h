@@ -11,7 +11,6 @@ namespace Explorer
 	{
 	private:
 		GLFWwindow* m_WindowHandle;		//窗口句柄
-
 	public:
 		/// <summary>
 		/// OpenGL上下文

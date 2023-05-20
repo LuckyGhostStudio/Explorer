@@ -25,23 +25,10 @@ namespace Explorer
 		void Serialize(const std::string& filepath);
 
 		/// <summary>
-		/// 运行时序列化场景：序列化为二进制
-		/// </summary>
-		/// <param name="filepath">文件输出路径</param>
-		void SerializeRuntime(const std::string& filepath);
-
-		/// <summary>
 		/// 反序列化场景：文本文件反序列化
 		/// </summary>
 		/// <param name="filepath">文件路径</param>
 		/// <returns>结果</returns>
 		bool Deserialize(const std::string& filepath);
-
-		/// <summary>
-		/// 运行时反序列化：二进制反序列化
-		/// </summary>
-		/// <param name="filepath">文件路径</param>
-		/// <returns>结果</returns>
-		bool DeserializeRuntime(const std::string& filepath);
 	};
 }

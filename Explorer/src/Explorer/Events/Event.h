@@ -24,13 +24,6 @@ namespace Explorer
 
 		WindowClose,			//窗口关闭事件
 		WindowResize,			//窗口大小改变事件
-		WindowFocus,			//窗口聚焦事件
-		WindowLostFocus,		//窗口失焦事件
-		WindowMoved,			//窗口移动事件
-
-		AppTick,				//App时钟事件
-		AppUpdate,				//App每帧更新事件
-		AppRender,				//App渲染事件
 
 		KeyPressed,				//按键按下事件
 		KeyReleased,			//按键抬起事件

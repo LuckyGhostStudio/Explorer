@@ -24,12 +24,4 @@
       <Filter>Panels</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="assets\shaders\CircleShader.vert" />
-    <None Include="assets\shaders\CircleShader.frag" />
-    <None Include="assets\shaders\LineShader.vert" />
-    <None Include="assets\shaders\LineShader.frag" />
-    <None Include="assets\shaders\RayTracingShader.vert" />
-    <None Include="assets\shaders\RayTracingShader.frag" />
-  </ItemGroup>
 </Project>

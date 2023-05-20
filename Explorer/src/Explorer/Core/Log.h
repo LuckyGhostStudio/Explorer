@@ -34,7 +34,7 @@ namespace Explorer
 	};
 }
 
-//核心日志
+//内核日志
 #define EXP_CORE_TRACE(...) ::Explorer::Log::GetCoreLogger()->trace(__VA_ARGS__)	//提示日志
 #define EXP_CORE_INFO(...) ::Explorer::Log::GetCoreLogger()->info(__VA_ARGS__)		//信息日志
 #define EXP_CORE_WARN(...) ::Explorer::Log::GetCoreLogger()->warn(__VA_ARGS__)		//警告日志
