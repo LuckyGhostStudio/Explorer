@@ -1,7 +1,7 @@
 #pragma once
 
 /// <summary>
-/// 创建应用程序：在SandboxApp定义
+/// 创建应用程序：在ExplorerEditor定义
 /// </summary>
 /// <returns>应用程序指针</returns>
 extern Explorer::Application* Explorer::CreateApplication();
